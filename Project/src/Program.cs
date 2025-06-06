@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using System;
 
-namespace Proyecto;
+namespace Project;
 
 class Program
 {

@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:screens="clr-namespace:Project.presentation.screens"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Project.presentation.components.tabControl">
+
+	<TabControl TabStripPlacement="Top">
+		<!-- Style to center the tabs -->
+		<TabControl.Styles>
+			<Style Selector="TabControl WrapPanel">
+				<Setter Property="HorizontalAlignment" Value="Center"/>
+			</Style>
+		</TabControl.Styles>
+
+		<TabItem Header="Calendario">
+			<screens:calendar />
+		</TabItem>
+		<TabItem Header="Estadisticas">
+			<screens:statistics />
+		</TabItem>
+		<TabItem Header="Tips">
+			<screens:tips />
+		</TabItem>
+		<TabItem Header="Cuenta">
+			<screens:account />
+		</TabItem>
+	</TabControl>
+</UserControl>

@@ -20,4 +20,10 @@
     </PackageReference>
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="domain\" />
+    <Folder Include="infraestructure\" />
+    <Folder Include="application\" />
+  </ItemGroup>
 </Project>

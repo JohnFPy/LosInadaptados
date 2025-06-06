@@ -1,0 +1,6 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Project.presentation.Views.UnauthViews.UnauthenticatedAreaView">
+	<TextBlock Text="Esta es un área no autenticada"
+			   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+</UserControl>
