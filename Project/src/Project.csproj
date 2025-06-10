@@ -19,11 +19,13 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
+    <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="application\" />
     <Folder Include="domain\" />
     <Folder Include="infraestructure\" />
-    <Folder Include="application\" />
   </ItemGroup>
 </Project>
