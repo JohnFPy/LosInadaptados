@@ -1,6 +1,117 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Project.presentation.Views.UnauthViews.UnauthenticatedAreaView">
-	<TextBlock Text="Esta es un área no autenticada"
-			   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+
+	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+		<!-- Register Grid -->
+		<Grid x:Name="MainGrid"
+              IsVisible="True"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+              ColumnDefinitions="*">
+
+			<TextBlock Grid.Row="0"
+					   Grid.Column="0"
+					   Margin="0,0,0,20"
+					   Classes="H1"
+					   Theme="{StaticResource TitleTextBlock}"
+					   HorizontalAlignment="Center">
+				Registro
+			</TextBlock>
+
+			<TextBox Grid.Row="1"
+					 Grid.Column="0"
+					 Width="250"
+					 Margin="0,8"
+					 Watermark="Nombre de Usuario"
+					 HorizontalAlignment="Center"
+					 Classes="clearButton"/>
+
+			<TextBox Grid.Row="2"
+					 Grid.Column="0"
+					 Width="250" Margin="0,8"
+					 Watermark="Contraseña"
+					 HorizontalAlignment="Center"
+					 Classes="clearButton, revealPasswordButton"/>
+
+			<TextBox Grid.Row="3"
+					 Grid.Column="0" Width="250"
+					 Margin="0,8"
+					 Watermark="Primer Nombre"
+					 HorizontalAlignment="Center"
+					 Classes="clearButton"/>
+
+			<TextBox Grid.Row="4"
+					 Grid.Column="0" Width="250"
+					 Margin="0,8"
+					 Watermark="Apellido"
+					 HorizontalAlignment="Center"
+					 Classes="clearButton"/>
+
+			<TextBox Grid.Row="5"
+					 Grid.Column="0" Width="250"
+					 Margin="0,8"
+					 Watermark="Edad"
+					 HorizontalAlignment="Center"/>
+
+			<Button Grid.Row="6"
+					Grid.Column="0" Width="250"
+					Margin="0,16,0,0"
+					HorizontalAlignment="Center"
+					Content="Registrarse"/>
+
+
+			<!-- Botón para mostrar el Login Grid -->
+			<Button Grid.Row="7"
+					Grid.Column="0"
+					Width="250"
+					Margin="0,16,0,0"
+					HorizontalAlignment="Center"
+					Content="Ya estás registrado?"
+					Click="ShowOtherGrid"
+					Theme="{DynamicResource BorderlessRepeatButton}"
+					Classes="Secondary"/>
+
+		</Grid>
+
+
+		<!-- Login Grid -->
+		<Grid x:Name="OtherGrid"
+              IsVisible="False"
+              RowDefinitions="Auto,Auto,Auto,Auto"
+              ColumnDefinitions="*">
+
+			<TextBlock Grid.Row="0"
+					   Grid.Column="0"
+					   Margin="0,0,0,20"
+					   Classes="H1"
+					   HorizontalAlignment="Center">
+				       Login
+			</TextBlock>
+
+			<TextBox Grid.Row="1"
+				 Grid.Column="0"
+				 Width="250"
+				 Margin="0,8"
+				 Watermark="Nombre de Usuario"
+				 HorizontalAlignment="Center"
+				 Classes="clearButton"/>
+
+			<TextBox Grid.Row="2"
+					 Grid.Column="0"
+					 Width="250" Margin="0,8"
+					 Watermark="Contraseña"
+					 HorizontalAlignment="Center"
+					 Classes="clearButton, revealPasswordButton"/>
+
+			<Button Grid.Row="3"
+					Grid.Column="0"
+					Width="250"
+					Margin="0,16,0,0"
+					HorizontalAlignment="Center"
+					Content="Volver"
+					Click="ShowMainGrid"/>
+
+		</Grid>
+	</StackPanel>
 </UserControl>

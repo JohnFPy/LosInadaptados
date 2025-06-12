@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="application\" />
     <Folder Include="domain\" />
     <Folder Include="infraestructure\" />
   </ItemGroup>

@@ -22,7 +22,7 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            bool isAuthenticated = true; // Cambiar a true para probar la vista autenticada
+            bool isAuthenticated = false; // Cambiar a true para probar la vista autenticada
 
             var view = isAuthenticated
                 ? (Control)new AuthenticatedAreaView()
