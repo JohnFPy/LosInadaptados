@@ -27,4 +27,8 @@
     <Folder Include="domain\" />
     <Folder Include="infraestructure\" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <AvaloniaResource Include="resources\audio\**\*.*" />
+  </ItemGroup>
 </Project>
