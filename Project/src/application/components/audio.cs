@@ -6,138 +6,209 @@ using System;
 using System.IO;
 using Avalonia.Media;
 using Avalonia.Threading;
+using NAudio.Wave;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Project.presentation.components
 {
-    public partial class Audio : UserControl
+    public partial class Audio : UserControl, IDisposable
     {
+        public static readonly StyledProperty<string> AudioFileNameProperty =
+            AvaloniaProperty.Register<Audio, string>(nameof(AudioFileName), "relaxingPiano.mp3");
+
+        public string AudioFileName
+        {
+            get => GetValue(AudioFileNameProperty);
+            set => SetValue(AudioFileNameProperty, value);
+        }
+
+        public static readonly StyledProperty<string> ButtonTextProperty =
+            AvaloniaProperty.Register<Audio, string>(nameof(ButtonText), "Reproducir audio");
+
+        public string ButtonText
+        {
+            get => GetValue(ButtonTextProperty);
+            set => SetValue(ButtonTextProperty, value);
+        }
+
         private string? _audioPath;
-        private System.Diagnostics.Process? _currentProcess;
         private bool _isPlaying = false;
+        private AudioFileReader? _audioFileReader;
+        private WaveOutEvent? _outputDevice;
+        private Button? _playButton;
 
         public Audio()
         {
-            Console.WriteLine("Audio constructor start");
             InitializeComponent();
-            Console.WriteLine("InitializeComponent completed");
-            ExtractAudioFile();
-            var playButton = this.FindControl<Button>("PlayButton");
-            if (playButton != null)
+
+            // Registrar manejadores para cambios de propiedad
+            PropertyChanged += OnAudioPropertyChanged;
+
+            _playButton = this.FindControl<Button>("PlayButton");
+            if (_playButton != null)
             {
-                Console.WriteLine("PlayButton found, registering click event");
-                playButton.Click += PlayButton_Click;
+                _playButton.Click += PlayButton_Click;
+                UpdateButtonText();
             }
-            else
+
+            // Cargar audio cuando el componente esté inicializado
+            AttachedToVisualTree += (s, e) => ExtractAudioFile();
+        }
+
+        private void OnAudioPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property == AudioFileNameProperty)
             {
-                Console.WriteLine("ERROR: PlayButton not found in the UI");
+                ExtractAudioFile();
             }
-            Console.WriteLine("Audio constructor completed");
+            else if (e.Property == ButtonTextProperty)
+            {
+                UpdateButtonText();
+            }
+        }
+
+        private void UpdateButtonText()
+        {
+            if (_playButton != null)
+            {
+                _playButton.Content = new TextBlock { Text = ButtonText };
+            }
         }
 
         private void ExtractAudioFile()
         {
-            Console.WriteLine("ExtractAudioFile start");
-            try
-            {
-                // Alternative approach using direct file access
-                var resourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources", "audio", "relaxingPiano.mp3");
-                Console.WriteLine($"Looking for audio file at: {resourcePath}");
+                // Intentar primero cargar desde recursos embebidos
+                var resourceNames = GetType().Assembly.GetManifestResourceNames();
+
+                // Buscar archivo por nombre especificado
+                string? audioResourceName = resourceNames.FirstOrDefault(n =>
+                    n.EndsWith(AudioFileName, StringComparison.OrdinalIgnoreCase));
+
+                // Si no encontramos el específico, buscar cualquier audio
+                if (audioResourceName == null)
+                {
+                    audioResourceName = resourceNames.FirstOrDefault(n =>
+                        n.Contains("mp3", StringComparison.OrdinalIgnoreCase) ||
+                        n.Contains("wav", StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (audioResourceName != null)
+                {
+                    // Usar el nombre del archivo original para la extensión correcta
+                    string extension = Path.GetExtension(AudioFileName);
+                    if (string.IsNullOrEmpty(extension))
+                        extension = ".mp3";
+
+                    var tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(Guid.NewGuid().ToString()) + extension);
+
+                    using (var stream = GetType().Assembly.GetManifestResourceStream(audioResourceName))
+                    {
+                        if (stream != null)
+                        {
+                            using (var fileStream = File.Create(tempPath))
+                            {
+                                stream.CopyTo(fileStream);
+                            }
+                            _audioPath = tempPath;
+                            return;
+                        }
+                    }
+                }
+
+                // Si no está como recurso embebido, intentar cargar desde sistema de archivos
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var resourcePath = Path.Combine(baseDir, "resources", "audio", AudioFileName);
 
                 if (File.Exists(resourcePath))
                 {
                     _audioPath = resourcePath;
-                    Console.WriteLine("Audio file found successfully");
+                    return;
                 }
-                else
-                {
-                    Console.WriteLine("ERROR: Audio file not found at the specified path");
-                    // Try to list the directory contents to see what's available
-                    var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    Console.WriteLine($"Base directory: {baseDir}");
-
-                    if (Directory.Exists(Path.Combine(baseDir, "resources")))
-                    {
-                        var folders = Directory.GetDirectories(Path.Combine(baseDir, "resources"));
-                        Console.WriteLine($"Available folders in resources: {string.Join(", ", folders)}");
-
-                        if (Directory.Exists(Path.Combine(baseDir, "resources", "audio")))
-                        {
-                            var files = Directory.GetFiles(Path.Combine(baseDir, "resources", "audio"));
-                            Console.WriteLine($"Available files in audio folder: {string.Join(", ", files)}");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERROR in audio extraction: {ex.Message}");
-                Console.WriteLine($"Exception stack trace: {ex.StackTrace}");
-            }
-            Console.WriteLine("ExtractAudioFile end");
         }
 
         private void PlayButton_Click(object? sender, RoutedEventArgs e)
         {
-            Console.WriteLine("PlayButton_Click triggered");
-
-            try
-            {
-                if (_isPlaying && _currentProcess != null && !_currentProcess.HasExited)
+                if (_isPlaying)
                 {
-                    Console.WriteLine("Stopping audio playback");
-                    _currentProcess.Kill();
-                    _isPlaying = false;
-                    Console.WriteLine("Audio playback stopped");
+                    StopAudio();
+                    UpdateButtonText();
                 }
                 else if (!string.IsNullOrEmpty(_audioPath))
                 {
-                    Console.WriteLine($"Starting audio playback from: {_audioPath}");
-
-                    var psi = new System.Diagnostics.ProcessStartInfo
+                    PlayAudio();
+                    if (_playButton != null)
                     {
-                        FileName = "powershell",
-                        Arguments = $"-c (New-Object Media.SoundPlayer '{_audioPath}').PlaySync()",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
-
-                    Console.WriteLine("Starting process with parameters:");
-                    Console.WriteLine($"  FileName: {psi.FileName}");
-                    Console.WriteLine($"  Arguments: {psi.Arguments}");
-
-                    _currentProcess = System.Diagnostics.Process.Start(psi);
-
-                    if (_currentProcess != null)
-                    {
-                        Console.WriteLine($"Process started with ID: {_currentProcess.Id}");
-                        _isPlaying = true;
-
-                        // Capture process output (optional)
-                        string output = _currentProcess.StandardOutput.ReadToEnd();
-                        string error = _currentProcess.StandardError.ReadToEnd();
-
-                        if (!string.IsNullOrEmpty(output))
-                            Console.WriteLine($"Process output: {output}");
-                        if (!string.IsNullOrEmpty(error))
-                            Console.WriteLine($"Process error: {error}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR: Failed to start process - Process.Start returned null");
+                        _playButton.Content = new TextBlock { Text = "Detener audio" };
                     }
                 }
-                else
-                {
-                    Console.WriteLine("ERROR: Cannot play audio - audioPath is null or empty");
-                }
+        }
+
+        private void PlayAudio()
+        {
+            try
+            {
+                DisposeAudioResources();
+                _audioFileReader = new AudioFileReader(_audioPath);
+                _outputDevice = new WaveOutEvent();
+                _outputDevice.PlaybackStopped += OnPlaybackStopped;
+                _outputDevice.Init(_audioFileReader);
+                _outputDevice.Play();
+                _isPlaying = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR in audio playback: {ex.Message}");
-                Console.WriteLine($"Exception stack trace: {ex.StackTrace}");
+                DisposeAudioResources();
             }
+        }
+
+        private void StopAudio()
+        {
+            if (_outputDevice != null)
+            {
+                _outputDevice.Stop();
+                DisposeAudioResources();
+                _isPlaying = false;
+            }
+        }
+
+        private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _isPlaying = false;
+                UpdateButtonText();
+            });
+
+            DisposeAudioResources();
+        }
+
+        private void DisposeAudioResources()
+        {
+            if (_outputDevice != null)
+            {
+                _outputDevice.PlaybackStopped -= OnPlaybackStopped;
+                _outputDevice.Dispose();
+                _outputDevice = null;
+            }
+
+            if (_audioFileReader != null)
+            {
+                _audioFileReader.Dispose();
+                _audioFileReader = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            PropertyChanged -= OnAudioPropertyChanged;
+            StopAudio();
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            Dispose();
+            base.OnDetachedFromVisualTree(e);
         }
     }
 }

@@ -33,7 +33,7 @@ public partial class App : Application
                 Content = view,
                 Width = 1280,
                 Height = 720,
-                Title = isAuthenticated ? "Área Autenticada" : "Área No Autenticada"
+                Title = isAuthenticated ? "MoodPress" : "Ingreso"
             };
         }
 

@@ -20,6 +20,6 @@
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-		<components:Audio Grid.Row="2" />
+		<components:AudioPlayer Grid.Row="2" />
 	</Grid>
 </UserControl>

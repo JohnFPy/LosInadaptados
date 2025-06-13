@@ -10,7 +10,7 @@
 
 	<StackPanel Margin="16" Spacing="12">
 		<Button Name="PlayButton">
-			<TextBlock Text="Reproducir piano relajante" />
+			<TextBlock Text="Reproducir audio" />
 		</Button>
 	</StackPanel>
 </UserControl>
