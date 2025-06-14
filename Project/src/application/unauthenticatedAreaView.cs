@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Project.domain; // Importante: importa tu validador
+using Project.domain;
 using Project.presentation.Views.AuthViews;
 using System;
 
@@ -13,6 +13,7 @@ namespace Project.presentation.Views.UnauthViews
         private Grid? _registerGrid;
         private Grid? _loginGrid;
         private TextBox? _ageTextBox;
+        private TextBox? _nameTextBox;
 
         public UnauthenticatedAreaView()
         {
@@ -25,6 +26,7 @@ namespace Project.presentation.Views.UnauthViews
             _registerGrid = this.FindControl<Grid>("RegisterGrid");
             _loginGrid = this.FindControl<Grid>("LoginGrid");
             _ageTextBox = this.FindControl<TextBox>("AgeTextBox");
+            _nameTextBox = this.FindControl<TextBox>("NameTextBox");
         }
 
         // Método para dirigirse a LoginGrid
@@ -50,11 +52,14 @@ namespace Project.presentation.Views.UnauthViews
         private void OnRegisterClick(object? sender, RoutedEventArgs e)
         {
             var edadTexto = _ageTextBox?.Text;
+            var nombreTexto = _nameTextBox?.Text;
 
-            if (RegisterAutentification.EsEdadValida(edadTexto))
+            bool edadValida = RegisterAutentification.EsEdadValida(edadTexto);
+            bool nombreValido = RegisterAutentification.EsNombreValido(nombreTexto);
+
+            if (edadValida && nombreValido)
             {
-                // Edad válida: aquí puedes continuar con el registro
-                // Por ejemplo, navegar a la vista autenticada:
+                // Ambos válidos: continuar con el registro
                 var window = this.VisualRoot as Window;
                 if (window != null)
                 {
@@ -63,10 +68,24 @@ namespace Project.presentation.Views.UnauthViews
             }
             else
             {
-                // Edad inválida: muestra un mensaje de error
-                // Puedes usar un MessageBox, Snackbar, etc.
-                // Ejemplo simple:
-                _ageTextBox!.Watermark = "Introduce una edad válida";
+                // Mostrar mensajes de error según corresponda
+                if (!edadValida)
+                    _ageTextBox!.Watermark = "Introduce una edad válida";
+                if (!nombreValido)
+                    _nameTextBox!.Watermark = "Nombre inválido (sin números ni espacios)";
+            }
+        }
+
+        private void ValidarNombre()
+        {
+            var nombre = _nameTextBox?.Text;
+            if (!RegisterAutentification.EsNombreValido(nombre))
+            {
+                _nameTextBox!.Watermark = "Nombre inválido (sin números ni espacios)";
+            }
+            else
+            {
+                // Nombre válido, puedes continuar con el flujo
             }
         }
     }

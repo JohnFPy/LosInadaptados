@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Project.domain
@@ -16,5 +17,13 @@ namespace Project.domain
             }
             return false;
         }
+        public static bool EsNombreValido(string? nameText)
+        {
+            if (string.IsNullOrWhiteSpace(nameText))
+                return false;
+            // Solo letras, sin espacios ni números
+            return Regex.IsMatch(nameText, @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$");
+        }
+
     }
 }

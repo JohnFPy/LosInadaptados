@@ -40,7 +40,7 @@
 					 Classes="clearButton, revealPasswordButton"/>
 
 			<!-- TextBox para ingresar el primer nombre del usuario -->
-			<TextBox x:Name="FirstNameTextBox"
+			<TextBox x:Name="NameTextBox"
 					 Grid.Row="3"
 					 Grid.Column="0"
 					 Width="250"
