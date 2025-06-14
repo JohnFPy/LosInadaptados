@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Project.presentation.Views.AuthViews;
-using Project.Domain;
+//using Project.Domain;
 using System;
 
 namespace Project.presentation.Views.UnauthViews
