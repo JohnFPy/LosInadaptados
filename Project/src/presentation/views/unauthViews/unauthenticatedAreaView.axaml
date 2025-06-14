@@ -5,7 +5,7 @@
 	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
 		<!-- Register Grid -->
-		<Grid x:Name="MainGrid"
+		<Grid x:Name="RegisterGrid"
               IsVisible="True"
               RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
               ColumnDefinitions="*">
@@ -16,10 +16,12 @@
 					   Classes="H1"
 					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-					   Registro
+				Registro
 			</TextBlock>
 
-			<TextBox Grid.Row="1"
+			<!-- TextBox para ingresar el Username del usuario -->
+			<TextBox x:Name="UsernameTextBox"
+					 Grid.Row="1"
 					 Grid.Column="0"
 					 Width="250"
 					 Margin="0,8"
@@ -27,46 +29,55 @@
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
-			<TextBox Grid.Row="2"
+			<!-- TextBox para ingresar la contraseña del usuario -->
+			<TextBox x:Name="PasswordTextBox"
+					 Grid.Row="2"
 					 Grid.Column="0"
-					 Width="250" 
+					 Width="250"
 					 Margin="0,8"
 					 Watermark="Contraseña"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
 
-			<TextBox Grid.Row="3"
-					 Grid.Column="0" 
+			<!-- TextBox para ingresar el primer nombre del usuario -->
+			<TextBox x:Name="FirstNameTextBox"
+					 Grid.Row="3"
+					 Grid.Column="0"
 					 Width="250"
 					 Margin="0,8"
 					 Watermark="Primer Nombre"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
-			<TextBox Grid.Row="4"
-					 Grid.Column="0" 
+			<!-- TextBox para ingresar el apellido del usuario -->
+			<TextBox x:Name="LastNameTextBox"
+					 Grid.Row="4"
+					 Grid.Column="0"
 					 Width="250"
 					 Margin="0,8"
 					 Watermark="Apellido"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
-			<TextBox Grid.Row="5"
-					 Grid.Column="0" 
+			<!-- TextBox para ingresar la edad del usuario -->
+			<TextBox x:Name="AgeTextBox"
+					 Grid.Row="5"
+					 Grid.Column="0"
 					 Width="250"
 					 Margin="0,8"
 					 Watermark="Edad"
 					 HorizontalAlignment="Center"/>
 
+			<!-- Botón para Validar datos de Registro -->
 			<Button Grid.Row="6"
-					Grid.Column="0" 
+					Grid.Column="0"
 					Width="250"
 					Margin="0,16,0,0"
 					HorizontalAlignment="Center"
 					Content="Registrarse"
 					Click="OnRegisterClick"
 					Theme="{DynamicResource SolidButton}"/>
-	
+
 			<!-- Botón para mostrar el Login Grid -->
 			<Button Grid.Row="7"
 					Grid.Column="0"
@@ -74,7 +85,7 @@
 					Margin="0,16,0,0"
 					HorizontalAlignment="Center"
 					Content="¿Ya estás registrado?"
-					Click="ShowOtherGrid"
+					Click="ShowLoginGrid"
 					Theme="{DynamicResource BorderlessRepeatButton}"
 					Classes="Secondary"/>
 
@@ -82,7 +93,7 @@
 
 
 		<!-- Login Grid -->
-		<Grid x:Name="OtherGrid"
+		<Grid x:Name="LoginGrid"
               IsVisible="False"
               RowDefinitions="Auto,Auto,Auto,Auto"
               ColumnDefinitions="*">
@@ -93,9 +104,10 @@
 					   Classes="H1"
 					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-				       Iniciar Sesión
+				Iniciar Sesión
 			</TextBlock>
 
+			<!-- TextBox para ingresar el Username del usuario -->
 			<TextBox Grid.Row="1"
 				 Grid.Column="0"
 				 Width="250"
@@ -104,6 +116,7 @@
 				 HorizontalAlignment="Center"
 				 Classes="clearButton"/>
 
+			<!-- TextBox para ingresar la contraseña del usuario -->
 			<TextBox Grid.Row="2"
 					 Grid.Column="0"
 					 Width="250" Margin="0,8"
@@ -111,6 +124,8 @@
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
 
+
+			<!-- Botón para mostrar el Register Grid -->
 			<Button Grid.Row="3"
 					Grid.Column="0"
 					Width="250"
@@ -119,7 +134,7 @@
 					Content="¿Aún no tienes una cuenta?"
 					Theme="{DynamicResource BorderlessRepeatButton}"
 					Classes="Secondary"
-					Click="ShowMainGrid"/>
+					Click="ShowRegisterGrid"/>
 		</Grid>
 	</StackPanel>
 </UserControl>
