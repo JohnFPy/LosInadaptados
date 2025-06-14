@@ -16,7 +16,7 @@
 					   Classes="H1"
 					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-				Registro
+					   Registro
 			</TextBlock>
 
 			<TextBox Grid.Row="1"
@@ -29,45 +29,51 @@
 
 			<TextBox Grid.Row="2"
 					 Grid.Column="0"
-					 Width="250" Margin="0,8"
+					 Width="250" 
+					 Margin="0,8"
 					 Watermark="Contraseña"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
 
 			<TextBox Grid.Row="3"
-					 Grid.Column="0" Width="250"
+					 Grid.Column="0" 
+					 Width="250"
 					 Margin="0,8"
 					 Watermark="Primer Nombre"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
 			<TextBox Grid.Row="4"
-					 Grid.Column="0" Width="250"
+					 Grid.Column="0" 
+					 Width="250"
 					 Margin="0,8"
 					 Watermark="Apellido"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
 			<TextBox Grid.Row="5"
-					 Grid.Column="0" Width="250"
+					 Grid.Column="0" 
+					 Width="250"
 					 Margin="0,8"
 					 Watermark="Edad"
 					 HorizontalAlignment="Center"/>
 
 			<Button Grid.Row="6"
-					Grid.Column="0" Width="250"
+					Grid.Column="0" 
+					Width="250"
 					Margin="0,16,0,0"
 					HorizontalAlignment="Center"
-					Content="Registrarse"/>
-
-
+					Content="Registrarse"
+					Click="OnRegisterClick"
+					Theme="{DynamicResource SolidButton}"/>
+	
 			<!-- Botón para mostrar el Login Grid -->
 			<Button Grid.Row="7"
 					Grid.Column="0"
 					Width="250"
 					Margin="0,16,0,0"
 					HorizontalAlignment="Center"
-					Content="Ya estás registrado?"
+					Content="¿Ya estás registrado?"
 					Click="ShowOtherGrid"
 					Theme="{DynamicResource BorderlessRepeatButton}"
 					Classes="Secondary"/>
@@ -85,8 +91,9 @@
 					   Grid.Column="0"
 					   Margin="0,0,0,20"
 					   Classes="H1"
+					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-				       Login
+				       Iniciar Sesión
 			</TextBlock>
 
 			<TextBox Grid.Row="1"
@@ -109,9 +116,10 @@
 					Width="250"
 					Margin="0,16,0,0"
 					HorizontalAlignment="Center"
-					Content="Volver"
+					Content="¿Aún no tienes una cuenta?"
+					Theme="{DynamicResource BorderlessRepeatButton}"
+					Classes="Secondary"
 					Click="ShowMainGrid"/>
-
 		</Grid>
 	</StackPanel>
 </UserControl>

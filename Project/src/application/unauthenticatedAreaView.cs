@@ -2,6 +2,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Project.presentation.Views.AuthViews;
+using Project.Domain;
 using System;
 
 namespace Project.presentation.Views.UnauthViews
@@ -23,7 +25,7 @@ namespace Project.presentation.Views.UnauthViews
             _otherGrid = this.FindControl<Grid>("OtherGrid");
         }
 
-        // Este método se llama al hacer clic en "Ya estás registrado?"
+        // Método para dirigirse a LoginGrid
         private void ShowOtherGrid(object? sender, RoutedEventArgs e)
         {
             if (_mainGrid == null || _otherGrid == null)
@@ -33,7 +35,7 @@ namespace Project.presentation.Views.UnauthViews
             _otherGrid.IsVisible = true;
         }
 
-        // Este método se llama al hacer clic en "Volver"
+        // Método para dirigirse a RegisterGrid
         private void ShowMainGrid(object? sender, RoutedEventArgs e)
         {
             if (_mainGrid == null || _otherGrid == null)
@@ -41,6 +43,18 @@ namespace Project.presentation.Views.UnauthViews
 
             _mainGrid.IsVisible = true;
             _otherGrid.IsVisible = false;
+        }
+
+        private void OnRegisterClick(object? sender, RoutedEventArgs e)
+        {
+
+            var window = this.VisualRoot as Window;
+            if (window != null)
+            {
+                // Crea la vista autenticada y reemplaza el contenido
+                var authenticatedView = new AuthenticatedAreaView();
+                window.Content = authenticatedView;
+            }
         }
     }
 }
