@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Project.presentation.screens.tips">
 
-	<Grid RowDefinitions="Auto,Auto,*">
+	<Grid RowDefinitions="Auto,Auto,Auto,*">
 		<TextBlock Grid.Row="0"
                    Text="Tips"
                    FontSize="24"
@@ -20,6 +20,8 @@
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-		<components:AudioPlayer Grid.Row="2" />
+		<components:AudioPlayer Grid.Row="2" Margin="0,0,0,15" />
+
+		<components:VolumeController Grid.Row="3" HorizontalAlignment="Center" />
 	</Grid>
 </UserControl>
