@@ -5,12 +5,145 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Project.presentation.screens.account">
 
-	<Grid RowDefinitions="Auto,*">
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
 		<TextBlock Grid.Row="0"
                    Text="Cuenta"
                    FontSize="24"
                    FontWeight="Bold"
                    HorizontalAlignment="Center"
                    Margin="0,10,0,20"/>
+
+		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+			<!-- Actualization Grid -->
+			<Grid x:Name="ActualizationGrid"
+				  IsVisible="True"
+				  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+				  ColumnDefinitions="*">
+
+				<TextBlock Grid.Row="0"
+						   Grid.Column="0"
+						   Margin="0,0,0,20"
+						   Classes="H1"
+						   Theme="{StaticResource TitleTextBlock}"
+						   HorizontalAlignment="Center">
+						   Actualización de Datos
+				</TextBlock>
+
+				<!-- TextBox para Actualizar el Username del usuario -->
+				<TextBox x:Name="UsernameTextBox"
+						 Grid.Row="1"
+						 Grid.Column="0"
+						 Width="250"
+						 Margin="0,10"
+						 Watermark="Nombre de Usuario"
+						 HorizontalAlignment="Center"
+						 Classes="clearButton"/>
+
+				<!--Las watermark luego se corregirán por los datos de la cuenta-->
+
+				<TextBlock x:Name="UsernameErrorTextBlock"
+						   Grid.Row="2"
+						   Grid.Column="0"
+						   Foreground="Red"
+						   FontSize="12"
+						   HorizontalAlignment="Center"
+						   IsVisible="False"/>
+
+
+				<!-- TextBox para Actualizar la contraseña del usuario -->
+				<TextBox x:Name="PasswordTextBox"
+						 Grid.Row="3"
+						 Grid.Column="0"
+						 Width="250"
+						 Margin="0,10"
+						 Watermark="Contraseña"
+						 HorizontalAlignment="Center"
+						 Classes="clearButton, revealPasswordButton"/>
+
+				<TextBlock x:Name="PasswordErrorTextBlock"
+						  Grid.Row="4"
+						  Grid.Column="0"
+						  Foreground="Red"
+						  FontSize="12"
+						  HorizontalAlignment="Center"
+						  IsVisible="False"/>
+
+
+				<!-- TextBox para Actualizar el primer nombre del usuario -->
+				<TextBox x:Name="NameTextBox"
+						 Grid.Row="5"
+						 Grid.Column="0"
+						 Width="250"
+						 Margin="0,10"
+						 Watermark="Primer Nombre"
+						 HorizontalAlignment="Center"
+						 Classes="clearButton"/>
+
+				<TextBlock x:Name="NameErrorTextBlock"
+						   Grid.Row="6"
+						   Grid.Column="0"
+						   Foreground="Red"
+						   FontSize="12"
+						   HorizontalAlignment="Center"
+						   IsVisible="False"/>
+				<!--Margin="0,0,0,4"-->
+
+				<!-- TextBox para Actualizar el apellido del usuario -->
+				<TextBox x:Name="LastnameTextBox"
+						 Grid.Row="7"
+						 Grid.Column="0"
+						 Width="250"
+						 Margin="0,10"
+						 Watermark="Apellido"
+						 HorizontalAlignment="Center"
+						 Classes="clearButton"/>
+
+				<TextBlock x:Name="LastnameErrorTextBlock"
+						   Grid.Row="8"
+						   Grid.Column="0"
+						   Foreground="Red"
+						   FontSize="12"
+						   HorizontalAlignment="Center"
+						   IsVisible="False"/>
+
+				<!-- TextBox para Actualizar la edad del usuario -->
+				<TextBox x:Name="AgeTextBox"
+						 Grid.Row="9"
+						 Grid.Column="0"
+						 Width="250"
+						 Margin="0,10"
+						 Watermark="Edad"
+						 HorizontalAlignment="Center"/>
+
+				<TextBlock x:Name="AgeErrorTextBlock"
+						   Grid.Row="10"
+						   Grid.Column="0"
+						   Foreground="Red"
+						   FontSize="12"
+						   HorizontalAlignment="Center"
+						   IsVisible="False"/>
+
+				<!-- Botón para Validar datos de Actualización -->
+				<Button Grid.Row="11"
+						Grid.Column="0"
+						Width="250"
+						Margin="0,16,0,0"
+						HorizontalAlignment="Center"
+						Content="Actualizar datos"
+						Theme="{DynamicResource SolidButton}"/>
+						<!--Click="ActualizationClick"-->
+
+			</Grid>
+
+		</StackPanel>
+
 	</Grid>
+		
 </UserControl>
