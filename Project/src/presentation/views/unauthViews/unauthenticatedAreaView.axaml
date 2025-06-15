@@ -16,7 +16,7 @@
 					   Classes="H1"
 					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-				Registro
+					   Registro
 			</TextBlock>
 
 			<!-- TextBox para ingresar el Username del usuario --> 
@@ -29,6 +29,14 @@
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
 
+			<TextBlock x:Name="UsernameErrorTextBlock"
+					   Grid.Row="2"
+					   Grid.Column="0"
+					   Foreground="Red"
+					   FontSize="12"
+					   HorizontalAlignment="Center"
+					   IsVisible="False"/>
+
 
 			<!-- TextBox para ingresar la contraseña del usuario -->
 			<TextBox x:Name="PasswordTextBox"
@@ -39,6 +47,14 @@
 					 Watermark="Contraseña"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
+
+			<TextBlock x:Name="PasswordErrorTextBlock"
+					  Grid.Row="4"
+				      Grid.Column="0"
+				      Foreground="Red"
+			          FontSize="12"
+					  HorizontalAlignment="Center"
+					  IsVisible="False"/>
 	
 
 			<!-- TextBox para ingresar el primer nombre del usuario -->
@@ -55,12 +71,13 @@
 			           Grid.Row="6"
 				       Grid.Column="0"
 					   Foreground="Red"
-					   FontSize="12"			   
+					   FontSize="12"		
+					   HorizontalAlignment="Center"
 			           IsVisible="False"/>
 					   <!--Margin="0,0,0,4"-->
 
 			<!-- TextBox para ingresar el apellido del usuario -->
-			<TextBox x:Name="LastNameTextBox"
+			<TextBox x:Name="LastnameTextBox"
 					 Grid.Row="7"
 					 Grid.Column="0"
 					 Width="250"
@@ -68,6 +85,14 @@
 					 Watermark="Apellido"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
+
+			<TextBlock x:Name="LastnameErrorTextBlock"
+					   Grid.Row="8"
+					   Grid.Column="0"
+			 		   Foreground="Red"
+			 	       FontSize="12"
+					   HorizontalAlignment="Center"
+					   IsVisible="False"/>
 
 			<!-- TextBox para ingresar la edad del usuario -->
 			<TextBox x:Name="AgeTextBox"
@@ -77,6 +102,14 @@
 					 Margin="0,10"
 					 Watermark="Edad"
 					 HorizontalAlignment="Center"/>
+
+			<TextBlock x:Name="AgeErrorTextBlock"
+					   Grid.Row="10"
+					   Grid.Column="0"
+					   Foreground="Red"
+					   FontSize="12"
+					   HorizontalAlignment="Center"
+					   IsVisible="False"/>
 
 			<!-- Botón para Validar datos de Registro -->
 			<Button Grid.Row="11"
