@@ -14,6 +14,7 @@ namespace Project.presentation.Views.UnauthViews
         private Grid? _loginGrid;
         private TextBox? _ageTextBox;
         private TextBox? _nameTextBox;
+        private TextBox? _lastNameTextBox;
 
         public UnauthenticatedAreaView()
         {
@@ -27,6 +28,7 @@ namespace Project.presentation.Views.UnauthViews
             _loginGrid = this.FindControl<Grid>("LoginGrid");
             _ageTextBox = this.FindControl<TextBox>("AgeTextBox");
             _nameTextBox = this.FindControl<TextBox>("NameTextBox");
+            _lastNameTextBox = this.FindControl<TextBox>("LastNameTextBox");
         }
 
         // Método para dirigirse a LoginGrid
@@ -53,11 +55,13 @@ namespace Project.presentation.Views.UnauthViews
         {
             var edadTexto = _ageTextBox?.Text;
             var nombreTexto = _nameTextBox?.Text;
+            var apellidoTexto = _lastNameTextBox?.Text;
 
             bool edadValida = RegisterAutentification.EsEdadValida(edadTexto);
             bool nombreValido = RegisterAutentification.EsNombreValido(nombreTexto);
+            bool apellidoValido = RegisterAutentification.EsApellidoValido(apellidoTexto); 
 
-            if (edadValida && nombreValido)
+            if (edadValida && nombreValido && apellidoValido)
             {
                 // Ambos válidos: continuar con el registro
                 var window = this.VisualRoot as Window;
@@ -73,6 +77,8 @@ namespace Project.presentation.Views.UnauthViews
                     _ageTextBox!.Watermark = "Introduce una edad válida";
                 if (!nombreValido)
                     _nameTextBox!.Watermark = "Nombre inválido (sin números ni espacios)";
+                if (!apellidoValido)
+                    _lastNameTextBox!.Watermark = "Apellido inválido (sin números ni espacios)";
             }
         }
 

@@ -25,5 +25,13 @@ namespace Project.domain
             return Regex.IsMatch(nameText, @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$");
         }
 
+        public static bool EsApellidoValido(string? lastNameText)
+        {
+            if (string.IsNullOrWhiteSpace(lastNameText))
+                return false;
+            // Solo letras, sin espacios ni números
+            return Regex.IsMatch(lastNameText, @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$");
+        }
+
     }
 }
