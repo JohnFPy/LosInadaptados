@@ -9,15 +9,15 @@ namespace Project.domain
 {
     public static class RegisterAutentification
     {
-        public static bool EsEdadValida(string? ageText)
+        public static bool IsValidAge(string? ageText)
         {
-            if (int.TryParse(ageText, out int edad))
+            if (int.TryParse(ageText, out int age)) 
             {
-                return edad > 0;
+                return age > 0;
             }
             return false;
         }
-        public static bool EsNombreValido(string? nameText)
+        public static bool IsValidName(string? nameText)
         {
             if (string.IsNullOrWhiteSpace(nameText))
                 return false;
@@ -25,13 +25,24 @@ namespace Project.domain
             return Regex.IsMatch(nameText, @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$");
         }
 
-        public static bool EsApellidoValido(string? lastNameText)
+        public static bool IsValidLastName(string? lastNameText)
         {
             if (string.IsNullOrWhiteSpace(lastNameText))
                 return false;
             // Solo letras, sin espacios ni números
             return Regex.IsMatch(lastNameText, @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$");
         }
+
+        public static bool IsValidPassword(string? password)
+        {
+            if (string.IsNullOrEmpty(password))
+                return false;
+
+            // Al menos 8 caracteres, una mayúscula, una minúscula y un número
+            var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$");
+            return regex.IsMatch(password);
+        }
+
 
     }
 }
