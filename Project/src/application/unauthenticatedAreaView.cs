@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Project.domain;
 using Project.presentation.Views.AuthViews;
 using System;
@@ -18,6 +19,8 @@ namespace Project.presentation.Views.UnauthViews
         private TextBox? _lastNameTextBox;
         private TextBox? _passwordTextBox;
 
+        private TextBlock? _nameErrorTextBlock;
+
         public UnauthenticatedAreaView()
         {
             InitializeComponent();
@@ -26,13 +29,22 @@ namespace Project.presentation.Views.UnauthViews
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+
+            // Mostrar Register y Login grid
+
             _registerGrid = this.FindControl<Grid>("RegisterGrid");
             _loginGrid = this.FindControl<Grid>("LoginGrid");
+
+            // TextBox de validacion de datos
 
             _ageTextBox = this.FindControl<TextBox>("AgeTextBox");
             _nameTextBox = this.FindControl<TextBox>("NameTextBox");
             _lastNameTextBox = this.FindControl<TextBox>("LastNameTextBox"); 
-            _passwordTextBox = this.FindControl<TextBox>("PasswordTextBox");
+            _passwordTextBox = this.FindControl<TextBox>("PasswordTextBox"); 
+
+            // TextBlock para mostrar errores de valores ingresados en el registro
+
+            _nameErrorTextBlock = this.FindControl<TextBlock>("NameErrorTextBlock");
         }
 
         // Método para dirigirse a LoginGrid
@@ -67,10 +79,15 @@ namespace Project.presentation.Views.UnauthViews
             bool validLastName = RegisterAutentification.IsValidLastName(lastNameText);
             bool validPassword = RegisterAutentification.IsValidPassword(contraseñaTexto);
 
+            // Ocultar mensajes de error antes de validar
+
+            _nameErrorTextBlock!.IsVisible = false;
+
             if (validAge && validName && validLastName && validPassword)
             {
-                // Ambos válidos: continuar con el registro
+                // Todos los datos son válidos, proceder a la siguiente vista
                 var window = this.VisualRoot as Window;
+
                 if (window != null)
                 {
                     window.Content = new AuthenticatedAreaView();
@@ -81,10 +98,16 @@ namespace Project.presentation.Views.UnauthViews
                 // Mostrar mensajes de error según corresponda
                 if (!validAge)
                     _ageTextBox!.Watermark = "Introduce una edad válida";
+
                 if (!validName)
-                    _nameTextBox!.Watermark = "Nombre inválido (sin números ni espacios)";
+                {
+                    _nameErrorTextBlock.Text = "Nombre inválido (sin números ni espacios)";
+                    _nameErrorTextBlock.IsVisible = true;
+                }
+
                 if (!validLastName)
                     _lastNameTextBox!.Watermark = "Apellido inválido (sin números ni espacios)";
+
                 if (!validPassword)
                     _passwordTextBox!.Watermark = "Contraseña inválida (mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número)";
             }
