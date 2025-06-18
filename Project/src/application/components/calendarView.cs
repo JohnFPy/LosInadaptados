@@ -30,15 +30,25 @@ namespace Project.application.components
 
         private DateTime currentDate;
 
+        public ICommand TodayCommand { get; }
+
         public calendarView()
         {
             currentDate = DateTime.Today;
             Days = new ObservableCollection<dayView>();
             PreviousMonthCommand = new RelayCommand(_ => PreviousMonth());
             NextMonthCommand = new RelayCommand(_ => NextMonth());
+            TodayCommand = new RelayCommand(_ => Today());
 
             UpdateCalendar();
         }
+
+        public void Today()
+        {
+            currentDate = DateTime.Today;
+            UpdateCalendar();
+        }
+
 
         private void UpdateCalendar()
         {
