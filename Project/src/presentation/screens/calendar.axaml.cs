@@ -10,7 +10,7 @@ namespace Project.presentation.screens
         public calendar()
         {
             InitializeComponent();
-            DataContext = new CalendarView();
+            DataContext = new calendarView();
         }
 
         private void InitializeComponent()

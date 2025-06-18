@@ -2,7 +2,7 @@
 
 namespace Project.application.components
 {
-    public class DayView
+    public class dayView
     {
         public string DayNumber { get; set; }
         public IBrush EmotionColor { get; set; }

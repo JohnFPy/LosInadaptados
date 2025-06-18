@@ -26,7 +26,7 @@
         </ItemsControl.ItemsPanel>
 
         <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="local:DayViewModel">
+          <DataTemplate x:DataType="vm:dayView">
             <Border Background="{Binding EmotionColor}" Margin="2" CornerRadius="4" Height="40">
               <TextBlock Text="{Binding DayNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
