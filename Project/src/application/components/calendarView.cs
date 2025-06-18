@@ -2,14 +2,29 @@
 using Avalonia.Media;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Project.application.components
 {
-    public class calendarView
+    public class calendarView : INotifyPropertyChanged
     {
         public ObservableCollection<dayView> Days { get; set; }
-        public string MonthYearText { get; set; }
+        private string _monthYearText;
+        public string MonthYearText
+        {
+            get => _monthYearText;
+            set
+            {
+                if (_monthYearText != value)
+                {
+                    _monthYearText = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ICommand PreviousMonthCommand { get; }
         public ICommand NextMonthCommand { get; }
 
@@ -28,19 +43,18 @@ namespace Project.application.components
         private void UpdateCalendar()
         {
             MonthYearText = currentDate.ToString("MMMM yyyy");
+
             Days.Clear();
 
             int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
             DayOfWeek firstDay = new DateTime(currentDate.Year, currentDate.Month, 1).DayOfWeek;
-            int offset = ((int)firstDay + 6) % 7; // Para que inicie en lunes
+            int offset = ((int)firstDay + 6) % 7; // Inicia en lunes
 
-            // Días vacíos antes del día 1
             for (int i = 0; i < offset; i++)
             {
                 Days.Add(new dayView { DayNumber = "", EmotionColor = Brushes.Transparent });
             }
 
-            // Días del mes
             for (int i = 1; i <= daysInMonth; i++)
             {
                 Days.Add(new dayView
@@ -62,9 +76,14 @@ namespace Project.application.components
             currentDate = currentDate.AddMonths(1);
             UpdateCalendar();
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
-    // Comando simple
     public class RelayCommand : ICommand
     {
         private readonly Action<object?> execute;
@@ -77,9 +96,7 @@ namespace Project.application.components
         }
 
         public event EventHandler? CanExecuteChanged;
-
         public bool CanExecute(object? parameter) => canExecute?.Invoke(parameter) ?? true;
-
         public void Execute(object? parameter) => execute(parameter);
     }
 }
