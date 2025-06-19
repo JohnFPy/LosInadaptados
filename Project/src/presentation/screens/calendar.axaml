@@ -19,10 +19,10 @@
                    FontSize="24"
                    FontWeight="Bold"
                    HorizontalAlignment="Center"
-                   Margin="0,10,0,10"/>
+                   Margin="0,10,0,50"/>
 
 		<!-- Header -->
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10" Spacing="10">
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,40" Spacing="10">
 			<Button Content="◀ Anterior" Command="{Binding PreviousMonthCommand}" />
 			<TextBlock Text="{Binding MonthYearText}" FontSize="20" VerticalAlignment="Center"/>
 			<Button Content="Hoy" Command="{Binding TodayCommand}" />
@@ -30,11 +30,11 @@
 		</StackPanel>
 
 		<!-- Calendar Container -->
-		<Border Grid.Row="2" Grid.RowSpan="2" Width="420" HorizontalAlignment="Center">
+		<Border Grid.Row="2" Grid.RowSpan="2" Width="420" Height="380" HorizontalAlignment="Center" VerticalAlignment="Top">
 			<Grid RowDefinitions="Auto,*">
 		
 				<!-- Week Days -->
-				<UniformGrid Grid.Row="0" Columns="7">
+				<UniformGrid Grid.Row="0" Columns="7" Margin="0,0,0,10">
 					<TextBlock Text="Lun" HorizontalAlignment="Center" FontWeight="Bold"/>
 					<TextBlock Text="Mar" HorizontalAlignment="Center" FontWeight="Bold"/>
 					<TextBlock Text="Mié" HorizontalAlignment="Center" FontWeight="Bold"/>

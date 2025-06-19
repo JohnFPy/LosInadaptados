@@ -22,15 +22,15 @@ namespace Project.application.components
             }
         }
 
-        private IBrush _emotionColor = Brushes.Transparent;
-        public IBrush EmotionColor
+        private SolidColorBrush _emotionBrush = new SolidColorBrush(Colors.Transparent);
+        public SolidColorBrush EmotionColor
         {
-            get => _emotionColor;
+            get => _emotionBrush;
             set
             {
-                if (_emotionColor != value)
+                if (_emotionBrush.Color != value.Color)
                 {
-                    _emotionColor = value;
+                    _emotionBrush.Color = value.Color;
                     OnPropertyChanged();
                 }
             }
@@ -46,7 +46,7 @@ namespace Project.application.components
         private void OnClicked()
         {
             // EMOTION FORM CONNECTION ###########################
-            EmotionColor = Brushes.Yellow;
+            EmotionColor.Color = Colors.Yellow;
 
         }
 
@@ -65,7 +65,7 @@ namespace Project.application.components
         public emptyDayView()
         {
             DayNumber = "";
-            EmotionColor = Avalonia.Media.Brushes.Transparent;
+            EmotionColor.Color = Colors.Transparent;
         }
     }
 }

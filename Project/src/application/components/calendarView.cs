@@ -75,8 +75,10 @@ namespace Project.application.components
                 Days.Add(new dayView
                 {
                     DayNumber = i.ToString(),
-                    // Default background colors
-                    EmotionColor = (i % 2 == 0) ? Brushes.Transparent : Brushes.Transparent
+
+                    // Default background color
+                    EmotionColor = new SolidColorBrush(Colors.Transparent)
+
                 });
             }
         }

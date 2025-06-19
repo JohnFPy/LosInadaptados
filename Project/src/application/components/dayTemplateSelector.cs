@@ -1,23 +1,30 @@
 ﻿using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Media;
 using System;
 
 namespace Project.application.components
 {
     public class dayTemplateSelector : IDataTemplate
     {
+        const int DEFAULT_HEIGHT = 40;
+        const int DEFAULT_MARGIN = 2;
+        const int DEFAULT_CORNER_RADIUS = 4;
+
         public Control Build(object? data)
         {
+
             if (data is emptyDayView)
             {
                 return new Border
                 {
                     Background = Avalonia.Media.Brushes.Transparent,
-                    Height = 40,
-                    Margin = new Thickness(2),
-                    CornerRadius = new CornerRadius(4)
+                    Height = DEFAULT_HEIGHT,
+                    Margin = new Thickness(DEFAULT_MARGIN),
+                    CornerRadius = new CornerRadius(DEFAULT_CORNER_RADIUS)
                 };
             }
 
@@ -25,12 +32,12 @@ namespace Project.application.components
             {
                 var button = new Button
                 {
-                    Background = Avalonia.Media.Brushes.Transparent,
+                    Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     Command = day.ClickCommand,
                     Content = new TextBlock
                     {
-                        Text = day.DayNumber,
+                        [!TextBlock.TextProperty] = new Binding("DayNumber"),
                         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
                     }
@@ -38,13 +45,12 @@ namespace Project.application.components
 
                 var border = new Border
                 {
-                    Margin = new Thickness(2),
-                    CornerRadius = new CornerRadius(4),
-                    Height = 40,
+                    Height = DEFAULT_HEIGHT,
+                    Margin = new Thickness(DEFAULT_MARGIN),
+                    CornerRadius = new CornerRadius(DEFAULT_CORNER_RADIUS),
                     Child = button
                 };
 
-                // Bind background
                 border.Bind(Border.BackgroundProperty, new Binding("EmotionColor"));
 
                 return border;
