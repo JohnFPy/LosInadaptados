@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using System;
 
 namespace Project.application.components
@@ -35,14 +36,18 @@ namespace Project.application.components
                     }
                 };
 
-                return new Border
+                var border = new Border
                 {
-                    Background = day.EmotionColor,
                     Margin = new Thickness(2),
                     CornerRadius = new CornerRadius(4),
                     Height = 40,
                     Child = button
                 };
+
+                // Bind background
+                border.Bind(Border.BackgroundProperty, new Binding("EmotionColor"));
+
+                return border;
             }
 
             throw new NotSupportedException("Unsupported data type");

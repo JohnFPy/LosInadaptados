@@ -1,4 +1,5 @@
 ﻿using Avalonia.Media;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -46,6 +47,7 @@ namespace Project.application.components
         {
             // EMOTION FORM CONNECTION ###########################
             EmotionColor = Brushes.Yellow;
+
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
