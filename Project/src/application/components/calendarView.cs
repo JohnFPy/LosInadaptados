@@ -1,8 +1,10 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
@@ -32,16 +34,19 @@ namespace Project.application.components
 
         public ICommand TodayCommand { get; }
 
+        public ICommand DayClickCommand { get; }
+
         public calendarView()
         {
             currentDate = DateTime.Today;
             Days = new ObservableCollection<dayView>();
-            PreviousMonthCommand = new RelayCommand(_ => PreviousMonth());
-            NextMonthCommand = new RelayCommand(_ => NextMonth());
-            TodayCommand = new RelayCommand(_ => Today());
+            PreviousMonthCommand = new relayCommand(_ => PreviousMonth());
+            NextMonthCommand = new relayCommand(_ => NextMonth());
+            TodayCommand = new relayCommand(_ => Today());
 
             UpdateCalendar();
         }
+
 
         public void Today()
         {
@@ -58,7 +63,7 @@ namespace Project.application.components
 
             int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
             DayOfWeek firstDay = new DateTime(currentDate.Year, currentDate.Month, 1).DayOfWeek;
-            int offset = ((int)firstDay + 6) % 7; // Inicia en lunes
+            int offset = ((int)firstDay + 6) % 7; // Start on Monday
 
             for (int i = 0; i < offset; i++)
             {
@@ -70,7 +75,8 @@ namespace Project.application.components
                 Days.Add(new dayView
                 {
                     DayNumber = i.ToString(),
-                    EmotionColor = (i % 2 == 0) ? Brushes.LightPink : Brushes.LightBlue
+                    // Default background colors
+                    EmotionColor = (i % 2 == 0) ? Brushes.Transparent : Brushes.Transparent
                 });
             }
         }
@@ -94,20 +100,5 @@ namespace Project.application.components
         }
     }
 
-    public class RelayCommand : ICommand
-    {
-        private readonly Action<object?> execute;
-        private readonly Func<object?, bool>? canExecute;
-
-        public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
-        {
-            this.execute = execute;
-            this.canExecute = canExecute;
-        }
-
-        public event EventHandler? CanExecuteChanged;
-        public bool CanExecute(object? parameter) => canExecute?.Invoke(parameter) ?? true;
-        public void Execute(object? parameter) => execute(parameter);
-    }
 }
 

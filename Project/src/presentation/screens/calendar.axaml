@@ -18,7 +18,7 @@
 
 		<Grid Grid.Row="1" RowDefinitions="Auto,*">
 
-			<!-- Encabezado de navegación -->
+			<!-- Header -->
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="0" Spacing="10">
 				<Button Content="◀ Anterior" Command="{Binding PreviousMonthCommand}" />
 				<TextBlock Text="{Binding MonthYearText}" FontSize="20" VerticalAlignment="Center"/>
@@ -26,38 +26,40 @@
 				<Button Content="Siguiente ▶" Command="{Binding NextMonthCommand}" />
 			</StackPanel>
 
-			<!-- Contenedor calendario completo -->
-			<Grid Grid.Row="1" RowDefinitions="Auto,*">
+			<!-- Calendar Container -->
+			<Border Width="420" Height="420" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Grid RowDefinitions="Auto,*">
 
-				<!-- Días de la semana -->
-				<UniformGrid Columns="7" Rows="1" Margin="10,0">
-					<TextBlock Text="Lun" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Mar" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Mié" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Jue" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Vie" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Sáb" HorizontalAlignment="Center" FontWeight="Bold"/>
-					<TextBlock Text="Dom" HorizontalAlignment="Center" FontWeight="Bold"/>
-				</UniformGrid>
+					<!-- Week Days -->
+					<UniformGrid Columns="7" Rows="1" Margin="0,0,0,5">
+						<TextBlock Text="Lun" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Mar" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Mié" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Jue" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Vie" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Sáb" HorizontalAlignment="Center" FontWeight="Bold"/>
+						<TextBlock Text="Dom" HorizontalAlignment="Center" FontWeight="Bold"/>
+					</UniformGrid>
 
-				<!-- Días del mes -->
-				<ItemsControl Grid.Row="1" ItemsSource="{Binding Days}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<UniformGrid Columns="7" />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="vm:dayView">
-							<Border Background="{Binding EmotionColor}" Margin="2" CornerRadius="4" Height="50">
-								<TextBlock Text="{Binding DayNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-
-			</Grid>
+					<!-- Calendar -->
+					<ItemsControl ItemsSource="{Binding Days}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<UniformGrid Columns="7" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="vm:dayView">
+								<Border Background="{Binding EmotionColor}" Margin="2" CornerRadius="4" Height="40" Cursor="Hand">
+									<Button Command="{Binding ClickCommand}" Background="Transparent" BorderThickness="0">
+										<TextBlock Text="{Binding DayNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									</Button>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Grid>
+			</Border>
 		</Grid>
-
 	</Grid>
 </UserControl>
