@@ -55,3 +55,15 @@ namespace Project.application.components
         }
     }
 }
+
+namespace Project.application.components
+{
+    public class emptyDayView : dayView
+    {
+        public emptyDayView()
+        {
+            DayNumber = "";
+            EmotionColor = Avalonia.Media.Brushes.Transparent;
+        }
+    }
+}

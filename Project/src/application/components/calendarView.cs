@@ -67,7 +67,7 @@ namespace Project.application.components
 
             for (int i = 0; i < offset; i++)
             {
-                Days.Add(new dayView { DayNumber = "", EmotionColor = Brushes.Transparent });
+                Days.Add(new emptyDayView());
             }
 
             for (int i = 1; i <= daysInMonth; i++)
