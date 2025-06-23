@@ -9,12 +9,15 @@
 	<StackPanel Margin="16" Spacing="16">
 		<!-- Se instancian de audio.axaml -->
 		<local:Audio AudioFileName="relaxingPiano.mp3"
-                     ButtonText="Piano relajante" />
+                     ButtonText="Piano relajante"
+                     Description="Calma tu mente en minutos" />
 
 		<local:Audio AudioFileName="japanBeat.wav"
-                     ButtonText="Ritmo japonés" />
+                     ButtonText="Ritmo japonés"
+                     Description="Energía con inspiración oriental" />
 
 		<local:Audio AudioFileName="ethnoFolk.wav"
-                     ButtonText="Ethno folk" />
+                     ButtonText="Ethno folk"
+                     Description="Sonidos tradicionales del mundo" />
 	</StackPanel>
 </UserControl>

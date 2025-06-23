@@ -32,6 +32,16 @@ namespace Project.presentation.components
             set => SetValue(ButtonTextProperty, value);
         }
 
+        // Add this after the ButtonText property
+        public static readonly StyledProperty<string> DescriptionProperty =
+            AvaloniaProperty.Register<Audio, string>(nameof(Description), string.Empty);
+
+        public string Description
+        {
+            get => GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
+        }
+
         private string? _audioPath;
         private bool _isPlaying = false;
         private AudioFileReader? _audioFileReader;
