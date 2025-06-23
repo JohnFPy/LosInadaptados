@@ -2,21 +2,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="80"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="120"
              x:Class="Project.presentation.components.Card">
 
 	<Border CornerRadius="6"
             Padding="16,12"
             Margin="0,4"
             Background="#1A1A1A">
-		<StackPanel HorizontalAlignment="Left">
-			<ContentControl Name="TitleContent"
-                           HorizontalAlignment="Left" />
-			<TextBlock Name="DescriptionText"
-                       Margin="0,4,0,0"
-                       Opacity="0.7"
-                       FontSize="12"
-                       Foreground="White" />
-		</StackPanel>
+		<Grid ColumnDefinitions="Auto,*">
+			<!-- Imagen a la izquierda -->
+			<Border Name="ImageContainer"
+                    Grid.Column="0"
+                    Width="0"
+                    Height="0"
+                    Margin="0,0,12,0"
+                    IsVisible="False"
+                    CornerRadius="4">
+				<Image Name="CardImage" Stretch="UniformToFill"/>
+			</Border>
+
+			<!-- Contenido a la derecha -->
+			<StackPanel Grid.Column="1" HorizontalAlignment="Left">
+				<ContentControl Name="TitleContent" HorizontalAlignment="Left" />
+				<TextBlock Name="DescriptionText"
+                           Margin="0,4,0,0"
+                           Opacity="0.7"
+                           FontSize="12"
+                           Foreground="White" />
+			</StackPanel>
+		</Grid>
 	</Border>
 </UserControl>

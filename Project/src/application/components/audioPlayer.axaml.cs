@@ -28,6 +28,7 @@ namespace Project.presentation.components
                 .WithAudioFile("relaxingPiano.mp3")
                 .WithTitle("Piano relajante")
                 .WithDescription("Calma tu mente en minutos")
+                .WithImage("icons/piano.png")
                 .Build();
 
             // This one was already interactive
@@ -35,6 +36,7 @@ namespace Project.presentation.components
                 .WithAudioFile("japanBeat.wav")
                 .WithTitle("Ritmo japonés")
                 .WithDescription("Energía con inspiración oriental")
+                .WithImage("icons/japan.png")
                 .Build();
 
             // Changed this one from standard to interactive
@@ -42,6 +44,7 @@ namespace Project.presentation.components
                 .WithAudioFile("ethnoFolk.wav")
                 .WithTitle("Ethno folk")
                 .WithDescription("Sonidos tradicionales del mundo")
+                .WithImage("icons/guitar.png")
                 .Build();
 
             // Add all cards to the container

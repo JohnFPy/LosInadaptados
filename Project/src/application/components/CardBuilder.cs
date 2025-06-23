@@ -1,5 +1,3 @@
-using System;
-
 namespace Project.presentation.components
 {
     public class CardBuilder
@@ -33,6 +31,13 @@ namespace Project.presentation.components
         public CardBuilder WithTextTitle()
         {
             _card.UseButtonTitle = false;
+            return this;
+        }
+
+        // Nuevo método para añadir imagen desde recursos
+        public CardBuilder WithImage(string iconResourcePath)
+        {
+            _card.ImageResource = iconResourcePath;
             return this;
         }
 

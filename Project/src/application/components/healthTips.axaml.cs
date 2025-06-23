@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
+using Project.presentation.components;
 
 namespace Project.application.components
 {
@@ -26,57 +26,29 @@ namespace Project.application.components
             // Limpiar el contenedor para añadir las tarjetas programáticamente
             _tipsContainer.Children.Clear();
 
-            // Añadir las tarjetas de consejos de salud
-            AddHealthTip(
-                "Prueba la respiración profunda",
-                "Reduce el estrés y mejora tu enfoque");
+            // Crear tarjetas usando el CardBuilder
+            var breathingCard = CardBuilder.CreateStandard() // Sin botón interactivo, solo texto
+                .WithTitle("Prueba la respiración profunda")
+                .WithDescription("Reduce el estrés y mejora tu enfoque")
+                .WithImage("icons/leaf.png") // Si tienes esta imagen disponible
+                .Build();
 
-            AddHealthTip(
-                "Haz estiramientos",
-                "Mejora tu postura y alivia la tensión");
+            var stretchingCard = CardBuilder.CreateStandard()
+                .WithTitle("Haz estiramientos")
+                .WithDescription("Mejora tu postura y alivia la tensión")
+                .WithImage("icons/meditation.png") // Si tienes esta imagen disponible
+                .Build();
 
-            AddHealthTip(
-                "Mantén una dieta equilibrada",
-                "Nutre tu cuerpo con alimentos saludables");
-        }
+            var dietCard = CardBuilder.CreateStandard()
+                .WithTitle("Mantén una dieta equilibrada")
+                .WithDescription("Nutre tu cuerpo con alimentos saludables")
+                .WithImage("icons/salad.png") // Si tienes esta imagen disponible
+                .Build();
 
-        private void AddHealthTip(string title, string description)
-        {
-            var border = new Border
-            {
-                CornerRadius = new CornerRadius(6),
-                Background = new SolidColorBrush(Color.Parse("#1A1A1A")),
-                Padding = new Thickness(16, 12),
-                Margin = new Thickness(0, 4)
-            };
-
-            var stackPanel = new StackPanel
-            {
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left
-            };
-
-            var titleBlock = new TextBlock
-            {
-                Text = title,
-                FontWeight = FontWeight.SemiBold,
-                FontSize = 16,
-                Foreground = Brushes.White
-            };
-
-            var descriptionBlock = new TextBlock
-            {
-                Text = description,
-                Margin = new Thickness(0, 4, 0, 0),
-                Opacity = 0.7,
-                FontSize = 12,
-                Foreground = Brushes.White
-            };
-
-            stackPanel.Children.Add(titleBlock);
-            stackPanel.Children.Add(descriptionBlock);
-            border.Child = stackPanel;
-
-            _tipsContainer.Children.Add(border);
+            // Añadir las tarjetas al contenedor
+            _tipsContainer.Children.Add(breathingCard);
+            _tipsContainer.Children.Add(stretchingCard);
+            _tipsContainer.Children.Add(dietCard);
         }
     }
 }
