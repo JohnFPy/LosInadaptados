@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="300"
+             x:Class="Project.application.components.HealthTips">
+
+	<StackPanel Name="TipsContainer" Spacing="8" Width="450">
+		<!-- Las tarjetas serán añadidas desde el código -->
+
+		<!-- Vista previa de diseño -->
+		<Border CornerRadius="6" Background="#1A1A1A" Padding="16,12" Margin="0,4">
+			<StackPanel HorizontalAlignment="Left">
+				<TextBlock Text="Prueba la respiración profunda"
+                           FontWeight="SemiBold"
+                           FontSize="16"
+                           Foreground="White"/>
+				<TextBlock Text="Reduce el estrés y mejora tu enfoque"
+                           Margin="0,4,0,0"
+                           Opacity="0.7"
+                           FontSize="12"
+                           Foreground="White"/>
+			</StackPanel>
+		</Border>
+
+		<Border CornerRadius="6" Background="#1A1A1A" Padding="16,12" Margin="0,4">
+			<StackPanel HorizontalAlignment="Left">
+				<TextBlock Text="Haz estiramientos"
+                           FontWeight="SemiBold"
+                           FontSize="16"
+                           Foreground="White"/>
+				<TextBlock Text="Mejora tu postura y alivia la tensión"
+                           Margin="0,4,0,0"
+                           Opacity="0.7"
+                           FontSize="12"
+                           Foreground="White"/>
+			</StackPanel>
+		</Border>
+
+		<Border CornerRadius="6" Background="#1A1A1A" Padding="16,12" Margin="0,4">
+			<StackPanel HorizontalAlignment="Left">
+				<TextBlock Text="Mantén una dieta equilibrada"
+                           FontWeight="SemiBold"
+                           FontSize="16"
+                           Foreground="White"/>
+				<TextBlock Text="Nutre tu cuerpo con alimentos saludables"
+                           Margin="0,4,0,0"
+                           Opacity="0.7"
+                           FontSize="12"
+                           Foreground="White"/>
+			</StackPanel>
+		</Border>
+	</StackPanel>
+</UserControl>
