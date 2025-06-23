@@ -2,22 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:Project.presentation.components"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Project.presentation.components.AudioPlayer">
 
-	<StackPanel Margin="16" Spacing="16">
-		<!-- Se instancian de audio.axaml -->
-		<local:Audio AudioFileName="relaxingPiano.mp3"
-                     ButtonText="Piano relajante"
-                     Description="Calma tu mente en minutos" />
-
-		<local:Audio AudioFileName="japanBeat.wav"
-                     ButtonText="Ritmo japonés"
-                     Description="Energía con inspiración oriental" />
-
-		<local:Audio AudioFileName="ethnoFolk.wav"
-                     ButtonText="Ethno folk"
-                     Description="Sonidos tradicionales del mundo" />
+	<StackPanel Name="CardsContainer"
+                Spacing="8"
+                Width="450">
 	</StackPanel>
 </UserControl>

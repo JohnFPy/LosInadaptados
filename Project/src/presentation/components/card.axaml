@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="80"
+             x:Class="Project.presentation.components.Card">
+
+	<Border CornerRadius="6"
+            Padding="16,12"
+            Margin="0,4"
+            Background="#1A1A1A">
+		<StackPanel HorizontalAlignment="Left">
+			<ContentControl Name="TitleContent"
+                           HorizontalAlignment="Left" />
+			<TextBlock Name="DescriptionText"
+                       Margin="0,4,0,0"
+                       Opacity="0.7"
+                       FontSize="12"
+                       Foreground="White" />
+		</StackPanel>
+	</Border>
+</UserControl>

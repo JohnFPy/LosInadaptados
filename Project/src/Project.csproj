@@ -43,4 +43,9 @@
     <EmbeddedResource Include="resources\audio\japanBeat.wav" />
     <EmbeddedResource Include="resources\audio\relaxingPiano.mp3" />
   </ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="src\**\*.xaml;src\**\*.axaml" />
+		<Compile Include="src\**\*.cs" />
+	</ItemGroup>
 </Project>
