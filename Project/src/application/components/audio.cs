@@ -32,6 +32,15 @@ namespace Project.presentation.components
             set => SetValue(ButtonTextProperty, value);
         }
 
+        public static readonly StyledProperty<string> DescriptionProperty =
+            AvaloniaProperty.Register<Audio, string>(nameof(Description), string.Empty);
+
+        public string Description
+        {
+            get => GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
+        }
+
         private string? _audioPath;
         private bool _isPlaying = false;
         private AudioFileReader? _audioFileReader;
@@ -76,21 +85,38 @@ namespace Project.presentation.components
             }
         }
 
+        // Updated ExtractAudioFile method with null safety
         private void ExtractAudioFile()
         {
+            // Return early if the audio file name is null
+            if (string.IsNullOrEmpty(AudioFileName))
+            {
+                Console.WriteLine("Warning: AudioFileName is null or empty");
+                return;
+            }
+
+            try
+            {
                 // Intentar primero cargar desde recursos embebidos
                 var resourceNames = GetType().Assembly.GetManifestResourceNames();
 
-                // Buscar archivo por nombre especificado
+                // Check if resourceNames is null or empty
+                if (resourceNames == null || resourceNames.Length == 0)
+                {
+                    Console.WriteLine("Warning: No resource names found in assembly");
+                    return;
+                }
+
+                // Buscar archivo por nombre especificado - with null safety
                 string? audioResourceName = resourceNames.FirstOrDefault(n =>
-                    n.EndsWith(AudioFileName, StringComparison.OrdinalIgnoreCase));
+                    n != null && n.EndsWith(AudioFileName, StringComparison.OrdinalIgnoreCase));
 
                 // Si no encontramos el específico, buscar cualquier audio
                 if (audioResourceName == null)
                 {
                     audioResourceName = resourceNames.FirstOrDefault(n =>
-                        n.Contains("mp3", StringComparison.OrdinalIgnoreCase) ||
-                        n.Contains("wav", StringComparison.OrdinalIgnoreCase));
+                        n != null && (n.Contains("mp3", StringComparison.OrdinalIgnoreCase) ||
+                        n.Contains("wav", StringComparison.OrdinalIgnoreCase)));
                 }
 
                 if (audioResourceName != null)
@@ -125,29 +151,41 @@ namespace Project.presentation.components
                     _audioPath = resourcePath;
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error extracting audio file: {ex.Message}");
+            }
         }
 
         private void PlayButton_Click(object? sender, RoutedEventArgs e)
         {
-                if (_isPlaying)
+            if (_isPlaying)
+            {
+                StopAudio();
+                UpdateButtonText();
+            }
+            else if (!string.IsNullOrEmpty(_audioPath))
+            {
+                PlayAudio();
+                if (_playButton != null)
                 {
-                    StopAudio();
-                    UpdateButtonText();
+                    _playButton.Content = new TextBlock { Text = "Detener audio" };
                 }
-                else if (!string.IsNullOrEmpty(_audioPath))
-                {
-                    PlayAudio();
-                    if (_playButton != null)
-                    {
-                        _playButton.Content = new TextBlock { Text = "Detener audio" };
-                    }
-                }
+            }
         }
 
-        private void PlayAudio()
+        // Changed from private to public to allow access from Card class
+        public void PlayAudio()
         {
             try
             {
+                // Make sure the audio file is extracted first
+                if (_audioPath == null)
+                {
+                    ExtractAudioFile();
+                }
+
                 DisposeAudioResources();
                 _audioFileReader = new AudioFileReader(_audioPath);
                 _outputDevice = new WaveOutEvent();
@@ -158,11 +196,13 @@ namespace Project.presentation.components
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error playing audio: {ex.Message}");
                 DisposeAudioResources();
             }
         }
 
-        private void StopAudio()
+        // Changed from private to public to allow stopping audio from outside
+        public void StopAudio()
         {
             if (_outputDevice != null)
             {

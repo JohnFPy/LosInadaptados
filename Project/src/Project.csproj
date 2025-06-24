@@ -38,10 +38,13 @@
     <AvaloniaResource Remove="resources\audio\japanBeat.wav" />
     <AvaloniaResource Remove="resources\audio\relaxingPiano.mp3" />
   </ItemGroup>
-	
-  <ItemGroup>
-    <EmbeddedResource Include="resources\audio\ethnoFolk.wav" />
-    <EmbeddedResource Include="resources\audio\japanBeat.wav" />
-    <EmbeddedResource Include="resources\audio\relaxingPiano.mp3" />
-  </ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="resources\**\*.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="src\**\*.xaml;src\**\*.axaml" />
+		<Compile Include="src\**\*.cs" />
+	</ItemGroup>
 </Project>

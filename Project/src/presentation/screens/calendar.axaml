@@ -1,39 +1,60 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="clr-namespace:Project.presentation.screens"
+             xmlns:local="clr-namespace:Project.presentation.screens"
+             xmlns:vm="clr-namespace:Project.application.components"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Project.presentation.screens.calendar"
-			 x:DataType="local:calendar">
+             x:DataType="vm:calendarView">
+	<UserControl.Resources>
+		<vm:dayTemplateSelector x:Key="DaySelector" />
+	</UserControl.Resources>
 
-	<Grid RowDefinitions="Auto,*">
+
+	<Grid RowDefinitions="Auto,Auto,Auto,*">
+		<!-- Tittle -->
 		<TextBlock Grid.Row="0"
                    Text="Calendario"
                    FontSize="24"
                    FontWeight="Bold"
                    HorizontalAlignment="Center"
-                   Margin="0,10,0,20"/>
+                   Margin="0,10,0,50"/>
 
-		<StackPanel Grid.Row="1">
-			<TextBlock Text="{Binding MonthYearText}" FontSize="20" HorizontalAlignment="Center" Margin="0,10"/>
-
-			<ItemsControl ItemsSource="{Binding Days}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<UniformGrid Columns="7" />
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:DayViewModel">
-						<Border Background="{Binding EmotionColor}" Margin="2" CornerRadius="4" Height="40">
-							<TextBlock Text="{Binding DayNumber}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+		<!-- Header -->
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,40" Spacing="10">
+			<Button Content="◀ Anterior" Command="{Binding PreviousMonthCommand}" />
+			<TextBlock Text="{Binding MonthYearText}" FontSize="20" VerticalAlignment="Center"/>
+			<Button Content="Hoy" Command="{Binding TodayCommand}" />
+			<Button Content="Siguiente ▶" Command="{Binding NextMonthCommand}" />
 		</StackPanel>
+
+		<!-- Calendar Container -->
+		<Border Grid.Row="2" Grid.RowSpan="2" Width="420" Height="380" HorizontalAlignment="Center" VerticalAlignment="Top">
+			<Grid RowDefinitions="Auto,*">
+		
+				<!-- Week Days -->
+				<UniformGrid Grid.Row="0" Columns="7" Margin="0,0,0,10">
+					<TextBlock Text="Lun" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Mar" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Mié" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Jue" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Vie" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Sáb" HorizontalAlignment="Center" FontWeight="Bold"/>
+					<TextBlock Text="Dom" HorizontalAlignment="Center" FontWeight="Bold"/>
+				</UniformGrid>
+
+				<!-- Calendar -->
+				<ItemsControl Grid.Row="1"
+							  ItemsSource="{Binding Days}"
+							  ItemTemplate="{StaticResource DaySelector}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<UniformGrid Columns="7" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+			</Grid>
+		</Border>
 	</Grid>
 </UserControl>

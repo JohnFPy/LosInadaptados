@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Project.presentation.components.VolumeController">
+	<StackPanel Spacing="10" Margin="10">
+		<TextBlock Text="Controla el volumen"
+				   FontSize="16"
+				   FontWeight="Medium"
+				   HorizontalAlignment="Center"/>
+
+		<Slider Minimum="0"
+				Maximum="100"
+				Value="70"
+				Width="200"
+				Name="VolumeSlider"/>
+	</StackPanel>
+</UserControl>
