@@ -22,6 +22,7 @@
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
     <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8" />
     <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
   </ItemGroup>
 
   <ItemGroup>
