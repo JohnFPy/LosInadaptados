@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 using Project.presentation.components;
 
 namespace Project.presentation.components
@@ -22,7 +23,6 @@ namespace Project.presentation.components
         private Audio _audioPlayer;
         private bool _isPlaying = false;
 
-        // Propiedades existentes
         public static readonly StyledProperty<string> AudioFileNameProperty =
             AvaloniaProperty.Register<Card, string>("AudioFileName");
 
@@ -35,13 +35,12 @@ namespace Project.presentation.components
         public static readonly StyledProperty<bool> UseButtonTitleProperty =
             AvaloniaProperty.Register<Card, bool>("UseButtonTitle", true);
 
-        // Nueva propiedad para la imagen
         public static readonly StyledProperty<string> ImageResourceProperty =
             AvaloniaProperty.Register<Card, string>("ImageResource");
 
         private string _originalButtonText;
 
-        // Getters y setters para propiedades existentes
+        // Getters y setters 
         public string AudioFileName
         {
             get => GetValue(AudioFileNameProperty);
@@ -66,7 +65,6 @@ namespace Project.presentation.components
             set => SetValue(UseButtonTitleProperty, value);
         }
 
-        // Getter y setter para la nueva propiedad de imagen
         public string ImageResource
         {
             get => GetValue(ImageResourceProperty);
@@ -88,7 +86,6 @@ namespace Project.presentation.components
             _imageContainer = this.FindControl<Border>("ImageContainer");
             _cardImage = this.FindControl<Image>("CardImage");
 
-            // Color de acento para títulos
             var accentBlue = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#3CADE0"));
 
             _titleTextBlock = new TextBlock
@@ -113,7 +110,6 @@ namespace Project.presentation.components
             InitializeAudio();
             UpdateTitleContent();
 
-            // Cargar imagen si está configurada
             if (!string.IsNullOrEmpty(ImageResource))
             {
                 LoadImageFromResource(ImageResource);
@@ -122,7 +118,6 @@ namespace Project.presentation.components
 
         private void InitializeAudio()
         {
-            // [Código existente de inicialización de audio]
             _audioPlayer = new Audio();
 
             if (!string.IsNullOrEmpty(AudioFileName))
@@ -150,14 +145,13 @@ namespace Project.presentation.components
             // Register with AudioManager and provide callback for when audio is stopped externally
             _audioPlayer.RegisterWithAudioManager(OnAudioStoppedByManager);
 
-            // Agregar observador para cambios en la propiedad de imagen
             this.PropertyChanged += (s, e) =>
             {
                 if (e.Property == ImageResourceProperty)
                 {
                     LoadImageFromResource(ImageResource);
                 }
-                // [Otros observadores existentes]
+
                 else if (e.Property == AudioFileNameProperty && _audioPlayer != null)
                 {
                     _audioPlayer.AudioFileName = AudioFileName ?? "relaxingPiano.mp3";
@@ -169,9 +163,7 @@ namespace Project.presentation.components
             };
         }
 
-        /// <summary>
         /// Callback method called by AudioManager when this card's audio is stopped externally
-        /// </summary>
         private void OnAudioStoppedByManager()
         {
             // Use Dispatcher to ensure UI updates happen on the UI thread
@@ -184,12 +176,11 @@ namespace Project.presentation.components
                     {
                         _titleButton.Content = _originalButtonText;
                     }
-                    Console.WriteLine($"Card audio stopped by AudioManager: {TitleText}");
+                    Debug.WriteLine($"Card audio stopped by AudioManager: {TitleText}");
                 }
             });
         }
 
-        // Método para cargar la imagen desde recursos embebidos
         private void LoadImageFromResource(string resourcePath)
         {
             if (string.IsNullOrEmpty(resourcePath))
@@ -200,14 +191,12 @@ namespace Project.presentation.components
 
             try
             {
-                // Asegurarse de que la ruta está correctamente formateada
                 if (!resourcePath.StartsWith("resources/"))
                     resourcePath = "resources/" + resourcePath;
 
                 var assembly = Assembly.GetExecutingAssembly();
                 string fullResourceName = null;
 
-                // Buscar el recurso por nombre
                 foreach (var name in assembly.GetManifestResourceNames())
                 {
                     if (name.EndsWith(resourcePath.Replace('/', '.'), StringComparison.OrdinalIgnoreCase))
@@ -219,7 +208,6 @@ namespace Project.presentation.components
 
                 if (fullResourceName != null)
                 {
-                    // Cargar la imagen desde el recurso
                     using (var stream = assembly.GetManifestResourceStream(fullResourceName))
                     {
                         if (stream != null)
@@ -231,26 +219,23 @@ namespace Project.presentation.components
                             _imageContainer.IsVisible = true;
                             _imageContainer.Width = 60;  // Tamaño fijo cuadrado 60x60
                             _imageContainer.Height = 60;
-
-                            Console.WriteLine($"Imagen cargada correctamente: {resourcePath}");
                             return;
                         }
                     }
                 }
 
-                Console.WriteLine($"No se pudo encontrar el recurso de imagen: {resourcePath}");
+                Debug.WriteLine($"No se pudo encontrar el recurso de imagen: {resourcePath}");
                 _imageContainer.IsVisible = false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
+                Debug.WriteLine($"Error al cargar la imagen: {ex.Message}");
                 _imageContainer.IsVisible = false;
             }
         }
 
         private void OnPropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
-            // [Código existente de manejo de propiedades]
             if (e.Property == TitleTextProperty)
             {
                 if (!_isPlaying)
@@ -318,10 +303,8 @@ namespace Project.presentation.components
             }
         }
 
-        /// <summary>
         /// Forces this card to stop playing audio if it's currently playing.
         /// This method is called by the AudioManager when another audio starts playing.
-        /// </summary>
         internal void ForceStopAudio()
         {
             if (_isPlaying && _audioPlayer != null)
@@ -335,9 +318,7 @@ namespace Project.presentation.components
             }
         }
 
-        /// <summary>
         /// Gets whether this card's audio is currently playing
-        /// </summary>
         public bool IsAudioPlaying => _isPlaying;
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

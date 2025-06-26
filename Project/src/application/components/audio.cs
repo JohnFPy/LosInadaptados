@@ -61,19 +61,12 @@ namespace Project.presentation.components
                 UpdateButtonText();
             }
 
-            // Cargar audio cuando el componente esté inicializado
             AttachedToVisualTree += (s, e) => ExtractAudioFile();
         }
 
-        /// <summary>
-        /// Gets whether this audio instance is currently playing
-        /// </summary>
         public bool IsPlaying => _isPlaying;
 
-        /// <summary>
         /// Registers this audio instance with the AudioManager
-        /// </summary>
-        /// <param name="onAudioStopped">Optional callback when this audio is stopped by the manager</param>
         public void RegisterWithAudioManager(Action? onAudioStopped = null)
         {
             AudioManager.Instance.RegisterAudio(this, onAudioStopped);
@@ -99,33 +92,27 @@ namespace Project.presentation.components
             }
         }
 
-        // Updated ExtractAudioFile method with null safety
         private void ExtractAudioFile()
         {
-            // Return early if the audio file name is null
             if (string.IsNullOrEmpty(AudioFileName))
             {
-                Console.WriteLine("Warning: AudioFileName is null or empty");
+                Debug.WriteLine("Warning: AudioFileName is null or empty");
                 return;
             }
 
             try
             {
-                // Intentar primero cargar desde recursos embebidos
                 var resourceNames = GetType().Assembly.GetManifestResourceNames();
 
-                // Check if resourceNames is null or empty
                 if (resourceNames == null || resourceNames.Length == 0)
                 {
-                    Console.WriteLine("Warning: No resource names found in assembly");
+                    Debug.WriteLine("Warning: No resource names found in assembly");
                     return;
                 }
 
-                // Buscar archivo por nombre especificado - with null safety
                 string? audioResourceName = resourceNames.FirstOrDefault(n =>
                     n != null && n.EndsWith(AudioFileName, StringComparison.OrdinalIgnoreCase));
 
-                // Si no encontramos el específico, buscar cualquier audio
                 if (audioResourceName == null)
                 {
                     audioResourceName = resourceNames.FirstOrDefault(n =>
@@ -135,7 +122,6 @@ namespace Project.presentation.components
 
                 if (audioResourceName != null)
                 {
-                    // Usar el nombre del archivo original para la extensión correcta
                     string extension = Path.GetExtension(AudioFileName);
                     if (string.IsNullOrEmpty(extension))
                         extension = ".mp3";
@@ -156,7 +142,6 @@ namespace Project.presentation.components
                     }
                 }
 
-                // Si no está como recurso embebido, intentar cargar desde sistema de archivos
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 var resourcePath = Path.Combine(baseDir, "resources", "audio", AudioFileName);
 
@@ -168,7 +153,7 @@ namespace Project.presentation.components
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error extracting audio file: {ex.Message}");
+                Debug.WriteLine($"Error extracting audio file: {ex.Message}");
             }
         }
 
@@ -189,19 +174,16 @@ namespace Project.presentation.components
             }
         }
 
-        // Changed from private to public to allow access from Card class
         public void PlayAudio()
         {
             try
             {
-                // Request permission to play from AudioManager (this will stop any currently playing audio)
                 if (!AudioManager.Instance.RequestPlayAudio(this))
                 {
-                    Console.WriteLine("AudioManager denied play request");
+                    Debug.WriteLine("AudioManager denied play request");
                     return;
                 }
 
-                // Make sure the audio file is extracted first
                 if (_audioPath == null)
                 {
                     ExtractAudioFile();
@@ -209,7 +191,7 @@ namespace Project.presentation.components
 
                 if (string.IsNullOrEmpty(_audioPath))
                 {
-                    Console.WriteLine("Audio path is not available");
+                    Debug.WriteLine("Audio path is not available");
                     return;
                 }
 
@@ -221,18 +203,16 @@ namespace Project.presentation.components
                 _outputDevice.Play();
                 _isPlaying = true;
 
-                Console.WriteLine($"Started playing audio: {AudioFileName}");
+                Debug.WriteLine($"Started playing audio: {AudioFileName}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error playing audio: {ex.Message}");
+                Debug.WriteLine($"Error playing audio: {ex.Message}");
                 DisposeAudioResources();
-                // Notify AudioManager that we failed to play
                 AudioManager.Instance.NotifyAudioStopped(this);
             }
         }
 
-        // Changed from private to public to allow stopping audio from outside
         public void StopAudio()
         {
             if (_outputDevice != null)
@@ -240,11 +220,9 @@ namespace Project.presentation.components
                 _outputDevice.Stop();
                 DisposeAudioResources();
                 _isPlaying = false;
-                
-                // Notify AudioManager that we stopped
                 AudioManager.Instance.NotifyAudioStopped(this);
                 
-                Console.WriteLine($"Stopped playing audio: {AudioFileName}");
+                Debug.WriteLine($"Stopped playing audio: {AudioFileName}");
             }
         }
 
@@ -255,7 +233,6 @@ namespace Project.presentation.components
                 _isPlaying = false;
                 UpdateButtonText();
                 
-                // Notify AudioManager that playback stopped
                 AudioManager.Instance.NotifyAudioStopped(this);
             });
 
@@ -283,7 +260,6 @@ namespace Project.presentation.components
             PropertyChanged -= OnAudioPropertyChanged;
             StopAudio();
             
-            // Unregister from AudioManager
             AudioManager.Instance.UnregisterAudio(this);
         }
 

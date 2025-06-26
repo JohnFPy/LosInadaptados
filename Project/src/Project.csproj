@@ -24,10 +24,6 @@
     <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="infraestructure\" />
-  </ItemGroup>
 	
   <ItemGroup>
     <AvaloniaResource Include="resources\audio\**\*.*" />
