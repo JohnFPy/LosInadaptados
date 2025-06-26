@@ -65,6 +65,20 @@ namespace Project.presentation.components
             AttachedToVisualTree += (s, e) => ExtractAudioFile();
         }
 
+        /// <summary>
+        /// Gets whether this audio instance is currently playing
+        /// </summary>
+        public bool IsPlaying => _isPlaying;
+
+        /// <summary>
+        /// Registers this audio instance with the AudioManager
+        /// </summary>
+        /// <param name="onAudioStopped">Optional callback when this audio is stopped by the manager</param>
+        public void RegisterWithAudioManager(Action? onAudioStopped = null)
+        {
+            AudioManager.Instance.RegisterAudio(this, onAudioStopped);
+        }
+
         private void OnAudioPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property == AudioFileNameProperty)
@@ -180,10 +194,23 @@ namespace Project.presentation.components
         {
             try
             {
+                // Request permission to play from AudioManager (this will stop any currently playing audio)
+                if (!AudioManager.Instance.RequestPlayAudio(this))
+                {
+                    Console.WriteLine("AudioManager denied play request");
+                    return;
+                }
+
                 // Make sure the audio file is extracted first
                 if (_audioPath == null)
                 {
                     ExtractAudioFile();
+                }
+
+                if (string.IsNullOrEmpty(_audioPath))
+                {
+                    Console.WriteLine("Audio path is not available");
+                    return;
                 }
 
                 DisposeAudioResources();
@@ -193,11 +220,15 @@ namespace Project.presentation.components
                 _outputDevice.Init(_audioFileReader);
                 _outputDevice.Play();
                 _isPlaying = true;
+
+                Console.WriteLine($"Started playing audio: {AudioFileName}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error playing audio: {ex.Message}");
                 DisposeAudioResources();
+                // Notify AudioManager that we failed to play
+                AudioManager.Instance.NotifyAudioStopped(this);
             }
         }
 
@@ -209,6 +240,11 @@ namespace Project.presentation.components
                 _outputDevice.Stop();
                 DisposeAudioResources();
                 _isPlaying = false;
+                
+                // Notify AudioManager that we stopped
+                AudioManager.Instance.NotifyAudioStopped(this);
+                
+                Console.WriteLine($"Stopped playing audio: {AudioFileName}");
             }
         }
 
@@ -218,6 +254,9 @@ namespace Project.presentation.components
             {
                 _isPlaying = false;
                 UpdateButtonText();
+                
+                // Notify AudioManager that playback stopped
+                AudioManager.Instance.NotifyAudioStopped(this);
             });
 
             DisposeAudioResources();
@@ -243,6 +282,9 @@ namespace Project.presentation.components
         {
             PropertyChanged -= OnAudioPropertyChanged;
             StopAudio();
+            
+            // Unregister from AudioManager
+            AudioManager.Instance.UnregisterAudio(this);
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

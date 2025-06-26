@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using Avalonia.VisualTree;
+using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Reflection;
@@ -145,6 +147,9 @@ namespace Project.presentation.components
 
             _audioPlayer.IsVisible = false;
 
+            // Register with AudioManager and provide callback for when audio is stopped externally
+            _audioPlayer.RegisterWithAudioManager(OnAudioStoppedByManager);
+
             // Agregar observador para cambios en la propiedad de imagen
             this.PropertyChanged += (s, e) =>
             {
@@ -162,6 +167,26 @@ namespace Project.presentation.components
                     _originalButtonText = TitleText ?? string.Empty;
                 }
             };
+        }
+
+        /// <summary>
+        /// Callback method called by AudioManager when this card's audio is stopped externally
+        /// </summary>
+        private void OnAudioStoppedByManager()
+        {
+            // Use Dispatcher to ensure UI updates happen on the UI thread
+            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_isPlaying)
+                {
+                    _isPlaying = false;
+                    if (_titleButton != null && !string.IsNullOrEmpty(_originalButtonText))
+                    {
+                        _titleButton.Content = _originalButtonText;
+                    }
+                    Console.WriteLine($"Card audio stopped by AudioManager: {TitleText}");
+                }
+            });
         }
 
         // Método para cargar la imagen desde recursos embebidos
@@ -252,7 +277,6 @@ namespace Project.presentation.components
             }
         }
 
-        // [Resto del código existente]
         private void UpdateTitleContent()
         {
             if (UseButtonTitle)
@@ -286,10 +310,52 @@ namespace Project.presentation.components
             }
             else
             {
+                // The AudioManager will automatically stop any currently playing audio
+                // before allowing this one to play
                 _audioPlayer.PlayAudio();
                 _isPlaying = true;
                 _titleButton.Content = "Detener audio";
             }
+        }
+
+        /// <summary>
+        /// Forces this card to stop playing audio if it's currently playing.
+        /// This method is called by the AudioManager when another audio starts playing.
+        /// </summary>
+        internal void ForceStopAudio()
+        {
+            if (_isPlaying && _audioPlayer != null)
+            {
+                _audioPlayer.StopAudio();
+                _isPlaying = false;
+                if (_titleButton != null)
+                {
+                    _titleButton.Content = _originalButtonText;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets whether this card's audio is currently playing
+        /// </summary>
+        public bool IsAudioPlaying => _isPlaying;
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            // Make sure we stop audio when the card is removed from the visual tree
+            if (_isPlaying && _audioPlayer != null)
+            {
+                _audioPlayer.StopAudio();
+                _isPlaying = false;
+            }
+            
+            // Unregister from AudioManager to clean up callbacks
+            if (_audioPlayer != null)
+            {
+                AudioManager.Instance.UnregisterAudio(_audioPlayer);
+            }
+            
+            base.OnDetachedFromVisualTree(e);
         }
     }
 }
