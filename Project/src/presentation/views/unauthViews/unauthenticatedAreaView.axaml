@@ -135,10 +135,10 @@
 		</Grid>
 
 
-		<!-- Login Grid -->
+		<!-- LOGIN GRID -->
 		<Grid x:Name="LoginGrid"
               IsVisible="False"
-              RowDefinitions="Auto,Auto,Auto,Auto"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto"
               ColumnDefinitions="*">
 
 			<TextBlock Grid.Row="0"
@@ -168,8 +168,19 @@
 					 Classes="clearButton, revealPasswordButton"/>
 
 
-			<!-- Botón para mostrar el Register Grid -->
+			<!-- Botón para validar datos de Login -->
 			<Button Grid.Row="3"
+					Grid.Column="0"
+					Width="250"
+					Margin="0,16,0,0"
+					HorizontalAlignment="Center"
+					Content="Iniciar Sesión"
+					Click="OnLoginClick"
+					Theme="{DynamicResource SolidButton}"/>
+
+
+			<!-- Botón para mostrar el Register Grid -->
+			<Button Grid.Row="4"
 					Grid.Column="0"
 					Width="250"
 					Margin="0,16,0,0"

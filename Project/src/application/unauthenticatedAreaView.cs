@@ -101,6 +101,33 @@ namespace Project.presentation.Views.UnauthViews
             _lastnameErrorTextBlock!.IsVisible = false;
             _ageErrorTextBlock!.IsVisible = false;
 
+            // Validar los datos ingresados
+
+            if (validUsername && validPassword && validName && validLastname && validAge)
+            {
+                // Guardar en la base de datos usando UserCRUD
+                var userCrud = new Project.infrastucture.UserCRUD();
+                var newUser = new Project.domain.models.user
+                {
+                    Username = usernameText!,
+                    Password = passwordText!, // Considera hashear la contraseña si tu sistema lo requiere
+                    Name = nameText!,
+                    LastName = lastnameText!,
+                    Age = int.Parse(ageText!),
+                    PathImage = "" // O asigna un valor por defecto si corresponde
+                };
+
+                userCrud.SignUp(newUser);
+
+                // Todos los datos son válidos, proceder a la siguiente vista
+                var window = this.VisualRoot as Window;
+                if (window != null)
+                {
+                    window.Content = new AuthenticatedAreaView();
+                }
+            }
+
+
             if (validUsername && validPassword && validName && validLastname && validAge)
             {
                 // Todos los datos son válidos, proceder a la siguiente vista
@@ -142,6 +169,33 @@ namespace Project.presentation.Views.UnauthViews
                     _ageErrorTextBlock.Text = "La edad debe ser un número entero positivo";
                     _ageErrorTextBlock.IsVisible = true;
                 }
+            }
+        }
+
+
+        private void OnLoginClick(object? sender, RoutedEventArgs e)
+        {
+            // Busca los TextBox del login
+            var loginUsernameTextBox = this.FindControl<TextBox>("LoginUsernameTextBox");
+            var loginPasswordTextBox = this.FindControl<TextBox>("LoginPasswordTextBox");
+
+            var username = loginUsernameTextBox?.Text;
+            var password = loginPasswordTextBox?.Text;
+
+            var userCrud = new Project.infrastucture.UserCRUD();
+            bool acceso = userCrud.Login(username, password);
+
+            if (acceso)
+            {
+                var window = this.VisualRoot as Window;
+                if (window != null)
+                    window.Content = new AuthenticatedAreaView();
+            }
+            else
+            {
+                // Credenciales inválidas, mostrar mensaje de error
+                _usernameErrorTextBlock!.IsVisible = true;
+                _usernameErrorTextBlock.Text = "Nombre de usuario o contraseña incorrectos.";
             }
         }
     }
