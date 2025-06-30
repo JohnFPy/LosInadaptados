@@ -43,4 +43,10 @@
 		<AvaloniaResource Include="src\**\*.xaml;src\**\*.axaml" />
 		<Compile Include="src\**\*.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="presentation\screens\canvasView.axaml.cs">
+	    <DependentUpon>canvasView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>
