@@ -12,7 +12,7 @@ namespace Project.presentation.components
     {
         private static AudioManager? _instance;
         private static readonly object _lock = new object();
-        
+
         private readonly List<WeakReference<Audio>> _audioInstances = new List<WeakReference<Audio>>();
         private Audio? _currentlyPlayingAudio;
 
@@ -61,28 +61,26 @@ namespace Project.presentation.components
 
             lock (_lock)
             {
-                _audioInstances.RemoveAll(wr => 
+                _audioInstances.RemoveAll(wr =>
                 {
                     if (wr.TryGetTarget(out var target))
                     {
                         return ReferenceEquals(target, audio);
                     }
-                    return true; 
+                    return true;
                 });
 
                 // Remove callback
                 _audioStoppedCallbacks.Remove(audio);
 
-                // Si es el actual, se stopea y se mandan las estadisticas a domain
+                // Si es el actual, se detiene el tracking (esto registrará automáticamente en la BD)
                 if (ReferenceEquals(_currentlyPlayingAudio, audio))
                 {
                     AudioPlaybackTrackingService.Instance.StopTracking(_currentlyPlayingAudio.AudioFileName);
-                    SendStatisticsToDomain();
                     _currentlyPlayingAudio = null;
                 }
             }
         }
-
 
         public bool RequestPlayAudio(Audio requestingAudio)
         {
@@ -92,10 +90,10 @@ namespace Project.presentation.components
             {
                 StopCurrentlyPlayingAudio();
                 _currentlyPlayingAudio = requestingAudio;
-                
+
                 // Start tracking the new audio
                 AudioPlaybackTrackingService.Instance.StartTracking(_currentlyPlayingAudio.AudioFileName);
-                
+
                 return true;
             }
         }
@@ -108,9 +106,8 @@ namespace Project.presentation.components
             {
                 if (ReferenceEquals(_currentlyPlayingAudio, stoppedAudio))
                 {
-                    // Stop tracking before clearing reference
+                    // Stop tracking (esto registrará automáticamente en la BD)
                     AudioPlaybackTrackingService.Instance.StopTracking(_currentlyPlayingAudio.AudioFileName);
-                    SendStatisticsToDomain();
                     _currentlyPlayingAudio = null;
                 }
             }
@@ -153,25 +150,18 @@ namespace Project.presentation.components
             return AudioPlaybackTrackingService.Instance.GetTodayStatistics();
         }
 
-        /// Forces save of current tracking data (call on app shutdown)
+        /// Creates a local backup of tracking data (call on app shutdown)
         public void SaveTrackingData()
         {
-            AudioPlaybackTrackingService.Instance.ForceSave();
-            SendStatisticsToDomain();
-        }
+            // Detener cualquier audio en reproducción para registrar el tiempo
+            if (_currentlyPlayingAudio != null)
+            {
+                AudioPlaybackTrackingService.Instance.StopTracking(_currentlyPlayingAudio.AudioFileName);
+                _currentlyPlayingAudio = null;
+            }
 
-        /// Envía las estadísticas actuales al servicio de dominio para procesamiento
-        private void SendStatisticsToDomain()
-        {
-            try
-            {
-                var todayStats = GetTodayStatistics();
-                AudioStatisticsProcessor.Instance.ProcessDailyStatistics(todayStats);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error enviando estadísticas a dominio: {ex.Message}");
-            }
+            // Crear backup local sin forzar registro en BD
+            AudioPlaybackTrackingService.Instance.CreateLocalBackup();
         }
 
         private void StopCurrentlyPlayingAudio()
@@ -181,10 +171,9 @@ namespace Project.presentation.components
                 var audioToStop = _currentlyPlayingAudio;
                 try
                 {
-                    // Stop tracking before stopping audio
+                    // Stop tracking (esto registrará automáticamente en la BD)
                     AudioPlaybackTrackingService.Instance.StopTracking(audioToStop.AudioFileName);
-                    SendStatisticsToDomain();
-                    
+
                     audioToStop.StopAudio();
 
                     if (_audioStoppedCallbacks.TryGetValue(audioToStop, out var callback))
@@ -213,10 +202,10 @@ namespace Project.presentation.components
         private void CleanupDeadReferences()
         {
             _audioInstances.RemoveAll(wr => !wr.TryGetTarget(out _));
-            var keysToRemove = _audioStoppedCallbacks.Keys.Where(audio => 
+            var keysToRemove = _audioStoppedCallbacks.Keys.Where(audio =>
                 !_audioInstances.Any(wr => wr.TryGetTarget(out var target) && ReferenceEquals(target, audio))
             ).ToList();
-            
+
             foreach (var key in keysToRemove)
             {
                 _audioStoppedCallbacks.Remove(key);

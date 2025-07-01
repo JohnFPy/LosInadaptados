@@ -13,19 +13,19 @@ namespace Project.application.services
     {
         private static AudioPlaybackTrackingService? _instance;
         private static readonly object _lock = new object();
-        
+
         private readonly Dictionary<string, List<int>> _todayPlaybackTimes;
         private readonly Dictionary<string, Stopwatch> _activeStopwatches;
         private string _currentDate;
         private readonly string _dataDirectory;
 
-        private AudioPlaybackTrackingService() //saca la fecha y el diccionario de playback
+        private AudioPlaybackTrackingService()
         {
             _todayPlaybackTimes = new Dictionary<string, List<int>>();
             _activeStopwatches = new Dictionary<string, Stopwatch>();
-            _currentDate = DateTime.Now.ToString("ddMMyyyy"); // SOLUCION PROBLEMA 2: Cambiado de "ddMMyy" a "ddMMyyyy"
+            _currentDate = DateTime.Now.ToString("ddMMyyyy");
             _dataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioTracker");
-            
+
             InitializeForToday();
         }
 
@@ -44,17 +44,18 @@ namespace Project.application.services
             }
         }
 
-        /// Inicializa las listas para el día actual y procesa datos de días anteriores si es necesario
+        /// Inicializa las listas para el día actual
         private void InitializeForToday()
         {
-            var today = DateTime.Now.ToString("ddMMyyyy"); // SOLUCION PROBLEMA 2: Cambiado de "ddMMyy" a "ddMMyyyy"
-            
-            // Si cambió la fecha, procesar datos del día anterior
+            var today = DateTime.Now.ToString("ddMMyyyy");
+
+            // Si cambió la fecha, solo limpiar los datos locales sin registrar en base de datos
             if (_currentDate != today)
             {
-                ProcessPreviousDayData();
+                Debug.WriteLine($"Cambio de fecha detectado: {_currentDate} -> {today}");
                 _currentDate = today;
                 _todayPlaybackTimes.Clear();
+                _activeStopwatches.Clear(); // Limpiar stopwatches activos sin registrar
             }
 
             // Inicializar listas para los tipos de audio
@@ -79,14 +80,15 @@ namespace Project.application.services
 
             lock (_lock)
             {
-                InitializeForToday(); // Verificar si cambió la fecha
-                
+                InitializeForToday();
+
                 var key = $"{_currentDate}{audioType}";
-                
-                // Detener cualquier seguimiento activo para este tipo
+
+                // Detener cualquier seguimiento activo para este tipo sin registrar
                 if (_activeStopwatches.ContainsKey(key))
                 {
                     _activeStopwatches[key].Stop();
+                    _activeStopwatches.Remove(key);
                 }
 
                 // Iniciar nuevo seguimiento
@@ -95,7 +97,7 @@ namespace Project.application.services
             }
         }
 
-        /// Detiene el seguimiento y registra el tiempo transcurrido
+        /// Detiene el seguimiento y registra el tiempo transcurrido - ÚNICO PUNTO DE REGISTRO
         public void StopTracking(string audioFileName)
         {
             if (string.IsNullOrEmpty(audioFileName)) return;
@@ -106,12 +108,12 @@ namespace Project.application.services
             lock (_lock)
             {
                 var key = $"{_currentDate}{audioType}";
-                
+
                 if (_activeStopwatches.TryGetValue(key, out var stopwatch))
                 {
                     stopwatch.Stop();
                     var elapsedSeconds = (int)stopwatch.Elapsed.TotalSeconds;
-                    
+
                     // Registrar el tiempo solo si es mayor a 1 segundo
                     if (elapsedSeconds > 0)
                     {
@@ -119,11 +121,11 @@ namespace Project.application.services
                         {
                             _todayPlaybackTimes[key] = new List<int>();
                         }
-                        
+
                         _todayPlaybackTimes[key].Add(elapsedSeconds);
                         Debug.WriteLine($"Registrado: {elapsedSeconds} segundos para {key}");
-                        
-                        // SOLUCION PROBLEMA 1: Registrar inmediatamente en la base de datos
+
+                        // ÚNICO PUNTO DE REGISTRO: Solo aquí se registra en la base de datos
                         try
                         {
                             AudioStatisticsProcessor.Instance.RegisterAudioPlayback(audioType, elapsedSeconds);
@@ -133,7 +135,7 @@ namespace Project.application.services
                             Debug.WriteLine($"Error registrando en base de datos: {ex.Message}");
                         }
                     }
-                    
+
                     _activeStopwatches.Remove(key);
                 }
             }
@@ -143,66 +145,18 @@ namespace Project.application.services
         private string GetAudioTypeFromFileName(string fileName)
         {
             fileName = fileName.ToLowerInvariant();
-            
+
             if (fileName.Contains("japon") || fileName.Contains("japan"))
                 return "japon";
             if (fileName.Contains("ethno") || fileName.Contains("ethnic"))
                 return "ethno";
             if (fileName.Contains("piano") || fileName.Contains("relaxing"))
                 return "piano";
-                
+
             return string.Empty;
         }
 
-        /// Procesa los datos del día anterior enviándolos a la capa de dominio
-        private void ProcessPreviousDayData()
-        {
-            if (_todayPlaybackTimes.Count == 0) return;
-
-            try
-            {
-                // Calcular totales por tipo de audio
-                var dailyTotals = new Dictionary<string, int>();
-                
-                foreach (var kvp in _todayPlaybackTimes)
-                {
-                    var audioType = kvp.Key.Substring(8); // SOLUCION PROBLEMA 2: Cambiado de 6 a 8 para el nuevo formato de fecha
-                    var totalSeconds = 0;
-                    
-                    foreach (var seconds in kvp.Value)
-                    {
-                        totalSeconds += seconds;
-                    }
-                    
-                    if (totalSeconds > 0)
-                    {
-                        dailyTotals[audioType] = totalSeconds;
-                    }
-                }
-
-                // SOLUCION PROBLEMA 1: Enviar datos también a AudioStatisticsProcessor
-                if (dailyTotals.Count > 0)
-                {
-                    _ = SaveDailyTotalsAsync(_currentDate, dailyTotals);
-                    
-                    // Procesar estadísticas diarias en AudioStatisticsProcessor
-                    try
-                    {
-                        AudioStatisticsProcessor.Instance.ProcessDailyStatistics(dailyTotals);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error enviando datos a AudioStatisticsProcessor: {ex.Message}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error procesando datos del día anterior: {ex.Message}");
-            }
-        }
-
-        /// Guarda los totales diarios de forma asíncrona en el appdata
+        /// Guarda los totales diarios de forma asíncrona en el appdata (solo backup local)
         private async Task SaveDailyTotalsAsync(string date, Dictionary<string, int> dailyTotals)
         {
             try
@@ -213,7 +167,7 @@ namespace Project.application.services
                 }
 
                 var filePath = Path.Combine(_dataDirectory, $"audio_usage_{date}.json");
-                
+
                 var data = new
                 {
                     Date = date,
@@ -221,47 +175,47 @@ namespace Project.application.services
                     SavedAt = DateTime.Now
                 };
 
-                var json = JsonSerializer.Serialize(data, new JsonSerializerOptions 
-                { 
-                    WriteIndented = true 
+                var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                {
+                    WriteIndented = true
                 });
-                
+
                 await File.WriteAllTextAsync(filePath, json);
-                Debug.WriteLine($"Datos guardados para fecha {date}: {filePath}");
+                Debug.WriteLine($"Backup local guardado para fecha {date}: {filePath}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error guardando datos diarios: {ex.Message}");
+                Debug.WriteLine($"Error guardando backup local: {ex.Message}");
             }
         }
 
-        /// Obtiene estadísticas del día actual
+        /// Obtiene estadísticas del día actual (solo datos locales)
         public Dictionary<string, int> GetTodayStatistics()
         {
             lock (_lock)
             {
                 InitializeForToday();
-                
+
                 var stats = new Dictionary<string, int>();
-                
+
                 foreach (var kvp in _todayPlaybackTimes)
                 {
-                    var audioType = kvp.Key.Substring(8); // SOLUCION PROBLEMA 2: Cambiado de 6 a 8 para el nuevo formato de fecha
+                    var audioType = kvp.Key.Substring(8);
                     var total = 0;
-                    
+
                     foreach (var seconds in kvp.Value)
                     {
                         total += seconds;
                     }
-                    
+
                     stats[audioType] = total;
                 }
-                
+
                 return stats;
             }
         }
 
-        /// SOLUCION PROBLEMA 1: Método para obtener estadísticas desde la base de datos
+        /// Método para obtener estadísticas desde la base de datos
         public Dictionary<string, int> GetTodayStatisticsFromDatabase()
         {
             try
@@ -280,62 +234,36 @@ namespace Project.application.services
             }
         }
 
-        /// SOLUCION PROBLEMA 3: Método para forzar el envío de estadísticas actuales a la base de datos
-        public void SendCurrentStatisticsToDatabase()
+        /// Método para crear backup local sin registrar en base de datos
+        public void CreateLocalBackup()
         {
             lock (_lock)
             {
                 var currentStats = GetTodayStatistics();
                 if (currentStats.Count > 0 && currentStats.Values.Any(v => v > 0))
                 {
-                    try
-                    {
-                        AudioStatisticsProcessor.Instance.ProcessDailyStatistics(currentStats);
-                        Debug.WriteLine("Estadísticas actuales enviadas a la base de datos");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error enviando estadísticas actuales: {ex.Message}");
-                    }
+                    _ = SaveDailyTotalsAsync(_currentDate, currentStats);
+                    Debug.WriteLine("Backup local creado");
                 }
             }
         }
 
-        /// Fuerza el guardado de datos actuales (útil al cerrar la aplicación)
-        public void ForceSave()
+        /// Limpia datos locales sin forzar registro en base de datos
+        public void ClearLocalData()
         {
             lock (_lock)
             {
-                // Detener todos los stopwatches activos
+                // Detener todos los stopwatches activos sin registrar
                 foreach (var kvp in _activeStopwatches)
                 {
                     kvp.Value.Stop();
-                    var audioType = kvp.Key.Substring(8); // SOLUCION PROBLEMA 2: Cambiado de 6 a 8 para el nuevo formato de fecha
-                    var elapsedSeconds = (int)kvp.Value.Elapsed.TotalSeconds;
-                    
-                    if (elapsedSeconds > 0)
-                    {
-                        if (!_todayPlaybackTimes.ContainsKey(kvp.Key))
-                        {
-                            _todayPlaybackTimes[kvp.Key] = new List<int>();
-                        }
-                        _todayPlaybackTimes[kvp.Key].Add(elapsedSeconds);
-                        
-                        // SOLUCION PROBLEMA 1: Registrar en base de datos al forzar guardado
-                        try
-                        {
-                            AudioStatisticsProcessor.Instance.RegisterAudioPlayback(audioType, elapsedSeconds);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Error registrando datos finales en base de datos: {ex.Message}");
-                        }
-                    }
+                    Debug.WriteLine($"Stopwatch detenido sin registrar: {kvp.Key}");
                 }
+
                 _activeStopwatches.Clear();
-                
-                // Procesar datos actuales
-                ProcessPreviousDayData();
+                _todayPlaybackTimes.Clear();
+
+                Debug.WriteLine("Datos locales limpiados sin registro en base de datos");
             }
         }
     }
