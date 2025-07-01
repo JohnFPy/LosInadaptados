@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Project.application.components;
 
 namespace Project.presentation.screens
@@ -17,6 +18,11 @@ namespace Project.presentation.screens
             // Close the eindow when event is trigggered
             viewModel.RequestClose += (_, __) => Avalonia.Threading.Dispatcher.UIThread.Post(Close);
 
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
         }
     }
 }

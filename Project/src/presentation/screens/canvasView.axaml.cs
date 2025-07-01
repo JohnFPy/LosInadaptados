@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Markup.Xaml;
 
 namespace Project.presentation.screens
 {
@@ -9,6 +10,11 @@ namespace Project.presentation.screens
         public canvasView()
         {
             InitializeComponent();
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
         }
 
         private void Canvas_PointerPressed(object? sender, PointerPressedEventArgs e)
