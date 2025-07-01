@@ -34,6 +34,10 @@
     <AvaloniaResource Remove="resources\audio\japanBeat.wav" />
     <AvaloniaResource Remove="resources\audio\relaxingPiano.mp3" />
   </ItemGroup>
+	
+	<ItemGroup>
+		<AvaloniaResource Include="resources/emotions/*.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="resources\**\*.*" />

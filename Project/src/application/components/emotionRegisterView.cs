@@ -12,31 +12,43 @@ using System.Windows.Input;
 
 namespace Project.application.components
 {
+    public class Emotion
+    {
+        public string Name { get; set; }
+        public string ImagePath { get; set; } // Avares path
+    }
+
+
     public class emotionRegisterView : INotifyPropertyChanged
     {
         private readonly dayView _day;
         private Window? _parentWindow;
 
-        public ObservableCollection<string> Emotions { get; set; } = new ObservableCollection<string>
+        // READ FROM DATABASE ###############
+        public ObservableCollection<Emotion> Emotions { get; set; } = new ObservableCollection<Emotion>
         {
-            "Feliz", "Triste", "Enojado", "Calmado"
+            new Emotion { Name = "Feliz", ImagePath = "avares://Project/resources/emotions/feliz.png" },
+            new Emotion { Name = "Triste", ImagePath = "avares://Project/resources/emotions/triste.png" },
+            new Emotion { Name = "Enojado", ImagePath = "avares://Project/resources/emotions/enojado.png" },
+            new Emotion { Name = "Preocupado", ImagePath = "avares://Project/resources/emotions/preocupado.png" },
+            new Emotion { Name = "Serio", ImagePath = "avares://Project/resources/emotions/serio.png" }
         };
 
-        private string? _selectedEmotion;
-        public string? SelectedEmotion
+
+        private Emotion? _selectedEmotion;
+        public Emotion? SelectedEmotion
         {
             get => _selectedEmotion;
             set
             {
-                if (_selectedEmotion != value)
-                {
-                    _selectedEmotion = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(CanSave));
-                    SaveCommand.RaiseCanExecuteChanged();
-                }
+                _selectedEmotion = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanSave));
+                SaveCommand.RaiseCanExecuteChanged();
             }
         }
+
+        public bool CanSave => SelectedEmotion != null;
 
         private string _comment = "";
         public string Comment
@@ -65,8 +77,6 @@ namespace Project.application.components
         public ICommand SelectImageCommand { get; }
 
         public event EventHandler? RequestClose;
-
-        public bool CanSave => !string.IsNullOrWhiteSpace(SelectedEmotion);
 
         public emotionRegisterView(dayView day, Window? parentWindow = null)
         {
