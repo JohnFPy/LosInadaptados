@@ -1,4 +1,6 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
+using Project.presentation.screens;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -38,20 +40,19 @@ namespace Project.application.components
 
         public ICommand ClickCommand { get; }
 
-        // Event to notify click
-        public event Action<dayView>? DayClicked;
 
         public dayView()
         {
             ClickCommand = new relayCommand(_ => OnClicked());
         }
 
-        private void OnClicked()
+        private async void OnClicked()
         {
-            // EMOTION FORM CONNECTION ###########################
-            EmotionColor.Color = Colors.Yellow;
-            DayClicked?.Invoke(this);
-
+            var window = new emotionRegister(this);
+            if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                await window.ShowDialog(desktop.MainWindow);
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

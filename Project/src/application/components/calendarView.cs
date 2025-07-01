@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using System;
 using System.Collections.ObjectModel;
@@ -55,6 +56,13 @@ namespace Project.application.components
         }
 
 
+        private async void OnDayClicked(dayView clickedDay)
+        {
+            var window = new emotionRegister(clickedDay);
+            await window.ShowDialog((Window)App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
+        }
+
+
         private void UpdateCalendar()
         {
             MonthYearText = currentDate.ToString("MMMM yyyy");
@@ -72,14 +80,16 @@ namespace Project.application.components
 
             for (int i = 1; i <= daysInMonth; i++)
             {
-                Days.Add(new dayView
+                var day = new dayView
                 {
                     DayNumber = i.ToString(),
-
-                    // Default background color
                     EmotionColor = new SolidColorBrush(Colors.Transparent)
+                };
 
-                });
+                // SUSCRIPCIÓN AL EVENTO
+                day.DayClicked += OnDayClicked;
+
+                Days.Add(day);
             }
         }
 
