@@ -5,7 +5,7 @@
 		xmlns:services="clr-namespace:Project.application.services"
         x:Class="Project.presentation.screens.emotionRegister"
         x:DataType="vm:emotionRegisterView"
-        Width="400" Height="350"
+        Width="800" Height="700"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         Title="Registrar emoción">
@@ -15,37 +15,56 @@
 	</Window.Resources>
 
 
-	<StackPanel Margin="20" Spacing="10">
+	<StackPanel Margin="20" Spacing="10" HorizontalAlignment="Center">
+
+		<TextBlock Text="Registro de Emoción"
+           FontSize="24"
+           FontWeight="Bold"
+           HorizontalAlignment="Center"
+           Margin="0,0,0,20"/>
 
 		<!-- Emotion -->
-		<TextBlock Text="Seleccione una emoción:"/>
-		<ComboBox ItemsSource="{Binding Emotions}"
-          SelectedItem="{Binding SelectedEmotion}"
-          Width="300">
-			<ComboBox.ItemTemplate>
+		<TextBlock Text="Seleccione una emoción:" Margin="10,0,0,10"/>
+
+		<ListBox ItemsSource="{Binding Emotions}"
+				 SelectedItem="{Binding SelectedEmotion}"
+				 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+				 BorderThickness="0"
+				 Background="Transparent"
+				 SelectionMode="Single"
+				 Margin="0,0,0,20"
+				 HorizontalAlignment="Center">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Horizontal" />
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+
+			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<StackPanel Orientation="Horizontal" Spacing="10">
-						<Image Source="{Binding ImagePath, Converter={StaticResource UriToBitmapConverter}}" Width="24" Height="24"/>
-						<TextBlock Text="{Binding Name}"/>
+					<StackPanel Orientation="Vertical" Margin="10" HorizontalAlignment="Center">
+						<Image Source="{Binding ImagePath, Converter={StaticResource UriToBitmapConverter}}"
+							   Width="100" Height="100"/>
+						<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="0,5,0,0"/>
 					</StackPanel>
 				</DataTemplate>
-			</ComboBox.ItemTemplate>
-		</ComboBox>
-
+			</ListBox.ItemTemplate>
+		</ListBox>
 
 
 		<!-- Coment -->
-		<TextBlock Text="Comentario (opcional):"/>
-		<TextBox Text="{Binding Comment}" Width="300" Height="60" AcceptsReturn="True"/>
+		<TextBlock Text="Comentario (opcional):" Margin="10,0,0,10"/>
+		<TextBox Text="{Binding Comment}" Width="500" Height="60" AcceptsReturn="True" Margin="0,0,0,20"/>
 
 		<!-- Image -->
-		<TextBlock Text="Imagen personalizada (opcional):"/>
-		<Button Content="Seleccionar archivo" Command="{Binding SelectImageCommand}" Width="300" />
-		<TextBlock Text="{Binding SelectedImagePath}" FontSize="12" Foreground="Gray"/>
+		<TextBlock Text="Imagen personalizada (opcional):" Margin="10,0,0,10"/>
+		<Button Content="Seleccionar archivo" Command="{Binding SelectImageCommand}" Width="350" />
+		<TextBlock Text="{Binding SelectedImagePath}" FontSize="12" Foreground="Gray" Margin="0,0,0,20"
+				   HorizontalAlignment="Center"/>
 
 
 		<!-- Buttons -->
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,20,0,50">
 			<Button Content="Cancelar" Command="{Binding CancelCommand}" />
 			<Button Content="Guardar" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" />
 
