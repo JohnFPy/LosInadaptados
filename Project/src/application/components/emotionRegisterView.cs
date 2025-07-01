@@ -33,6 +33,7 @@ namespace Project.application.components
                     _selectedEmotion = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(CanSave));
+                    SaveCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -59,7 +60,7 @@ namespace Project.application.components
             }
         }
 
-        public ICommand SaveCommand { get; }
+        public relayCommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public ICommand SelectImageCommand { get; }
 
