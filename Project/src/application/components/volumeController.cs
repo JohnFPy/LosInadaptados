@@ -23,8 +23,8 @@ namespace Project.presentation.components
                 InitializeAudio();
 
                 // Set initial value to 100 as requested
-                _volumeSlider.Value = 70;
-                SetSystemVolume(0.7f); // Set system volume to match
+                _volumeSlider.Value = 100;
+                SetSystemVolume(1f); // Set system volume to match
 
                 // Add event handler for value changes
                 _volumeSlider.PropertyChanged += (sender, e) =>
