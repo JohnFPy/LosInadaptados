@@ -49,4 +49,10 @@
 	    <DependentUpon>canvasView.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="resources\emotions.sqlite">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	</ItemGroup>
 </Project>
