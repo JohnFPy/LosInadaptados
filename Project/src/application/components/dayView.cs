@@ -38,6 +38,9 @@ namespace Project.application.components
 
         public ICommand ClickCommand { get; }
 
+        // Event to notify click
+        public event Action<dayView>? DayClicked;
+
         public dayView()
         {
             ClickCommand = new relayCommand(_ => OnClicked());
@@ -47,6 +50,7 @@ namespace Project.application.components
         {
             // EMOTION FORM CONNECTION ###########################
             EmotionColor.Color = Colors.Yellow;
+            DayClicked?.Invoke(this);
 
         }
 
