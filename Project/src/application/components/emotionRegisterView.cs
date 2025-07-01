@@ -1,0 +1,122 @@
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Platform.Storage;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Input;
+
+namespace Project.application.components
+{
+    public class emotionRegisterView : INotifyPropertyChanged
+    {
+        private readonly dayView _day;
+        private Window? _parentWindow;
+
+        public ObservableCollection<string> Emotions { get; set; } = new ObservableCollection<string>
+        {
+            "Feliz", "Triste", "Enojado", "Calmado"
+        };
+
+        private string? _selectedEmotion;
+        public string? SelectedEmotion
+        {
+            get => _selectedEmotion;
+            set
+            {
+                if (_selectedEmotion != value)
+                {
+                    _selectedEmotion = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanSave));
+                }
+            }
+        }
+
+        private string _comment = "";
+        public string Comment
+        {
+            get => _comment;
+            set
+            {
+                _comment = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string? _selectedImagePath;
+        public string? SelectedImagePath
+        {
+            get => _selectedImagePath;
+            set
+            {
+                _selectedImagePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+        public ICommand SelectImageCommand { get; }
+
+        public event EventHandler? RequestClose;
+
+        public bool CanSave => !string.IsNullOrWhiteSpace(SelectedEmotion);
+
+        public emotionRegisterView(dayView day, Window? parentWindow = null)
+        {
+            _day = day;
+            _parentWindow = parentWindow;
+
+            SaveCommand = new relayCommand(_ => Save(), _ => CanSave);
+            CancelCommand = new relayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
+            SelectImageCommand = new relayCommand(async _ => await SelectImageAsync());
+        }
+
+
+        private async Task SelectImageAsync()
+        {
+            if (_parentWindow == null)
+                return;
+
+            var options = new FilePickerOpenOptions
+            {
+                AllowMultiple = false,
+                Title = "Selecciona una imagen",
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new FilePickerFileType("Imágenes")
+                    {
+                        Patterns = new[] { "*.png", "*.jpg", "*.jpeg" }
+                    }
+                }
+            };
+
+            var result = await _parentWindow.StorageProvider.OpenFilePickerAsync(options);
+            if (result.Count > 0)
+            {
+                var file = result[0];
+                var path = file.Path.LocalPath;
+                SelectedImagePath = path;
+            }
+        }
+
+        private void Save()
+        {
+            // DATA BASE CONNECTION ###############
+
+            // Color visual update
+            _day.EmotionColor = new SolidColorBrush(Colors.Yellow);
+
+            RequestClose?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}

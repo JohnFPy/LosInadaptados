@@ -1,33 +1,39 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls"
+        xmlns:vm="clr-namespace:Project.application.components"
         x:Class="Project.presentation.screens.emotionRegister"
+        x:DataType="vm:emotionRegisterView"
         Width="400" Height="350"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         Title="Registrar emoción">
 
-    <StackPanel Margin="20" Spacing="10">
 
-        <!-- Emoción -->
-        <TextBlock Text="Seleccione una emoción:"/>
-        <ComboBox Items="{Binding Emotions}"
+	<StackPanel Margin="20" Spacing="10">
+
+		<!-- Emotion -->
+		<TextBlock Text="Seleccione una emoción:"/>
+		<ComboBox ItemsSource="{Binding Emotions}"
                   SelectedItem="{Binding SelectedEmotion}"
                   Width="300" />
 
-        <!-- Comentario -->
-        <TextBlock Text="Comentario (opcional):"/>
-        <TextBox Text="{Binding Comment}" Width="300" Height="60" AcceptsReturn="True"/>
+		<!-- Coment -->
+		<TextBlock Text="Comentario (opcional):"/>
+		<TextBox Text="{Binding Comment}" Width="300" Height="60" AcceptsReturn="True"/>
 
-        <!-- Imagen (opcional) -->
-        <TextBlock Text="Imagen personalizada (opcional):"/>
-        <Button Content="Seleccionar archivo" Command="{Binding SelectImageCommand}" />
-        <TextBlock Text="{Binding SelectedImagePath}" FontSize="12" Foreground="Gray"/>
+		<!-- Image -->
+		<TextBlock Text="Imagen personalizada (opcional):"/>
+		<Button Content="Seleccionar archivo" Command="{Binding SelectImageCommand}" Width="300" />
+		<TextBlock Text="{Binding SelectedImagePath}" FontSize="12" Foreground="Gray"/>
 
-        <!-- Botones -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-            <Button Content="Cancelar" Command="{Binding CancelCommand}" />
-            <Button Content="Guardar" Command="{Binding SaveCommand}" />
-        </StackPanel>
 
-    </StackPanel>
+		<!-- Buttons -->
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+			<Button Content="Cancelar" Command="{Binding CancelCommand}" />
+			<Button Content="Guardar" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" />
+
+		</StackPanel>
+
+	</StackPanel>
 </Window>
