@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using System;
@@ -15,8 +16,10 @@ namespace Project.application.components
     public class Emotion
     {
         public string Name { get; set; }
-        public string ImagePath { get; set; } // Avares path
+        public string ImagePath { get; set; }
+        public bool IsAddButton { get; set; } = false; // For Custom Emotions
     }
+
 
 
     public class emotionRegisterView : INotifyPropertyChanged
@@ -31,7 +34,8 @@ namespace Project.application.components
             new Emotion { Name = "Triste", ImagePath = "avares://Project/resources/emotions/triste.png" },
             new Emotion { Name = "Enojado", ImagePath = "avares://Project/resources/emotions/enojado.png" },
             new Emotion { Name = "Preocupado", ImagePath = "avares://Project/resources/emotions/preocupado.png" },
-            new Emotion { Name = "Serio", ImagePath = "avares://Project/resources/emotions/serio.png" }
+            new Emotion { Name = "Serio", ImagePath = "avares://Project/resources/emotions/serio.png" },
+            new Emotion { Name = "Emoción personalizada", ImagePath = "avares://Project/resources/emotions/add.png", IsAddButton = true }
         };
 
 
@@ -41,14 +45,40 @@ namespace Project.application.components
             get => _selectedEmotion;
             set
             {
-                _selectedEmotion = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(CanSave));
-                SaveCommand.RaiseCanExecuteChanged();
+                if (_selectedEmotion != value)
+                {
+                    _selectedEmotion = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanSave));
+                    SaveCommand.RaiseCanExecuteChanged();
+
+                    if (_selectedEmotion?.IsAddButton == true)
+                    {
+                        SelectedEmotion = null;
+                        OpenCanvasWindow();
+                    }
+                }
             }
         }
 
+
         public bool CanSave => SelectedEmotion != null;
+
+
+        private async void OpenCanvasWindow()
+        {
+            if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var canvasWindow = new presentation.screens.canvas();
+                if (_parentWindow != null)
+                {
+                    await canvasWindow.ShowDialog(_parentWindow);
+                }
+
+                // UPDATE EMOTION LIST AFTER CANVAS WINDOW IS CLOSED
+            }
+        }
+
 
         private string _comment = "";
         public string Comment

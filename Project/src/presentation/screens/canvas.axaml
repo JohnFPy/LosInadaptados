@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:Project.application.components"
-             x:Class="Project.presentation.screens.canvasView"
+             x:Class="Project.presentation.screens.canvas"
              x:DataType="vm:canvasView">
 
 	<Grid RowDefinitions="Auto, *">

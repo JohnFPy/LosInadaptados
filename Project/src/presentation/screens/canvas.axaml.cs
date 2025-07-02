@@ -5,9 +5,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Project.presentation.screens
 {
-    public partial class canvasView : Window
+    public partial class canvas : Window
     {
-        public canvasView()
+        public canvas()
         {
             InitializeComponent();
         }

@@ -49,8 +49,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="presentation\screens\canvasView.axaml.cs">
-	    <DependentUpon>canvasView.axaml</DependentUpon>
+	  <Compile Update="presentation\screens\canvas.axaml.cs">
+	    <DependentUpon>canvas.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
