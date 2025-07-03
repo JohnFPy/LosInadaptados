@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Project.presentation.components.emotionsStatistics">
+
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<StackPanel>
+				<TextBlock Text="Estadísticas de Emociones" FontSize="16" FontWeight="Bold"/>
+				<Border Background="LightGray" CornerRadius="5" Padding="10" Margin="0,10">
+					<TextBlock Text="Preview de estadísticas de emociones"/>
+				</Border>
+			</StackPanel>
+		</Border>
+	</Design.PreviewWith>
+
+	<ScrollViewer>
+		<StackPanel Name="StatisticsContainer"
+					Spacing="10"
+					Margin="10">
+			<!-- Las cards de estadísticas se añadirán dinámicamente aquí -->
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
