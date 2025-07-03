@@ -67,6 +67,9 @@ namespace Project.presentation.screens
 
             if (_backButton != null)
                 _backButton.IsVisible = true;
+
+            if (_logoutButton != null)
+                _logoutButton.IsVisible = false;
         }
 
         private void BackButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -79,6 +82,9 @@ namespace Project.presentation.screens
 
             if (_backButton != null)
                 _backButton.IsVisible = false;
+
+            if (_logoutButton != null)
+                _logoutButton.IsVisible = true;
         }
 
         private void LogoutButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
