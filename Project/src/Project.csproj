@@ -49,7 +49,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="presentation\screens\canvas.axaml.cs">
+	  <Compile Update="application\components\canvas.axaml.cs">
 	    <DependentUpon>canvas.axaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
