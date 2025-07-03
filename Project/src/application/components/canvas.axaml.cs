@@ -4,10 +4,20 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Controls.Shapes;
+using Avalonia.Media.Imaging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Project.application.components
 {
+    public class SavedEmotion
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+    }
+
+
     public partial class canvas : Window
     {
         public canvas()
@@ -29,7 +39,7 @@ namespace Project.application.components
 
             foreach (var line in vm.Lines)
             {
-                var path = new Path
+                var path = new Avalonia.Controls.Shapes.Path
                 {
                     Stroke = line.Stroke,
                     StrokeThickness = line.Thickness,
@@ -65,9 +75,66 @@ namespace Project.application.components
             }
         }
 
-        private void CloseButton_Click(object? sender, RoutedEventArgs e)
+        private void ClearButton_Click(object? sender, RoutedEventArgs e)
         {
-            this.Close();
+            var vm = DataContext as canvasView;
+            vm?.Lines.Clear();
+            RedrawLines();
         }
+
+        private async void SaveButton_Click(object? sender, RoutedEventArgs e)
+        {
+            var nameWindow = new emotionNameInput();
+            var name = await nameWindow.ShowDialog<string>(this);
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var moodPressPath = Path.Combine(documentsPath, "MoodPress", "customEmotions");
+            Directory.CreateDirectory(moodPressPath);
+
+            var filePath = Path.Combine(moodPressPath, $"{name}.png");
+
+
+            var canvas = this.FindControl<Canvas>("DrawingCanvas");
+            var size = canvas.Bounds.Size;
+
+            var renderTarget = new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
+            renderTarget.Render(canvas);
+
+            using (var stream = File.Create(filePath))
+            {
+                renderTarget.Save(stream);
+            }
+
+            // Optional success message
+            var successMessage = new Window
+            {
+                Width = 300,
+                Height = 150,
+                Content = new TextBlock
+                {
+                    Text = "¡Imagen guardada correctamente!",
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    FontSize = 16
+                },
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            await successMessage.ShowDialog(this);
+
+            // Return object with name and path
+            var savedEmotion = new SavedEmotion
+            {
+                Name = name,
+                Path = filePath
+            };
+
+            this.Close(savedEmotion);
+        }
+
     }
 }
+

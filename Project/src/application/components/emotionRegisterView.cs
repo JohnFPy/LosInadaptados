@@ -72,13 +72,25 @@ namespace Project.application.components
         {
             if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var canvasWindow = new application.components.canvas();
                 if (_parentWindow != null)
                 {
-                    await canvasWindow.ShowDialog(_parentWindow);
+                    var canvasWindow = new canvas();
+                    var result = await canvasWindow.ShowDialog<SavedEmotion>(_parentWindow);
+
+                    if (result != null)
+                    {
+                        var customEmotion = new Emotion
+                        {
+                            Name = result.Name,
+                            ImagePath = result.Path
+                        };
+
+                        Emotions.Insert(Emotions.Count - 1, customEmotion);
+                    }
+
                 }
 
-                // UPDATE EMOTION LIST AFTER CANVAS WINDOW IS CLOSED
+                // UPDATE DATABASE ###############
             }
         }
 

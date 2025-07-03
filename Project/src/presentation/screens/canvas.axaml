@@ -12,12 +12,14 @@
     <Grid RowDefinitions="Auto, *">
 
         <!-- Toolbar -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Spacing="10">
-            <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor}" Width="100" />
-            <Button Content="Limpiar" Command="{Binding ClearCommand}" />
-        </StackPanel>
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Spacing="10">
+			<ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor}" Width="100"/>
+			<Button Content="Limpiar" Click="ClearButton_Click"/>
+			<Button Content="Guardar" Click="SaveButton_Click"/>
+		</StackPanel>
 
-        <!-- Canvas with background image -->
+
+		<!-- Canvas with background image -->
 		<Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
 			<Grid>
 
