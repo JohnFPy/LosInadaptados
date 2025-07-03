@@ -10,6 +10,8 @@ namespace Project;
 
 public partial class App : Application
 {
+    public bool IsAuthenticated { get; set; } = true; // Propiedad pública
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -22,9 +24,7 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            bool isAuthenticated = true; // Cambiar a true para probar la vista autenticada
-
-            var view = isAuthenticated
+            var view = IsAuthenticated
                 ? (Control)new AuthenticatedAreaView()
                 : new UnauthenticatedAreaView();
 
@@ -33,8 +33,8 @@ public partial class App : Application
                 Content = view,
                 Width = 1280,
                 Height = 720,
-                //Title = isAuthenticated ? "MoodPress" : "Ingreso"
                 Title = "MoodPress",
+                WindowState = WindowState.Maximized,
             };
         }
 

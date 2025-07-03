@@ -21,6 +21,14 @@
 
 		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 
+			<!-- Botón para mostrar formulario de actualización -->
+			<Button x:Name="ShowUpdateFormButton"
+					Width="250"
+					Margin="0,0,0,20"
+					HorizontalAlignment="Center"
+					Content="Actualiza tus datos"
+					Theme="{DynamicResource SolidButton}"/>
+
 			<!-- Actualization Grid -->
 			<Grid x:Name="ActualizationGrid"
 				  IsVisible="True"
@@ -33,7 +41,7 @@
 						   Classes="H1"
 						   Theme="{StaticResource TitleTextBlock}"
 						   HorizontalAlignment="Center">
-						   Actualización de Datos
+					Actualización de Datos
 				</TextBlock>
 
 				<!-- TextBox para Actualizar el Username del usuario -->
@@ -138,12 +146,27 @@
 						HorizontalAlignment="Center"
 						Content="Actualizar datos"
 						Theme="{DynamicResource SolidButton}"/>
-						<!--Click="ActualizationClick"-->
+				<!--Click="ActualizationClick"-->
 
 			</Grid>
+
+			<!-- Botón para volver -->
+			<Button x:Name="BackButton"
+					Width="250"
+					Margin="0,20,0,0"
+					HorizontalAlignment="Center"
+					Content="Volver"
+					Theme="{DynamicResource SolidButton}"/>
+			
+			<Button x:Name="LogoutButton"
+					Width="250"
+					Margin="0,20,0,0"
+					HorizontalAlignment="Center"
+					Content="Cerrar sesión"
+					Theme="{DynamicResource SolidButton}"/>
 
 		</StackPanel>
 
 	</Grid>
-		
+
 </UserControl>
