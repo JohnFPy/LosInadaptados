@@ -1,47 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<ApplicationIcon>resources\icons\logo.ico</ApplicationIcon>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
-      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
-    <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8" />
-    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <AvaloniaResource Include="resources\audio\**\*.*" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <AvaloniaResource Remove="resources\audio\ethnoFolk.wav" />
-    <AvaloniaResource Remove="resources\audio\japanBeat.wav" />
-    <AvaloniaResource Remove="resources\audio\relaxingPiano.mp3" />
-  </ItemGroup>
-	
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.3.0" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Semi.Avalonia" Version="11.2.1.8" />
+		<PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.8" />
+		<PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
+		<PackageReference Include="System.Data.SQLite" Version="1.0.119" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="resources\audio\**\*.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Remove="resources\audio\ethnoFolk.wav" />
+		<AvaloniaResource Remove="resources\audio\japanBeat.wav" />
+		<AvaloniaResource Remove="resources\audio\relaxingPiano.mp3" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<AvaloniaResource Include="resources/emotions/*.png" />
 	</ItemGroup>
 
+	<!-- Incluir iconos como AvaloniaResource para uso en la UI -->
+	<ItemGroup>
+		<AvaloniaResource Include="resources/icons/*.png" />
+	</ItemGroup>
+
+	<!-- Excluir archivos de logo específicos de EmbeddedResource -->
 	<ItemGroup>
 		<EmbeddedResource Include="resources\**\*.*" />
 	</ItemGroup>
+
+	<!-- Logo.ico como Content para ApplicationIcon (icono del exe) -->
+
+	<!-- Logo.png como EmbeddedResource para uso en código C# -->
 
 	<ItemGroup>
 		<AvaloniaResource Include="src\**\*.xaml;src\**\*.axaml" />
@@ -49,14 +60,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="application\components\canvas.axaml.cs">
-	    <DependentUpon>canvas.axaml</DependentUpon>
-	  </Compile>
+		<Compile Update="application\components\canvas.axaml.cs">
+			<DependentUpon>canvas.axaml</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Update="resources\emotions.sqlite">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </EmbeddedResource>
+		<EmbeddedResource Update="resources\emotions.sqlite">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AvaloniaResource Remove="resources\icons\logo.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Remove="resources\icons\logo.ico" />
+	  <EmbeddedResource Remove="resources\icons\logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="resources\icons\logo.ico" />
 	</ItemGroup>
 </Project>
