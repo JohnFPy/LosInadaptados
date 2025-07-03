@@ -54,8 +54,11 @@ namespace Project.application.components
 
                     if (_selectedEmotion?.IsAddButton == true)
                     {
-                        SelectedEmotion = null;
                         OpenCanvasWindow();
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                        {
+                            SelectedEmotion = null;
+                        });
                     }
                 }
             }
