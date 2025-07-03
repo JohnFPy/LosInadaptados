@@ -41,7 +41,11 @@ namespace Project.application.components
 
         public canvasView()
         {
-            ClearCommand = new relayCommand(_ => Lines.Clear());
+            ClearCommand = new relayCommand(_ =>
+            {
+                Lines.Clear();
+                OnPropertyChanged(nameof(Lines)); // Assuring UI notification
+            });
         }
 
         public void StartDrawing(Point point)

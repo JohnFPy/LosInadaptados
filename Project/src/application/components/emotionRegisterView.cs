@@ -72,7 +72,7 @@ namespace Project.application.components
         {
             if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var canvasWindow = new presentation.screens.canvas();
+                var canvasWindow = new application.components.canvas();
                 if (_parentWindow != null)
                 {
                     await canvasWindow.ShowDialog(_parentWindow);
