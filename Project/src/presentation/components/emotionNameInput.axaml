@@ -9,7 +9,7 @@
     <StackPanel Margin="20" Spacing="10">
         <TextBlock Text="Ingrese el nombre de la nueva emoción:"/>
         <TextBox x:Name="NameTextBox" />
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
             <Button Content="Cancelar" Click="Cancel_Click"/>
             <Button Content="Aceptar" Click="Accept_Click"/>
         </StackPanel>

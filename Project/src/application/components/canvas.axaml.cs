@@ -108,22 +108,9 @@ namespace Project.application.components
                 renderTarget.Save(stream);
             }
 
-            // Optional success message
-            var successMessage = new Window
-            {
-                Width = 300,
-                Height = 150,
-                Content = new TextBlock
-                {
-                    Text = "¡Imagen guardada correctamente!",
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                    FontSize = 16
-                },
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
+            var successWindow = new presentation.components.customEmotionSuccess(filePath);
+            await successWindow.ShowDialog(this);
 
-            await successMessage.ShowDialog(this);
 
             // Return object with name and path
             var savedEmotion = new SavedEmotion

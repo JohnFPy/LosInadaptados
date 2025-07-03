@@ -2,6 +2,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using System;
+using System.IO;
 
 namespace Project.application.components
 {
@@ -31,5 +33,6 @@ namespace Project.application.components
         {
             this.Close(null);
         }
+
     }
 }
