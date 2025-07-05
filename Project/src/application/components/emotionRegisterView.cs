@@ -18,6 +18,7 @@ namespace Project.application.components
         public string Name { get; set; }
         public string ImagePath { get; set; }
         public bool IsAddButton { get; set; } = false; // For Custom Emotions
+        public bool IsLocalImage { get; set; } = false; // Compilated
     }
 
 
@@ -82,7 +83,8 @@ namespace Project.application.components
                         var customEmotion = new Emotion
                         {
                             Name = result.Name,
-                            ImagePath = result.Path
+                            ImagePath = result.Path,
+                            IsLocalImage = true
                         };
 
                         Emotions.Insert(Emotions.Count - 1, customEmotion);

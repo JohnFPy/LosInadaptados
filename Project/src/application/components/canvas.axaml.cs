@@ -90,23 +90,25 @@ namespace Project.application.components
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var moodPressPath = Path.Combine(documentsPath, "MoodPress", "customEmotions");
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var moodPressPath = Path.Combine(appDataPath, "MoodPress", "customEmotions");
             Directory.CreateDirectory(moodPressPath);
 
             var filePath = Path.Combine(moodPressPath, $"{name}.png");
 
 
-            var canvas = this.FindControl<Canvas>("DrawingCanvas");
-            var size = canvas.Bounds.Size;
+            var renderSurface = this.FindControl<Grid>("RenderSurface");
+            var size = renderSurface.Bounds.Size;
 
             var renderTarget = new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
-            renderTarget.Render(canvas);
+            renderTarget.Render(renderSurface);
 
+            // Saving the image
             using (var stream = File.Create(filePath))
             {
                 renderTarget.Save(stream);
             }
+
 
             var successWindow = new presentation.components.customEmotionSuccess(filePath);
             await successWindow.ShowDialog(this);
