@@ -43,7 +43,7 @@
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Vertical" Margin="10" HorizontalAlignment="Center">
-						<Image Source="{Binding ImagePath, Converter={StaticResource UriToBitmapConverter}}"
+						<Image Source="{Binding ., Converter={StaticResource UriToBitmapConverter}}"
 							   Width="100" Height="100"/>
 						<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="0,5,0,0"/>
 					</StackPanel>

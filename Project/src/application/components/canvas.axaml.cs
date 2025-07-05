@@ -90,8 +90,8 @@ namespace Project.application.components
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var moodPressPath = Path.Combine(documentsPath, "MoodPress", "customEmotions");
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var moodPressPath = Path.Combine(appDataPath, "MoodPress", "customEmotions");
             Directory.CreateDirectory(moodPressPath);
 
             var filePath = Path.Combine(moodPressPath, $"{name}.png");

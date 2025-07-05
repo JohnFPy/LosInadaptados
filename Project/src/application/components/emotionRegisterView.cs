@@ -83,7 +83,8 @@ namespace Project.application.components
                         var customEmotion = new Emotion
                         {
                             Name = result.Name,
-                            ImagePath = result.Path
+                            ImagePath = result.Path,
+                            IsLocalImage = true
                         };
 
                         Emotions.Insert(Emotions.Count - 1, customEmotion);
