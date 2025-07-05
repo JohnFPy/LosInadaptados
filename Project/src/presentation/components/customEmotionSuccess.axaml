@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Project.presentation.components.customEmotionSuccess"
+		xmlns:vm="clr-namespace:Project.application.components"
+        x:DataType="vm:SuccessViewModel"
+        Width="500" Height="250"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Title="Éxito">
+
+    <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+        <TextBlock Text="¡Imagen guardada correctamente!"
+                   FontSize="16"
+                   HorizontalAlignment="Center"/>
+
+        <TextBlock Text="{Binding FilePath}"
+                   FontSize="12"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+            <Button Content="Ver carpeta"
+                    Width="120"
+                    Command="{Binding OpenFolderCommand}"/>
+            <Button Content="Aceptar"
+                    Width="100"
+                    Command="{Binding CloseCommand}"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

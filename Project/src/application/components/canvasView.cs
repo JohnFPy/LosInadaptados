@@ -35,14 +35,7 @@ namespace Project.application.components
             }
         }
 
-        public ICommand ClearCommand { get; }
-
         private Point? lastPoint = null;
-
-        public canvasView()
-        {
-            ClearCommand = new relayCommand(_ => Lines.Clear());
-        }
 
         public void StartDrawing(Point point)
         {
