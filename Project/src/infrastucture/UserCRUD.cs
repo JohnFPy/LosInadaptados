@@ -17,7 +17,7 @@ namespace Project.infrastucture
             using (var connection = _connectionSqlite.GetConnection())
             {
                 connection.Open();
-                string query = "INSERT INTO users (Username, Password, Name, LastName, Age, PathImage) VALUES (@Username, @Password, @Name, @LastName, @Age, @PathImage)";
+                string query = "INSERT INTO User (Username, Password, Name, LastName, Age, PathImage) VALUES (@Username, @Password, @Name, @LastName, @Age, @PathImage)";
                 using (var command = new SQLiteCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", user.Username);
@@ -38,7 +38,7 @@ namespace Project.infrastucture
             using (var connection = _connectionSqlite.GetConnection())
             {
                 connection.Open();
-                string query = "SELECT Password FROM users WHERE Username = @Username";
+                string query = "SELECT Password FROM User WHERE Username = @Username";
                 using var command = new SQLiteCommand(query, connection);
                 
                 command.Parameters.AddWithValue("@Username", username);
