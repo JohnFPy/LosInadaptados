@@ -21,7 +21,7 @@
 
 		<!-- Canvas with background image -->
 		<Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
-			<Grid>
+			<Grid x:Name="RenderSurface">
 
 				<Image Source="avares://Project/resources/emotions/base.png"
 					   Stretch="UniformToFill"/>

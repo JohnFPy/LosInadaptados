@@ -18,6 +18,7 @@ namespace Project.application.components
         public string Name { get; set; }
         public string ImagePath { get; set; }
         public bool IsAddButton { get; set; } = false; // For Custom Emotions
+        public bool IsLocalImage { get; set; } = false; // Compilated
     }
 
 
