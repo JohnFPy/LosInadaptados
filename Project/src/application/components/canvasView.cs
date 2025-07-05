@@ -17,12 +17,38 @@ namespace Project.application.components
 
     public class canvasView : INotifyPropertyChanged
     {
+        public class ColorOption
+        {
+            public string Name { get; set; }
+            public IBrush Brush { get; set; }
+        }
+
+        private double _lineThickness = 2;
+        public double LineThickness
+        {
+            get => _lineThickness;
+            set
+            {
+                if (_lineThickness != value)
+                {
+                    _lineThickness = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ObservableCollection<DrawnLine> Lines { get; set; } = new ObservableCollection<DrawnLine>();
+        public ObservableCollection<ColorOption> AvailableColors { get; } = new ObservableCollection<ColorOption>
+        {
+            new ColorOption { Name = "Negro", Brush = Brushes.Black },
+            new ColorOption { Name = "Rojo", Brush = Brushes.Red },
+            new ColorOption { Name = "Azul", Brush = Brushes.Blue },
+            new ColorOption { Name = "Verde", Brush = Brushes.Green },
+            new ColorOption { Name = "Amarillo", Brush = Brushes.Yellow }
+        };
 
-        public ObservableCollection<string> AvailableColors { get; } = new ObservableCollection<string> { "Black", "Red", "Blue", "Green", "Yellow" };
-
-        private string _selectedColor = "Black";
-        public string SelectedColor
+        private ColorOption _selectedColor;
+        public ColorOption SelectedColor
         {
             get => _selectedColor;
             set
@@ -34,6 +60,7 @@ namespace Project.application.components
                 }
             }
         }
+
 
         private Point? lastPoint = null;
 
@@ -50,7 +77,8 @@ namespace Project.application.components
                 {
                     Start = lastPoint.Value,
                     End = point,
-                    Stroke = GetBrushFromColor()
+                    Stroke = GetBrushFromColor(),
+                    Thickness = LineThickness
                 });
 
                 lastPoint = point;
@@ -59,15 +87,9 @@ namespace Project.application.components
 
         private IBrush GetBrushFromColor()
         {
-            return SelectedColor switch
-            {
-                "Red" => Brushes.Red,
-                "Blue" => Brushes.Blue,
-                "Green" => Brushes.Green,
-                "Yellow" => Brushes.Yellow,
-                _ => Brushes.Black
-            };
+            return SelectedColor?.Brush ?? Brushes.Black;
         }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
