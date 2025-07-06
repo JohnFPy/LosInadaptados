@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Project.domain.models;
+using Project.infrastucture.utils;
+using System;
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
-using Project.domain.models;
-using Project.infrastucture.utils;
 
 namespace Project.infrastucture
 {
@@ -88,6 +86,17 @@ namespace Project.infrastucture
                     bool loginSuccess = hashedPassword == storedPassword;
                     Debug.WriteLine($"Login result: {loginSuccess}");
 
+                    // Si el login es exitoso, establecer la sesión del usuario
+                    if (loginSuccess)
+                    {
+                        var currentUser = GetUserByUsername(username);
+                        if (currentUser != null)
+                        {
+                            UserSession.SetCurrentUser(currentUser);
+                            Debug.WriteLine($"User session established for: {currentUser.Name}");
+                        }
+                    }
+
                     return loginSuccess;
                 }
             }
@@ -96,6 +105,42 @@ namespace Project.infrastucture
                 Debug.WriteLine($"Error in Login: {ex.Message}");
                 return false;
             }
+        }
+
+        public user? GetUserByUsername(string username)
+        {
+            try
+            {
+                using (var connection = _connectionSqlite.GetConnection())
+                {
+                    connection.Open();
+                    Debug.WriteLine($"Getting user data for username: {username}");
+
+                    string query = "SELECT Username, Password, Name, LastName, Age, PathImage FROM User WHERE Username = @Username";
+                    using var command = new SQLiteCommand(query, connection);
+                    command.Parameters.AddWithValue("@Username", username);
+
+                    using var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return new user
+                        {
+                            Username = reader["Username"].ToString()!,
+                            Password = reader["Password"].ToString()!,
+                            Name = reader["Name"].ToString()!,
+                            LastName = reader["LastName"].ToString()!,
+                            Age = Convert.ToInt32(reader["Age"]),
+                            PathImage = reader["PathImage"].ToString() ?? ""
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting user by username: {ex.Message}");
+            }
+
+            return null;
         }
 
         // Método auxiliar para listar todos los usuarios (para debugging)

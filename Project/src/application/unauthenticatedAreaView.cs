@@ -62,7 +62,7 @@ namespace Project.presentation.Views.UnauthViews
 
             // TextBlock para mostrar errores de valores ingresados en el registro
             _usernameErrorTextBlock = this.FindControl<TextBlock>("UsernameErrorTextBlock");
-            _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBlock");
+            _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBox");
             _nameErrorTextBlock = this.FindControl<TextBlock>("NameErrorTextBlock");
             _lastnameErrorTextBlock = this.FindControl<TextBlock>("LastnameErrorTextBlock");
             _ageErrorTextBlock = this.FindControl<TextBlock>("AgeErrorTextBlock");
@@ -134,7 +134,9 @@ namespace Project.presentation.Views.UnauthViews
 
                     if (registroExitoso)
                     {
-                        // Registro exitoso, proceder a la siguiente vista
+                        // Registro exitoso, establecer sesión del usuario
+                        UserSession.SetCurrentUser(newUser);
+
                         System.Diagnostics.Debug.WriteLine($"Usuario registrado exitosamente: {usernameText}");
 
                         // Listar usuarios después del registro
