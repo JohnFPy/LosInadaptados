@@ -25,20 +25,37 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT ethnoTime, japanTime, pianoTime FROM audioReproductionTimes WHERE dateId = @dateId";
+                string query = @"
+                    SELECT audioType, time 
+                    FROM audioReproductionTimes 
+                    WHERE dateId = @dateId";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@dateId", todayDateId);
 
+                int ethnoTime = 0, japanTime = 0, pianoTime = 0;
+
                 using var reader = command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
-                    return (
-                        Convert.ToInt32(reader["ethnoTime"]),
-                        Convert.ToInt32(reader["japanTime"]),
-                        Convert.ToInt32(reader["pianoTime"])
-                    );
+                    var audioType = reader["audioType"].ToString()?.ToLower();
+                    var time = Convert.ToInt32(reader["time"]);
+
+                    switch (audioType)
+                    {
+                        case "ethno":
+                            ethnoTime = time;
+                            break;
+                        case "japan":
+                            japanTime = time;
+                            break;
+                        case "piano":
+                            pianoTime = time;
+                            break;
+                    }
                 }
+
+                return (ethnoTime, japanTime, pianoTime);
             }
             catch (Exception ex)
             {
@@ -59,20 +76,37 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT ethnoTime, japanTime, pianoTime FROM audioReproductionTimes WHERE dateId = @dateId";
+                string query = @"
+                    SELECT audioType, time 
+                    FROM audioReproductionTimes 
+                    WHERE dateId = @dateId";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@dateId", dateId);
 
+                int ethnoTime = 0, japanTime = 0, pianoTime = 0;
+
                 using var reader = command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
-                    return (
-                        Convert.ToInt32(reader["ethnoTime"]),
-                        Convert.ToInt32(reader["japanTime"]),
-                        Convert.ToInt32(reader["pianoTime"])
-                    );
+                    var audioType = reader["audioType"].ToString()?.ToLower();
+                    var time = Convert.ToInt32(reader["time"]);
+
+                    switch (audioType)
+                    {
+                        case "ethno":
+                            ethnoTime = time;
+                            break;
+                        case "japan":
+                            japanTime = time;
+                            break;
+                        case "piano":
+                            pianoTime = time;
+                            break;
+                    }
                 }
+
+                return (ethnoTime, japanTime, pianoTime);
             }
             catch (Exception ex)
             {
@@ -92,21 +126,38 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT SUM(ethnoTime) as totalEthno, SUM(japanTime) as totalJapan, SUM(pianoTime) as totalPiano FROM audioReproductionTimes";
+                string query = @"
+                    SELECT audioType, SUM(time) as totalTime 
+                    FROM audioReproductionTimes 
+                    GROUP BY audioType";
 
                 using var command = new SQLiteCommand(query, connection);
                 using var reader = command.ExecuteReader();
 
-                if (reader.Read())
+                int totalEthno = 0, totalJapan = 0, totalPiano = 0;
+
+                while (reader.Read())
                 {
-                    var totalEthno = reader["totalEthno"] != DBNull.Value ? Convert.ToInt32(reader["totalEthno"]) : 0;
-                    var totalJapan = reader["totalJapan"] != DBNull.Value ? Convert.ToInt32(reader["totalJapan"]) : 0;
-                    var totalPiano = reader["totalPiano"] != DBNull.Value ? Convert.ToInt32(reader["totalPiano"]) : 0;
+                    var audioType = reader["audioType"].ToString()?.ToLower();
+                    var totalTime = reader["totalTime"] != DBNull.Value ? Convert.ToInt32(reader["totalTime"]) : 0;
 
-                    Console.WriteLine($"Estadísticas totales: Ethno={totalEthno}, Japan={totalJapan}, Piano={totalPiano}");
-
-                    return (totalEthno, totalJapan, totalPiano);
+                    switch (audioType)
+                    {
+                        case "ethno":
+                            totalEthno = totalTime;
+                            break;
+                        case "japan":
+                            totalJapan = totalTime;
+                            break;
+                        case "piano":
+                            totalPiano = totalTime;
+                            break;
+                    }
                 }
+
+                Console.WriteLine($"Estadísticas totales: Ethno={totalEthno}, Japan={totalJapan}, Piano={totalPiano}");
+
+                return (totalEthno, totalJapan, totalPiano);
             }
             catch (Exception ex)
             {
@@ -126,7 +177,10 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT MIN(dateId) as firstDate, MAX(dateId) as lastDate FROM audioReproductionTimes WHERE (ethnoTime > 0 OR japanTime > 0 OR pianoTime > 0)";
+                string query = @"
+                    SELECT MIN(dateId) as firstDate, MAX(dateId) as lastDate 
+                    FROM audioReproductionTimes 
+                    WHERE time > 0";
 
                 using var command = new SQLiteCommand(query, connection);
                 using var reader = command.ExecuteReader();
@@ -252,7 +306,11 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT dateId FROM audioReproductionTimes WHERE (ethnoTime > 0 OR japanTime > 0 OR pianoTime > 0) ORDER BY dateId";
+                string query = @"
+                    SELECT DISTINCT dateId 
+                    FROM audioReproductionTimes 
+                    WHERE time > 0 
+                    ORDER BY dateId";
 
                 using var command = new SQLiteCommand(query, connection);
                 using var reader = command.ExecuteReader();
