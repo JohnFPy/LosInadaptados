@@ -1,11 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Project.infrastucture;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Project.domain;
 using Project.presentation.Views.AuthViews;
 using System;
+using System.Drawing.Printing;
 
 namespace Project.presentation.Views.UnauthViews
 {
@@ -173,7 +175,7 @@ namespace Project.presentation.Views.UnauthViews
         }
 
 
-        private void OnLoginClick(object? sender, RoutedEventArgs e)
+        private void OnLoginClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             // Busca los TextBox del login
             var loginUsernameTextBox = this.FindControl<TextBox>("LoginUsernameTextBox");
@@ -182,6 +184,18 @@ namespace Project.presentation.Views.UnauthViews
             var username = loginUsernameTextBox?.Text;
             var password = loginPasswordTextBox?.Text;
 
+            // Validación 
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+
+                _usernameErrorTextBlock!.IsVisible = true;
+                _usernameErrorTextBlock.Text = "Nombre de usuario o contraseña incorrectos.";
+
+                return;
+            }
+
+
             var userCrud = new Project.infrastucture.UserCRUD();
             bool acceso = userCrud.Login(username, password);
 
@@ -189,7 +203,9 @@ namespace Project.presentation.Views.UnauthViews
             {
                 var window = this.VisualRoot as Window;
                 if (window != null)
+                {
                     window.Content = new AuthenticatedAreaView();
+                }
             }
             else
             {
