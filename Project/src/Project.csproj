@@ -7,6 +7,9 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<ApplicationIcon>resources\icons\logo.ico</ApplicationIcon>
+		<!-- Add this property to ensure SQLite native libraries are copied -->
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>false</SelfContained>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,6 +28,14 @@
 		<PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.8" />
 		<PackageReference Include="System.Data.SQLite" Version="1.0.119" />
 	</ItemGroup>
+
+	<!-- Add this target to ensure SQLite native libraries are copied -->
+	<Target Name="CopySQLiteNativeLibraries" AfterTargets="Build">
+		<ItemGroup>
+			<SQLiteNativeFiles Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.119\runtimes\win-x64\native\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(SQLiteNativeFiles)" DestinationFolder="$(OutputPath)runtimes\win-x64\native\" SkipUnchangedFiles="true" />
+	</Target>
 
 	<ItemGroup>
 		<AvaloniaResource Include="resources\audio\**\*.*" />
@@ -72,15 +83,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AvaloniaResource Remove="resources\icons\logo.ico" />
+		<AvaloniaResource Remove="resources\icons\logo.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Remove="resources\icons\logo.ico" />
-	  <EmbeddedResource Remove="resources\icons\logo.png" />
+		<EmbeddedResource Remove="resources\icons\logo.ico" />
+		<EmbeddedResource Remove="resources\icons\logo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="resources\icons\logo.ico" />
+		<Content Include="resources\icons\logo.ico" />
 	</ItemGroup>
 </Project>

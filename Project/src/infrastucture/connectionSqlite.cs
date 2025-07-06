@@ -1,43 +1,53 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.IO;
+using System.Diagnostics;
 
 namespace Project.infrastucture
 {
     public class connectionSqlite
     {
         private readonly string _connectionString;
-        private static string _databasePath = "resources\\emotions.sqlite";
 
         public connectionSqlite()
         {
-            // Si DatabaseInitializer.DatabasePath está disponible, úsalo
+            string databasePath;
+
+            // Primero intentar usar la ruta del DatabaseInitializer
             if (!string.IsNullOrEmpty(DatabaseInitializer.DatabasePath) && File.Exists(DatabaseInitializer.DatabasePath))
             {
-                _databasePath = DatabaseInitializer.DatabasePath;
+                databasePath = DatabaseInitializer.DatabasePath;
+                Debug.WriteLine($"Using AppData database: {databasePath}");
             }
-            
-            _connectionString = $"Data Source={_databasePath};Version=3;";
+            else
+            {
+                // Si no está disponible, usar la ruta por defecto
+                databasePath = "resources\\emotions.sqlite";
+                Debug.WriteLine($"Using default database: {databasePath}");
+            }
+
+            _connectionString = $"Data Source={databasePath};Version=3;";
+            Debug.WriteLine($"Connection string: {_connectionString}");
         }
-        
+
         public SQLiteConnection GetConnection()
         {
             return new SQLiteConnection(_connectionString);
         }
-        
-        // Método para actualizar la ruta de la base de datos
-        public static void SetDatabasePath(string path)
-        {
-            if (!string.IsNullOrEmpty(path) && File.Exists(path))
-            {
-                _databasePath = path;
-            }
-        }
-        
+
         // Método para obtener la ruta actual
-        public static string GetDatabasePath()
+        public string GetDatabasePath()
         {
-            return _databasePath;
+            // Extraer la ruta de la cadena de conexión
+            var parts = _connectionString.Split(';');
+            foreach (var part in parts)
+            {
+                if (part.StartsWith("Data Source="))
+                {
+                    return part.Substring("Data Source=".Length);
+                }
+            }
+            return string.Empty;
         }
     }
 }

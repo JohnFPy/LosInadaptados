@@ -16,10 +16,10 @@
 					   Classes="H1"
 					   Theme="{StaticResource TitleTextBlock}"
 					   HorizontalAlignment="Center">
-					   Registro
+				Registro
 			</TextBlock>
 
-			<!-- TextBox para ingresar el Username del usuario --> 
+			<!-- TextBox para ingresar el Username del usuario -->
 			<TextBox x:Name="UsernameTextBox"
 					 Grid.Row="1"
 					 Grid.Column="0"
@@ -36,7 +36,6 @@
 					   FontSize="12"
 					   HorizontalAlignment="Center"
 					   IsVisible="False"/>
-
 
 			<!-- TextBox para ingresar la contraseña del usuario -->
 			<TextBox x:Name="PasswordTextBox"
@@ -55,7 +54,6 @@
 			          FontSize="12"
 					  HorizontalAlignment="Center"
 					  IsVisible="False"/>
-	
 
 			<!-- TextBox para ingresar el primer nombre del usuario -->
 			<TextBox x:Name="NameTextBox"
@@ -66,15 +64,14 @@
 					 Watermark="Primer Nombre"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton"/>
-			
+
 			<TextBlock x:Name="NameErrorTextBlock"
 			           Grid.Row="6"
 				       Grid.Column="0"
 					   Foreground="Red"
-					   FontSize="12"		
+					   FontSize="12"
 					   HorizontalAlignment="Center"
 			           IsVisible="False"/>
-					   <!--Margin="0,0,0,4"-->
 
 			<!-- TextBox para ingresar el apellido del usuario -->
 			<TextBox x:Name="LastnameTextBox"
@@ -134,7 +131,6 @@
 
 		</Grid>
 
-
 		<!-- LOGIN GRID -->
 		<Grid x:Name="LoginGrid"
               IsVisible="False"
@@ -151,7 +147,8 @@
 			</TextBlock>
 
 			<!-- TextBox para ingresar el Username del usuario -->
-			<TextBox Grid.Row="1"
+			<TextBox x:Name="LoginUsernameTextBox"
+				 Grid.Row="1"
 				 Grid.Column="0"
 				 Width="250"
 				 Margin="0,8"
@@ -160,13 +157,13 @@
 				 Classes="clearButton"/>
 
 			<!-- TextBox para ingresar la contraseña del usuario -->
-			<TextBox Grid.Row="2"
+			<TextBox x:Name="LoginPasswordTextBox"
+					 Grid.Row="2"
 					 Grid.Column="0"
 					 Width="250" Margin="0,8"
 					 Watermark="Contraseña"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
-
 
 			<!-- Botón para validar datos de Login -->
 			<Button Grid.Row="3"
@@ -177,7 +174,6 @@
 					Content="Iniciar Sesión"
 					Click="OnLoginClick"
 					Theme="{DynamicResource SolidButton}"/>
-
 
 			<!-- Botón para mostrar el Register Grid -->
 			<Button Grid.Row="4"
@@ -190,7 +186,7 @@
 					Classes="Secondary"
 					Click="ShowRegisterGrid"/>
 		</Grid>
-		
+
 	</StackPanel>
-	
+
 </UserControl>
