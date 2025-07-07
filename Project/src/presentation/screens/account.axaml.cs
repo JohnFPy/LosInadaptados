@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Project.presentation.Views.AuthViews;
 using Project.presentation.Views.UnauthViews;
+using Project.infrastucture;
 
 namespace Project.presentation.screens
 {
@@ -13,11 +14,13 @@ namespace Project.presentation.screens
         private Grid? _actualizationGrid;
         private Button? _backButton;
         private Button? _logoutButton;
+        private TextBlock? _welcomeTextBlock;
 
         public account()
         {
             InitializeComponent();
             SetupEventHandlers();
+            LoadUserWelcomeMessage();
         }
 
         private void InitializeComponent()
@@ -31,6 +34,7 @@ namespace Project.presentation.screens
             _actualizationGrid = this.FindControl<Grid>("ActualizationGrid");
             _backButton = this.FindControl<Button>("BackButton");
             _logoutButton = this.FindControl<Button>("LogoutButton");
+            _welcomeTextBlock = this.FindControl<TextBlock>("WelcomeTextBlock");
 
             if (_showUpdateFormButton != null)
                 _showUpdateFormButton.Click += ShowUpdateFormButton_Click;
@@ -43,6 +47,15 @@ namespace Project.presentation.screens
 
             // Establecer visibilidad inicial
             SetInitialVisibility();
+        }
+
+        private void LoadUserWelcomeMessage()
+        {
+            if (_welcomeTextBlock != null && UserSession.IsLoggedIn)
+            {
+                string userName = UserSession.GetCurrentUserName();
+                _welcomeTextBlock.Text = $"Bienvenido, {userName}";
+            }
         }
 
         private void SetInitialVisibility()
@@ -89,21 +102,21 @@ namespace Project.presentation.screens
 
         private void LogoutButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            // Limpiar la sesión del usuario
+            UserSession.ClearSession();
+
             // Obtener la aplicación actual
             if (Application.Current is App app)
             {
                 // Cambiar el estado de autenticación a false
                 app.IsAuthenticated = false;
 
-                // Obtener el ApplicationLifetime
-                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                // Navegar a la vista no autenticada
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    // Cambiar la vista principal a la vista no autenticada
-                    var unauthenticatedView = new UnauthenticatedAreaView();
-
                     if (desktop.MainWindow != null)
                     {
-                        desktop.MainWindow.Content = unauthenticatedView;
+                        desktop.MainWindow.Content = new UnauthenticatedAreaView();
                     }
                 }
             }

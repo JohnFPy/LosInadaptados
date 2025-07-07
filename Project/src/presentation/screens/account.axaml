@@ -9,6 +9,7 @@
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
@@ -17,9 +18,19 @@
                    FontSize="24"
                    FontWeight="Bold"
                    HorizontalAlignment="Center"
-                   Margin="0,10,0,20"/>
+                   Margin="0,10,0,10"/>
 
-		<StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+		<!-- Mensaje de bienvenida personalizado -->
+		<TextBlock x:Name="WelcomeTextBlock"
+				   Grid.Row="1"
+				   Text="Bienvenido, Usuario"
+				   FontSize="18"
+				   FontWeight="SemiBold"
+				   HorizontalAlignment="Center"
+				   Margin="0,0,0,20"
+				   Foreground="{DynamicResource SystemAccentColor}"/>
+
+		<StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
 
 			<!-- Botón para mostrar formulario de actualización -->
 			<Button x:Name="ShowUpdateFormButton"
@@ -157,7 +168,7 @@
 					HorizontalAlignment="Center"
 					Content="Volver"
 					Theme="{DynamicResource SolidButton}"/>
-			
+
 			<Button x:Name="LogoutButton"
 					Width="250"
 					Margin="0,20,0,0"

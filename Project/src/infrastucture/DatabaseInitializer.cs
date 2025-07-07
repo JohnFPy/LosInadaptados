@@ -12,16 +12,16 @@ namespace Project.infrastucture
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Project"
         );
-        
+
         // Nombre del archivo de base de datos
         private static readonly string DbFileName = "emotions.sqlite";
-        
+
         // Ruta completa a la base de datos persistente
         private static readonly string PersistentDbPath = Path.Combine(AppDataDir, DbFileName);
-        
+
         // Para acceso externo a la ruta de la base de datos
-        public static string DatabasePath { get; private set; }
-        
+        public static string DatabasePath { get; private set; } = string.Empty;
+
         public static void Initialize()
         {
             try
@@ -31,16 +31,16 @@ namespace Project.infrastucture
                 string resourcesDir = Path.Combine(baseDir, "resources");
                 string templateDbFile = Path.Combine(resourcesDir, DbFileName);
                 string sourceDbFile = Path.Combine(baseDir, DbFileName);
-                
+
                 Debug.WriteLine($"Inicializando base de datos persistente en: {PersistentDbPath}");
-                
+
                 // Crear directorio de AppData si no existe
                 if (!Directory.Exists(AppDataDir))
                 {
                     Debug.WriteLine($"Creando directorio de datos de la aplicación: {AppDataDir}");
                     Directory.CreateDirectory(AppDataDir);
                 }
-                
+
                 // Crear el directorio resources si no existe
                 if (!Directory.Exists(resourcesDir))
                 {
@@ -52,7 +52,7 @@ namespace Project.infrastucture
                 if (!File.Exists(PersistentDbPath))
                 {
                     Debug.WriteLine($"Inicializando nueva base de datos persistente...");
-                    
+
                     // Buscar una base de datos plantilla, primero en resources, luego en raíz
                     if (File.Exists(templateDbFile))
                     {
@@ -76,7 +76,7 @@ namespace Project.infrastucture
                 {
                     Debug.WriteLine($"Base de datos persistente encontrada en: {PersistentDbPath}");
                 }
-                
+
                 // También copiamos la base de datos persistente a la ubicación esperada por connectionSqlite
                 // (esto es un parche para no modificar connectionSqlite.cs)
                 if (File.Exists(PersistentDbPath))
@@ -85,28 +85,31 @@ namespace Project.infrastucture
                     {
                         Directory.CreateDirectory(resourcesDir);
                     }
-                    
+
                     Debug.WriteLine($"Copiando base de datos persistente a ubicación de trabajo...");
                     File.Copy(PersistentDbPath, templateDbFile, true);
                 }
-                
-                // Guardar la ruta a la base de datos para uso externo
+
+                // IMPORTANTE: Guardar la ruta a la base de datos para uso externo
                 DatabasePath = PersistentDbPath;
+                Debug.WriteLine($"DatabasePath configurado como: {DatabasePath}");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error inicializando base de datos: {ex.Message}");
+                // En caso de error, establecer una ruta por defecto
+                DatabasePath = "resources\\emotions.sqlite";
             }
         }
-        
+
         private static void ExtractEmbeddedDatabase(string outputPath)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            
+
             // Buscar el recurso emotions.sqlite
             var resourceNames = assembly.GetManifestResourceNames();
             var dbResourceName = Array.Find(resourceNames, name => name.EndsWith(DbFileName, StringComparison.OrdinalIgnoreCase));
-            
+
             if (string.IsNullOrEmpty(dbResourceName))
             {
                 Debug.WriteLine("No se encontró la base de datos como recurso embebido");
@@ -116,7 +119,7 @@ namespace Project.infrastucture
                 }
                 return;
             }
-            
+
             Debug.WriteLine($"Extrayendo base de datos desde recurso: {dbResourceName}");
             using (var stream = assembly.GetManifestResourceStream(dbResourceName))
             {
@@ -130,7 +133,7 @@ namespace Project.infrastucture
                 }
             }
         }
-        
+
         // Métodos de utilidad para copia de seguridad
         public static bool BackupDatabase(string backupPath)
         {
@@ -146,7 +149,7 @@ namespace Project.infrastucture
                 return false;
             }
         }
-        
+
         public static bool RestoreDatabase(string backupPath)
         {
             try
