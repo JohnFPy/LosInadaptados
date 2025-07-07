@@ -7,24 +7,32 @@
              x:Class="Project.presentation.components.tabControl">
 
 	<TabControl TabStripPlacement="Top">
+		
 		<!-- Style to center the tabs -->
+		
 		<TabControl.Styles>
+			
 			<Style Selector="TabControl WrapPanel">
 				<Setter Property="HorizontalAlignment" Value="Center"/>
 			</Style>
+			
 		</TabControl.Styles>
 
 		<TabItem Header="Calendario">
 			<screens:calendar />
 		</TabItem>
+		
 		<TabItem Header="Estadisticas">
 			<screens:statistics />
 		</TabItem>
+		
 		<TabItem Header="Tips">
 			<screens:tips />
 		</TabItem>
+		
 		<TabItem Header="Cuenta">
 			<screens:account />
 		</TabItem>
+		
 	</TabControl>
 </UserControl>
