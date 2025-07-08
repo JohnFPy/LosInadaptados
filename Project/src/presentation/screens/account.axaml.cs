@@ -24,10 +24,13 @@ namespace Project.presentation.screens
             SetupEventHandlers();
             LoadUserWelcomeMessage();
 
-            var updateButton = this.FindControl<Button>("ActualizationGrid").FindControl<Button>("Actualizar datos");
+            // Corrigir esta línea - ActualizationGrid es un Grid, no un Button
+            var actualizationGrid = this.FindControl<Grid>("ActualizationGrid");
+            var updateButton = actualizationGrid?.FindControl<Button>("Actualizar datos");
             if (updateButton != null)
-              //  updateButton.Click += UpdateUserData
-              ;
+            {
+                // updateButton.Click += UpdateUserData;
+            }
         }
 
         private void InitializeComponent()
@@ -128,29 +131,5 @@ namespace Project.presentation.screens
                 }
             }
         }
-        
-
-        /*private async void UpdateUserData(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            var newUsername = this.FindControl<TextBox>("NewUsernameTextBox")?.Text;
-            var newPassword = this.FindControl<TextBox>("NewPasswordTextBox")?.Text;
-            var newName = this.FindControl<TextBox>("NewNameTextBox")?.Text;
-            var newLastName = this.FindControl<TextBox>("NewLastNameTextBox")?.Text;
-            var newAgeText = this.FindControl<TextBox>("NewAgeTextBox")?.Text;
-
-
-            if (!string.IsNullOrWhiteSpace(newUsername))
-            {
-                var result = await UserCRUD.UpdateUsername(_userId, newUsername);
-                if (result)
-                {
-                    // Actualización exitosa del nombre de usuario
-                }
-                else
-                {
-                    // Mensaje de error al actualizar el nombre de usuario
-                }
-            }
-        }*/
     }
 }
