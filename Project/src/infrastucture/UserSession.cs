@@ -22,5 +22,10 @@ namespace Project.infrastucture
         {
             return CurrentUser?.Name ?? "Usuario";
         }
+
+        public static string GetCurrentUsername()
+        {
+            return CurrentUser?.Username ?? "Unknown";
+        }
     }
 }

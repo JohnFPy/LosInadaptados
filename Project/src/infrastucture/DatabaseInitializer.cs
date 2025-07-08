@@ -1,6 +1,7 @@
 using System;
-using System.IO;
+using System.Data.SQLite;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace Project.infrastucture
@@ -93,12 +94,75 @@ namespace Project.infrastucture
                 // IMPORTANTE: Guardar la ruta a la base de datos para uso externo
                 DatabasePath = PersistentDbPath;
                 Debug.WriteLine($"DatabasePath configurado como: {DatabasePath}");
+
+                // *** NUEVA FUNCIONALIDAD: Aplicar migraciones de esquema ***
+                ApplySchemaUpdates();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error inicializando base de datos: {ex.Message}");
                 // En caso de error, establecer una ruta por defecto
                 DatabasePath = "resources\\emotions.sqlite";
+            }
+        }
+
+        /// <summary>
+        /// Aplica actualizaciones de esquema a la base de datos existente
+        /// </summary>
+        private static void ApplySchemaUpdates()
+        {
+            try
+            {
+                using var connection = new SQLiteConnection($"Data Source={DatabasePath};Version=3;");
+                connection.Open();
+
+                // Verificar si la columna CurrentUsername ya existe
+                if (!ColumnExists(connection, "audioReproductionTimes", "CurrentUsername"))
+                {
+                    Debug.WriteLine("Agregando columna CurrentUsername a tabla audioReproductionTimes...");
+
+                    var addColumnCommand = new SQLiteCommand(
+                        "ALTER TABLE audioReproductionTimes ADD COLUMN CurrentUsername TEXT;",
+                        connection);
+                    addColumnCommand.ExecuteNonQuery();
+
+                    Debug.WriteLine("Columna CurrentUsername agregada exitosamente.");
+                }
+                else
+                {
+                    Debug.WriteLine("La columna CurrentUsername ya existe en la tabla audioReproductionTimes.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error aplicando actualizaciones de esquema: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Verifica si una columna existe en una tabla específica
+        /// </summary>
+        private static bool ColumnExists(SQLiteConnection connection, string tableName, string columnName)
+        {
+            try
+            {
+                var command = new SQLiteCommand($"PRAGMA table_info({tableName});", connection);
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var existingColumnName = reader["name"].ToString();
+                    if (string.Equals(existingColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error verificando existencia de columna: {ex.Message}");
+                return false;
             }
         }
 

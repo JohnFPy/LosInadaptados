@@ -8,7 +8,7 @@ namespace Project.infrastucture
     {
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
 
-        public bool UpdateAudioTime(string dateId, string audioType, int secondsToAdd)
+        public bool UpdateAudioTime(string dateId, string audioType, int secondsToAdd, string currentUsername = null)
         {
             try
             {
@@ -17,17 +17,21 @@ namespace Project.infrastucture
 
                 string normalizedAudioType = NormalizeAudioType(audioType);
 
+                // Si no se proporciona username, usar el Username de la sesión actual (para audio logs)
+                string username = currentUsername ?? UserSession.GetCurrentUsername();
+
                 // Usar INSERT OR REPLACE para manejar la clave primaria compuesta
                 string upsertQuery = @"
-                    INSERT INTO audioReproductionTimes (dateId, audioType, time) 
-                    VALUES (@dateId, @audioType, @secondsToAdd)
-                    ON CONFLICT(dateId, audioType) 
-                    DO UPDATE SET time = time + @secondsToAdd";
+            INSERT INTO audioReproductionTimes (dateId, audioType, time, CurrentUsername) 
+            VALUES (@dateId, @audioType, @secondsToAdd, @currentUsername)
+            ON CONFLICT(dateId, audioType) 
+            DO UPDATE SET time = time + @secondsToAdd, CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(upsertQuery, connection);
                 command.Parameters.AddWithValue("@dateId", dateId);
                 command.Parameters.AddWithValue("@audioType", normalizedAudioType);
                 command.Parameters.AddWithValue("@secondsToAdd", secondsToAdd);
+                command.Parameters.AddWithValue("@currentUsername", username);
 
                 return command.ExecuteNonQuery() > 0;
             }
