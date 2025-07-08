@@ -8,7 +8,7 @@ Una aplicación desarrollada por **Los Inadaptados** para registrar y mejorar tu
 
 ## 🎯 Objetivo
 
-El objetivo principal de MoodPress es fomentar la autorreflexión y el autocuidado emocional mediante una herramienta digital sencilla e intuitiva. Queremos que cada persona pueda reconocer sus emociones, monitorearlas y recibir apoyo a través de contenido útil y relevante que promueva su bienestar psicológico.
+Aplicación para llevar el registro del estado de ánimo día a día y ayudar a mejorar el mismo mediante tips y consejos de salud mental. Su principal fortaleza radica en una interfaz intuitiva, amigable y fácil de usar 🤗, alineada con la intención de brindar apoyo y acompañamiento al usuario de manera accesible y efectiva.✅
 
 ## 👥 Integrantes del equipo - *Los Inadaptados*
 
