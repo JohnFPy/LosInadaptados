@@ -134,7 +134,7 @@
 		<!-- LOGIN GRID -->
 		<Grid x:Name="LoginGrid"
               IsVisible="False"
-              RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
               ColumnDefinitions="*">
 
 			<TextBlock Grid.Row="0"
@@ -156,17 +156,33 @@
 				 HorizontalAlignment="Center"
 				 Classes="clearButton"/>
 
+			<TextBlock x:Name="LoginUsernameErrorTextBlock"
+					   Grid.Row="2"
+					   Grid.Column="0"
+					   Foreground="Red"
+					   FontSize="12"
+					   HorizontalAlignment="Center"
+					   IsVisible="False"/>
+
 			<!-- TextBox para ingresar la contraseña del usuario -->
 			<TextBox x:Name="LoginPasswordTextBox"
-					 Grid.Row="2"
+					 Grid.Row="3"
 					 Grid.Column="0"
 					 Width="250" Margin="0,8"
 					 Watermark="Contraseña"
 					 HorizontalAlignment="Center"
 					 Classes="clearButton, revealPasswordButton"/>
 
+			<TextBlock x:Name="LoginPasswordErrorTextBlock"
+					  Grid.Row="4"
+				      Grid.Column="0"
+				      Foreground="Red"
+			          FontSize="12"
+					  HorizontalAlignment="Center"
+					  IsVisible="False"/>
+
 			<!-- Botón para validar datos de Login -->
-			<Button Grid.Row="3"
+			<Button Grid.Row="5"
 					Grid.Column="0"
 					Width="250"
 					Margin="0,16,0,0"
@@ -176,7 +192,7 @@
 					Theme="{DynamicResource SolidButton}"/>
 
 			<!-- Botón para mostrar el Register Grid -->
-			<Button Grid.Row="4"
+			<Button Grid.Row="6"
 					Grid.Column="0"
 					Width="250"
 					Margin="0,16,0,0"

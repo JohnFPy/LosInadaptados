@@ -17,6 +17,7 @@ namespace Project.presentation.Views.UnauthViews
         private Grid? _registerGrid;
         private Grid? _loginGrid;
 
+        // Register TextBoxes & Error TextBlocks
         private TextBox? _usernameTextBox;
         private TextBox? _passwordTextBox;
         private TextBox? _nameTextBox;
@@ -28,6 +29,15 @@ namespace Project.presentation.Views.UnauthViews
         private TextBlock? _nameErrorTextBlock;
         private TextBlock? _lastnameErrorTextBlock;
         private TextBlock? _ageErrorTextBlock;
+
+        
+
+        // Login TextBoxes & Error TextBlocks
+        private TextBox? _loginUsernameTextBox;
+        private TextBox? _loginPasswordTextBox;
+
+        private TextBlock? _loginUsernameErrorTextBlock;
+        private TextBlock? _loginPasswordErrorTextBlock;
 
         public UnauthenticatedAreaView()
         {
@@ -53,19 +63,26 @@ namespace Project.presentation.Views.UnauthViews
             _registerGrid = this.FindControl<Grid>("RegisterGrid");
             _loginGrid = this.FindControl<Grid>("LoginGrid");
 
-            // TextBox de validacion de datos
+            // TextBox & ErrorTextBlock de validacion de datos del registro
             _usernameTextBox = this.FindControl<TextBox>("UsernameTextBox");
             _passwordTextBox = this.FindControl<TextBox>("PasswordTextBox");
             _nameTextBox = this.FindControl<TextBox>("NameTextBox");
             _lastnameTextBox = this.FindControl<TextBox>("LastnameTextBox");
             _ageTextBox = this.FindControl<TextBox>("AgeTextBox");
 
-            // TextBlock para mostrar errores de valores ingresados en el registro
             _usernameErrorTextBlock = this.FindControl<TextBlock>("UsernameErrorTextBlock");
             _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBox");
             _nameErrorTextBlock = this.FindControl<TextBlock>("NameErrorTextBlock");
             _lastnameErrorTextBlock = this.FindControl<TextBlock>("LastnameErrorTextBlock");
             _ageErrorTextBlock = this.FindControl<TextBlock>("AgeErrorTextBlock");
+
+            // TextBox & ErrorTextBlock de validacion de datos del login
+            _loginUsernameTextBox = this.FindControl<TextBox>("LoginUsernameTextBox");
+            _loginPasswordTextBox = this.FindControl<TextBox>("LoginPasswordTextBox");
+            _loginUsernameErrorTextBlock = this.FindControl<TextBlock>("LoginUsernameErrorTextBlock");
+            _loginPasswordErrorTextBlock = this.FindControl<TextBlock>("LoginPasswordErrorTextBlock");
+
+
         }
 
         // Método para dirigirse a LoginGrid
@@ -214,10 +231,16 @@ namespace Project.presentation.Views.UnauthViews
                 _usernameErrorTextBlock!.IsVisible = false;
 
                 // Validación básica
-                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                if (string.IsNullOrWhiteSpace(username))
                 {
-                    _usernameErrorTextBlock!.IsVisible = true;
-                    _usernameErrorTextBlock.Text = "Por favor, ingrese nombre de usuario y contraseña.";
+                    _loginUsernameErrorTextBlock!.IsVisible = true;
+                    _loginUsernameErrorTextBlock.Text = "Por favor, ingrese el nombre de usuario.";
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    _loginPasswordErrorTextBlock!.IsVisible = true;
+                    _loginPasswordErrorTextBlock.Text = "Por favor, ingrese la contraseña.";
                     return;
                 }
 
@@ -246,18 +269,14 @@ namespace Project.presentation.Views.UnauthViews
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("=== LOGIN FALLIDO ===");
-                    // Credenciales inválidas, mostrar mensaje de error
-                    _usernameErrorTextBlock!.IsVisible = true;
-                    _usernameErrorTextBlock.Text = "Nombre de usuario o contraseña incorrectos.";
+                    _loginUsernameErrorTextBlock!.IsVisible = true;
+                    _loginUsernameErrorTextBlock.Text = "Nombre de usuario o contraseña incorrectos.";
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error en login: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                _usernameErrorTextBlock!.IsVisible = true;
-                _usernameErrorTextBlock.Text = "Error interno. Intente nuevamente.";
+                _loginUsernameErrorTextBlock!.IsVisible = true;
+                _loginUsernameErrorTextBlock.Text = "Error interno. Intente nuevamente.";
             }
         }
     }

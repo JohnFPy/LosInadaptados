@@ -3,6 +3,7 @@ using Project.infrastucture.utils;
 using System;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Project.infrastucture
 {
@@ -139,7 +140,6 @@ namespace Project.infrastucture
             {
                 Debug.WriteLine($"Error getting user by username: {ex.Message}");
             }
-
             return null;
         }
 
@@ -169,5 +169,33 @@ namespace Project.infrastucture
                 Debug.WriteLine($"Error listing users: {ex.Message}");
             }
         }
+
+        public async Task<bool> UpdateUsername(int userId, string newUsername)
+        {
+            try
+            {
+                using (var connection = _connectionSqlite.GetConnection())
+                {
+                    connection.Open();
+                    Debug.WriteLine($"Database connection opened for UpdateUsername: {connection.DataSource}");
+
+                    string query = "UPDATE User SET Username = @NewUsername WHERE Id = @UserId";
+                    using var command = new SQLiteCommand(query, connection);
+                    command.Parameters.AddWithValue("@NewUsername", newUsername);
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                    Debug.WriteLine($"Username updated successfully. Rows affected: {rowsAffected}");
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating username: {ex.Message}");
+                return false;
+            }
+        }
+
+
     }
 }
