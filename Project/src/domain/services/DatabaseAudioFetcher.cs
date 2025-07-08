@@ -13,7 +13,7 @@ namespace Project.domain.services
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
 
         /// <summary>
-        /// Obtiene los tiempos de reproducción de audio para la fecha actual
+        /// Obtiene los tiempos de reproducción de audio para la fecha actual del usuario actual
         /// </summary>
         public (int ethnoSeconds, int japanSeconds, int pianoSeconds)? GetTodayAudioTimes()
         {
@@ -25,13 +25,15 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // CAMBIO: Agregar filtro por CurrentUsername
                 string query = @"
                     SELECT audioType, time 
                     FROM audioReproductionTimes 
-                    WHERE dateId = @dateId";
+                    WHERE dateId = @dateId AND CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@dateId", todayDateId);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
 
                 int ethnoTime = 0, japanTime = 0, pianoTime = 0;
 
@@ -67,7 +69,7 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene los tiempos de reproducción de audio para una fecha específica
+        /// Obtiene los tiempos de reproducción de audio para una fecha específica del usuario actual
         /// </summary>
         public (int ethnoSeconds, int japanSeconds, int pianoSeconds)? GetAudioTimesByDate(string dateId)
         {
@@ -76,13 +78,15 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // CAMBIO: Agregar filtro por CurrentUsername
                 string query = @"
                     SELECT audioType, time 
                     FROM audioReproductionTimes 
-                    WHERE dateId = @dateId";
+                    WHERE dateId = @dateId AND CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@dateId", dateId);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
 
                 int ethnoTime = 0, japanTime = 0, pianoTime = 0;
 
@@ -117,7 +121,7 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene las estadísticas totales de todos los tiempos registrados
+        /// Obtiene las estadísticas totales de todos los tiempos registrados del usuario actual
         /// </summary>
         public (int ethnoSeconds, int japanSeconds, int pianoSeconds)? GetTotalStatistics()
         {
@@ -126,12 +130,15 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // CAMBIO: Agregar filtro por CurrentUsername
                 string query = @"
                     SELECT audioType, SUM(time) as totalTime 
                     FROM audioReproductionTimes 
+                    WHERE CurrentUsername = @currentUsername
                     GROUP BY audioType";
 
                 using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
                 using var reader = command.ExecuteReader();
 
                 int totalEthno = 0, totalJapan = 0, totalPiano = 0;
@@ -168,7 +175,7 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene el rango de fechas de todos los registros en la tabla
+        /// Obtiene el rango de fechas de todos los registros en la tabla del usuario actual
         /// </summary>
         public (string firstDate, string lastDate)? GetTotalDateRange()
         {
@@ -177,12 +184,14 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // CAMBIO: Agregar filtro por CurrentUsername
                 string query = @"
                     SELECT MIN(dateId) as firstDate, MAX(dateId) as lastDate 
                     FROM audioReproductionTimes 
-                    WHERE time > 0";
+                    WHERE time > 0 AND CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
                 using var reader = command.ExecuteReader();
 
                 if (reader.Read())
@@ -219,7 +228,7 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene el audio más reproducido con su tiempo total
+        /// Obtiene el audio más reproducido con su tiempo total del usuario actual
         /// </summary>
         public (string audioType, int totalSeconds)? GetMostPlayedAudio()
         {
@@ -295,7 +304,7 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene todas las fechas con registros en un rango dado
+        /// Obtiene todas las fechas con registros en un rango dado del usuario actual
         /// </summary>
         private List<string> GetAllValidDatesInRange(DateTime startDate, DateTime endDate)
         {
@@ -306,13 +315,15 @@ namespace Project.domain.services
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // CAMBIO: Agregar filtro por CurrentUsername
                 string query = @"
                     SELECT DISTINCT dateId 
                     FROM audioReproductionTimes 
-                    WHERE time > 0 
+                    WHERE time > 0 AND CurrentUsername = @currentUsername
                     ORDER BY dateId";
 
                 using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
                 using var reader = command.ExecuteReader();
 
                 while (reader.Read())

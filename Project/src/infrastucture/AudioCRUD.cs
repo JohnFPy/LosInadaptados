@@ -20,12 +20,12 @@ namespace Project.infrastucture
                 // Si no se proporciona username, usar el Username de la sesión actual (para audio logs)
                 string username = currentUsername ?? UserSession.GetCurrentUsername();
 
-                // Usar INSERT OR REPLACE para manejar la clave primaria compuesta
+                // CAMBIO: Actualizar ON CONFLICT para el nuevo PRIMARY KEY
                 string upsertQuery = @"
             INSERT INTO audioReproductionTimes (dateId, audioType, time, CurrentUsername) 
             VALUES (@dateId, @audioType, @secondsToAdd, @currentUsername)
-            ON CONFLICT(dateId, audioType) 
-            DO UPDATE SET time = time + @secondsToAdd, CurrentUsername = @currentUsername";
+            ON CONFLICT(dateId, audioType, CurrentUsername) 
+            DO UPDATE SET time = time + @secondsToAdd";
 
                 using var command = new SQLiteCommand(upsertQuery, connection);
                 command.Parameters.AddWithValue("@dateId", dateId);
@@ -49,13 +49,15 @@ namespace Project.infrastucture
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
+                // Filtrar por dateId Y CurrentUsername del usuario actual
                 string query = @"
                     SELECT audioType, time 
                     FROM audioReproductionTimes 
-                    WHERE dateId = @dateId";
+                    WHERE dateId = @dateId AND CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@dateId", dateId);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
 
                 int ethnoTime = 0, japanTime = 0, pianoTime = 0;
 
@@ -137,7 +139,7 @@ namespace Project.infrastucture
         }
 
         /// <summary>
-        /// Obtiene todos los tipos de audio únicos registrados
+        /// Obtiene todos los tipos de audio únicos registrados para el usuario actual
         /// </summary>
         public List<string> GetAllAudioTypes()
         {
@@ -148,9 +150,13 @@ namespace Project.infrastucture
                 using var connection = _connectionSqlite.GetConnection();
                 connection.Open();
 
-                string query = "SELECT DISTINCT audioType FROM audioReproductionTimes ORDER BY audioType";
+                string query = @"SELECT DISTINCT audioType 
+                               FROM audioReproductionTimes 
+                               WHERE CurrentUsername = @currentUsername 
+                               ORDER BY audioType";
 
                 using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
                 using var reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -171,7 +177,7 @@ namespace Project.infrastucture
         }
 
         /// <summary>
-        /// Obtiene el tiempo total de un tipo de audio específico
+        /// Obtiene el tiempo total de un tipo de audio específico para el usuario actual
         /// </summary>
         public int GetTotalTimeByAudioType(string audioType)
         {
@@ -181,10 +187,13 @@ namespace Project.infrastucture
                 connection.Open();
 
                 string normalizedType = NormalizeAudioType(audioType);
-                string query = "SELECT SUM(time) as totalTime FROM audioReproductionTimes WHERE audioType = @audioType";
+                string query = @"SELECT SUM(time) as totalTime 
+                               FROM audioReproductionTimes 
+                               WHERE audioType = @audioType AND CurrentUsername = @currentUsername";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@audioType", normalizedType);
+                command.Parameters.AddWithValue("@currentUsername", UserSession.GetCurrentUsername());
 
                 var result = command.ExecuteScalar();
                 return result != DBNull.Value ? Convert.ToInt32(result) : 0;

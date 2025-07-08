@@ -132,6 +132,9 @@ namespace Project.infrastucture
                 {
                     Debug.WriteLine("La columna CurrentUsername ya existe en la tabla audioReproductionTimes.");
                 }
+
+                // *** MIGRACIÓN MANUAL: El usuario debe ejecutar comandos SQL manualmente ***
+                // No incluir migración automática del constraint
             }
             catch (Exception ex)
             {
