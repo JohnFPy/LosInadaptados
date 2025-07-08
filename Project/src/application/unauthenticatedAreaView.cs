@@ -30,7 +30,6 @@ namespace Project.presentation.Views.UnauthViews
         private TextBlock? _lastnameErrorTextBlock;
         private TextBlock? _ageErrorTextBlock;
 
-        
 
         // Login TextBoxes & Error TextBlocks
         private TextBox? _loginUsernameTextBox;
@@ -71,7 +70,7 @@ namespace Project.presentation.Views.UnauthViews
             _ageTextBox = this.FindControl<TextBox>("AgeTextBox");
 
             _usernameErrorTextBlock = this.FindControl<TextBlock>("UsernameErrorTextBlock");
-            _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBox");
+            _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBlock");
             _nameErrorTextBlock = this.FindControl<TextBlock>("NameErrorTextBlock");
             _lastnameErrorTextBlock = this.FindControl<TextBlock>("LastnameErrorTextBlock");
             _ageErrorTextBlock = this.FindControl<TextBlock>("AgeErrorTextBlock");
@@ -79,6 +78,7 @@ namespace Project.presentation.Views.UnauthViews
             // TextBox & ErrorTextBlock de validacion de datos del login
             _loginUsernameTextBox = this.FindControl<TextBox>("LoginUsernameTextBox");
             _loginPasswordTextBox = this.FindControl<TextBox>("LoginPasswordTextBox");
+
             _loginUsernameErrorTextBlock = this.FindControl<TextBlock>("LoginUsernameErrorTextBlock");
             _loginPasswordErrorTextBlock = this.FindControl<TextBlock>("LoginPasswordErrorTextBlock");
 
