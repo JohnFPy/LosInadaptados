@@ -7,52 +7,59 @@ namespace Project.infrastucture
 {
     public class EmotionLogCRUD
     {
-        private readonly connectionSqlite _connection = new connectionSqlite();
+        private readonly connectionSqlite _connection = new();
 
-        public bool RegisterEmotion(string dateId, string username, long? idEmotion, long? idPersonalizedEmotion)
+        public bool RegisterEmotion(string dateId, long? idEmotion, long? idPersonalizedEmotion)
         {
+            string username = UserSession.GetCurrentUsername();
 
             return false;
         }
 
-        public (long? idEmotion, long? idPersonalized)? GetEmotionByDate(string dateId, string username)
+        public (long? idEmotion, long? idPersonalized)? GetEmotionByDate(string dateId)
         {
+            string username = UserSession.GetCurrentUsername();
 
             return null;
         }
 
-        public bool DeleteEmotionEntry(string dateId, string username)
+        public bool DeleteEmotionEntry(string dateId)
         {
+            string username = UserSession.GetCurrentUsername();
 
             return false;
         }
 
         public string? GetEmotionNameById(long emotionId)
         {
-            
-            return null;
-        }
-
-        public string? GetPersonalizedEmotionNameById(long emotionId, string username)
-        {
-            
-            return null;
-        }
-
-        public Dictionary<string, int> GetEmotionFrequencies(string username)
-        {
 
             return null;
         }
 
-        public Dictionary<string, int> GetPersonalizedEmotionFrequencies(string username)
+        public string? GetPersonalizedEmotionNameById(long emotionId)
         {
+            string username = UserSession.GetCurrentUsername();
 
             return null;
         }
 
-        public List<personalizedEmotion> GetAllPersonalizedEmotionsByUser(string username)
+        public Dictionary<string, int> GetEmotionFrequencies()
         {
+            string username = UserSession.GetCurrentUsername();
+
+            return null;
+        }
+
+        public Dictionary<string, int> GetPersonalizedEmotionFrequencies()
+        {
+            string username = UserSession.GetCurrentUsername();
+
+            return null;
+        }
+
+        public List<personalizedEmotion> GetAllPersonalizedEmotionsByUser()
+        {
+            string username = UserSession.GetCurrentUsername();
 
             return null;
         }
