@@ -176,8 +176,9 @@ namespace Project.presentation.Views.UnauthViews
                 {
                     // Manejo de errores
                     System.Diagnostics.Debug.WriteLine($"Error en registro: {ex.Message}");
+
                     _usernameErrorTextBlock!.IsVisible = true;
-                    _usernameErrorTextBlock.Text = "Error interno. Intente nuevamente.";
+                    _usernameErrorTextBlock.Text = "Error interno. Intente nuevamente."; 
                 }
             }
             else
@@ -273,7 +274,7 @@ namespace Project.presentation.Views.UnauthViews
                     _loginUsernameErrorTextBlock.Text = "Nombre de usuario o contraseña incorrectos.";
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _loginUsernameErrorTextBlock!.IsVisible = true;
                 _loginUsernameErrorTextBlock.Text = "Error interno. Intente nuevamente.";
