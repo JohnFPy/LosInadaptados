@@ -10,6 +10,7 @@ namespace Project.domain.services
     internal class DatabaseEmotionFetcher
     {
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
+        string userId = UserSession.GetCurrentUsername();
 
         /// <summary>
         /// Obtiene la emoción (estándar o personalizada) registrada en una fecha para el usuario actual.
@@ -28,7 +29,7 @@ namespace Project.domain.services
 
                 using var cmd = new SQLiteCommand(query, conn);
                 cmd.Parameters.AddWithValue("@date", dateId);
-                cmd.Parameters.AddWithValue("@userId", UserSession.GetCurrentUsername());
+                cmd.Parameters.AddWithValue("@userId", userId);
 
                 using var reader = cmd.ExecuteReader();
                 if (reader.Read())
@@ -74,7 +75,7 @@ namespace Project.domain.services
         /// <summary>
         /// Obtiene el nombre de una emoción personalizada dado su Id y usuario.
         /// </summary>
-        public string? GetPersonalizedEmotionNameById(long id, string userId)
+        public string? GetPersonalizedEmotionNameById(long id)
         {
             try
             {
@@ -103,7 +104,7 @@ namespace Project.domain.services
         /// <summary>
         /// Obtiene el recuento por cada emoción estándar del usuario, para estadísticas.
         /// </summary>
-        public Dictionary<string, int> GetEmotionFrequencies(string userId)
+        public Dictionary<string, int> GetEmotionFrequencies()
         {
             var result = new Dictionary<string, int>();
             try
@@ -140,7 +141,7 @@ namespace Project.domain.services
         /// <summary>
         /// Obtiene el recuento por cada emoción personalizada del usuario, para estadísticas.
         /// </summary>
-        public Dictionary<string, int> GetPersonalizedEmotionFrequencies(string userId)
+        public Dictionary<string, int> GetPersonalizedEmotionFrequencies()
         {
             var result = new Dictionary<string, int>();
             try
@@ -177,7 +178,7 @@ namespace Project.domain.services
         /// <summary>
         /// Obtiene el rango de fechas con al menos un registro de emoción para el usuario.
         /// </summary>
-        public (string firstDate, string lastDate)? GetDateRange(string userId)
+        public (string firstDate, string lastDate)? GetDateRange()
         {
             try
             {
@@ -212,7 +213,7 @@ namespace Project.domain.services
         /// <summary>
         /// Obtiene el recuento de emociones registradas en los últimos 7 días.
         /// </summary>
-        public Dictionary<string, int> GetWeeklyEmotionFrequencies(string userId)
+        public Dictionary<string, int> GetWeeklyEmotionFrequencies()
         {
             var result = new Dictionary<string, int>();
             try
@@ -279,10 +280,10 @@ namespace Project.domain.services
         /// <summary>
         /// Devuelve la emoción (estándar o personalizada) más frecuente en total del usuario.
         /// </summary>
-        public (string emotionName, int count)? GetMostFrequentEmotion(string userId)
+        public (string emotionName, int count)? GetMostFrequentEmotion()
         {
-            var stdFreq = GetEmotionFrequencies(userId);
-            var persFreq = GetPersonalizedEmotionFrequencies(userId);
+            var stdFreq = GetEmotionFrequencies();
+            var persFreq = GetPersonalizedEmotionFrequencies();
 
             var allFrequencies = new Dictionary<string, int>(stdFreq);
 
@@ -299,6 +300,45 @@ namespace Project.domain.services
 
             var mostFrequent = allFrequencies.OrderByDescending(kv => kv.Value).First();
             return (mostFrequent.Key, mostFrequent.Value);
+        }
+
+        /// <summary>
+        /// Devuelve un resumen formateado con las emociones registradas en la última semana.
+        /// </summary>
+        public string GetWeeklyEmotionSummary()
+        {
+            var frequencies = GetWeeklyEmotionFrequencies();
+
+            if (frequencies.Count == 0)
+                return "No has registrado emociones en la última semana.";
+
+            var sorted = frequencies.OrderByDescending(kv => kv.Value);
+
+            var summary = new StringBuilder();
+            summary.AppendLine("Emociones registradas en la última semana:");
+
+            foreach (var (emotion, count) in sorted)
+            {
+                summary.AppendLine($"- {emotion}: {count} vez{(count == 1 ? "" : "es")}");
+            }
+
+            return summary.ToString().TrimEnd();
+        }
+
+        /// <summary>
+        /// Devuelve un resumen formateado de la emoción más frecuente.
+        /// </summary>
+        public string GetMostFrequentEmotionSummary()
+        {
+            var result = GetMostFrequentEmotion();
+
+            if (!result.HasValue)
+                return "No hay emociones registradas todavía.";
+
+            var (emotionName, count) = result.Value;
+            var veces = count == 1 ? "vez" : "veces";
+
+            return $"Tu emoción más frecuente es **{emotionName}**, registrada {count} {veces}.";
         }
 
     }
