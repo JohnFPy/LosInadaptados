@@ -3,6 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Project.application.services;
+using Project.domain.services;
+using Project.infrastucture;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,18 +20,17 @@ namespace Project.application.components
     {
         public string Name { get; set; }
         public string ImagePath { get; set; }
-        public bool IsAddButton { get; set; } = false; // For Custom Emotions
-        public bool IsLocalImage { get; set; } = false; // Compilated
+        public bool IsAddButton { get; set; } = false;
+        public bool IsLocalImage { get; set; } = false;
     }
-
-
 
     public class emotionRegisterView : INotifyPropertyChanged
     {
         private readonly dayView _day;
+        private readonly EmotionLogCRUD _emotionLogCRUD = new();
+        private readonly DatabaseEmotionFetcher _emotionFetcher = new();
         private Window? _parentWindow;
 
-        // READ FROM DATABASE ###############
         public ObservableCollection<Emotion> Emotions { get; set; } = new ObservableCollection<Emotion>
         {
             new Emotion { Name = "Feliz", ImagePath = "avares://Project/resources/emotions/feliz.png" },
@@ -38,7 +40,6 @@ namespace Project.application.components
             new Emotion { Name = "Serio", ImagePath = "avares://Project/resources/emotions/serio.png" },
             new Emotion { Name = "Emoción personalizada", ImagePath = "avares://Project/resources/emotions/add.png", IsAddButton = true }
         };
-
 
         private Emotion? _selectedEmotion;
         public Emotion? SelectedEmotion
@@ -65,37 +66,29 @@ namespace Project.application.components
             }
         }
 
-
         public bool CanSave => SelectedEmotion != null;
-
 
         private async void OpenCanvasWindow()
         {
-            if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (_parentWindow != null)
             {
-                if (_parentWindow != null)
+                var canvasWindow = new canvas();
+                var result = await canvasWindow.ShowDialog<SavedEmotion>(_parentWindow);
+
+                if (result != null)
                 {
-                    var canvasWindow = new canvas();
-                    var result = await canvasWindow.ShowDialog<SavedEmotion>(_parentWindow);
-
-                    if (result != null)
+                    var customEmotion = new Emotion
                     {
-                        var customEmotion = new Emotion
-                        {
-                            Name = result.Name,
-                            ImagePath = result.Path,
-                            IsLocalImage = true
-                        };
+                        Name = result.Name,
+                        ImagePath = result.Path,
+                        IsLocalImage = true
+                    };
 
-                        Emotions.Insert(Emotions.Count - 1, customEmotion);
-                    }
-
+                    Emotions.Insert(Emotions.Count - 1, customEmotion);
                 }
 
-                // UPDATE DATABASE ###############
             }
         }
-
 
         private string _comment = "";
         public string Comment
@@ -133,13 +126,53 @@ namespace Project.application.components
             SaveCommand = new relayCommand(_ => Save(), _ => CanSave);
             CancelCommand = new relayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
             SelectImageCommand = new relayCommand(async _ => await SelectImageAsync());
+
+            // Intentar cargar emoción previamente registrada
+            string dateId = _day.DateId ?? DateTime.Today.ToString("yyyy-MM-dd");
+            var log = _emotionLogCRUD.GetEmotionByDate(dateId);
+
+            if (log != null)
+            {
+                string? name = null;
+                bool isPersonalized = false;
+
+                if (log.Value.idEmotion.HasValue)
+                {
+                    name = _emotionFetcher.GetEmotionNameById(log.Value.idEmotion.Value);
+                }
+                else if (log.Value.idPersonalized.HasValue)
+                {
+                    name = _emotionFetcher.GetPersonalizedEmotionNameById(log.Value.idPersonalized.Value);
+                    isPersonalized = true;
+                }
+
+                if (name != null)
+                {
+                    var existing = FindMatchingEmotion(name, isPersonalized);
+                    if (existing != null)
+                    {
+                        SelectedEmotion = existing;
+                    }
+                    else
+                    {
+                        // Si es personalizada y no está, agregarla a la lista
+                        Emotions.Insert(Emotions.Count - 1, new Emotion
+                        {
+                            Name = name,
+                            ImagePath = "avares://Project/resources/emotions/custom.png", // puedes personalizar
+                            IsLocalImage = true
+                        });
+
+                        SelectedEmotion = Emotions[^2]; // penúltimo (antes del botón '+')
+                    }
+                }
+            }
         }
 
 
         private async Task SelectImageAsync()
         {
-            if (_parentWindow == null)
-                return;
+            if (_parentWindow == null) return;
 
             var options = new FilePickerOpenOptions
             {
@@ -158,23 +191,64 @@ namespace Project.application.components
             if (result.Count > 0)
             {
                 var file = result[0];
-                var path = file.Path.LocalPath;
-                SelectedImagePath = path;
+                SelectedImagePath = file.Path.LocalPath;
             }
         }
 
         private void Save()
         {
-            // DATA BASE CONNECTION ###############
+            if (SelectedEmotion == null)
+                return;
 
-            // Color visual update
-            _day.EmotionColor = new SolidColorBrush(Colors.Yellow);
+            string dateId = _day.DateId ?? DateTime.Today.ToString("yyyy-MM-dd");
+            long? idEmotion = null;
+            long? idPersonalized = null;
+
+            if (SelectedEmotion.IsAddButton)
+            {
+                return;
+            }
+            else if (SelectedEmotion.IsLocalImage)
+            {
+                idPersonalized = _emotionFetcher.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
+            }
+            else
+            {
+                idEmotion = _emotionFetcher.GetEmotionIdByName(SelectedEmotion.Name);
+            }
+
+            if (idEmotion == null && idPersonalized == null)
+            {
+                return;
+            }
+
+            _emotionLogCRUD.RegisterEmotion(dateId, idEmotion, idPersonalized);
+
+            // Actualizar color visual del día
+            var colorHex = emotionColorMapper.GetColor(SelectedEmotion.Name, isPersonalized: idPersonalized != null);
+            _day.EmotionColor = new SolidColorBrush(Color.Parse(colorHex));
 
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
+
+        private Emotion? FindMatchingEmotion(string name, bool isPersonalized)
+        {
+            foreach (var emo in Emotions)
+            {
+                if (emo.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                    emo.IsLocalImage == isPersonalized)
+                {
+                    return emo;
+                }
+            }
+            return null;
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+
 }

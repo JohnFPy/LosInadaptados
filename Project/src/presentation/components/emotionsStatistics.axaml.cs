@@ -38,7 +38,7 @@ namespace Project.presentation.components
             var container = this.FindControl<StackPanel>("StatisticsContainer");
             if (container != null && _viewModel != null)
             {
-                _viewModel.RefreshStatistics(container);
+                //_viewModel.RefreshStatistics(container);
             }
         }
     }

@@ -35,14 +35,14 @@ namespace Project.domain.services
         {
             var dateId = AudioCRUD.GetTodayDateId();
             var username = UserSession.GetCurrentUsername();
-            return _emotionLogCRUD.RegisterEmotion(dateId, username, idStandardEmotion, idPersonalizedEmotion);
+            return _emotionLogCRUD.RegisterEmotion(dateId, idStandardEmotion, idPersonalizedEmotion);
         }
 
         public (long? idEmotion, long? idPersonalized)? GetTodayEmotion()
         {
             var dateId = AudioCRUD.GetTodayDateId();
             var username = UserSession.GetCurrentUsername();
-            return _emotionLogCRUD.GetEmotionByDate(dateId, username);
+            return _emotionLogCRUD.GetEmotionByDate(dateId);
         }
 
         public void ProcessDailyEmotion()
@@ -70,7 +70,7 @@ namespace Project.domain.services
             }
             else if (idPersonalized.HasValue)
             {
-                var name = _emotionLogCRUD.GetPersonalizedEmotionNameById(idPersonalized.Value, username);
+                var name = _emotionLogCRUD.GetPersonalizedEmotionNameById(idPersonalized.Value);
                 Debug.WriteLine($"Emoción personalizada: {name} (ID: {idPersonalized})");
             }
             else
@@ -88,8 +88,8 @@ namespace Project.domain.services
             Debug.WriteLine("=======================================");
             Debug.WriteLine("INSIGHTS EMOCIONALES:");
 
-            var std = _emotionLogCRUD.GetEmotionFrequencies(username);
-            var per = _emotionLogCRUD.GetPersonalizedEmotionFrequencies(username);
+            var std = _emotionLogCRUD.GetEmotionFrequencies();
+            var per = _emotionLogCRUD.GetPersonalizedEmotionFrequencies();
 
             if (std.Count > 0)
             {

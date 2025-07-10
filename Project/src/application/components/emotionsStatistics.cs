@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using Project.presentation.components;
+using Project.domain.services;
 
 namespace Project.application.components
 {
     public class emotionsStatisticsViewModel : INotifyPropertyChanged
     {
         private string _emotionsStatisticsText = "Estadísticas de Emociones";
+        private readonly DatabaseEmotionFetcher _databaseEmotionFetcher = new();
 
         public string EmotionsStatisticsText
         {
@@ -33,73 +33,89 @@ namespace Project.application.components
         {
             if (container == null) return;
 
-            // Limpiar el contenedor
             container.Children.Clear();
 
-            // Datos de ejemplo para las estadísticas de emociones
-            string todayEmotionsDescription = GetTodayEmotionsExample();
-            string totalEmotionsDescription = GetTotalEmotionsExample();
-            string favoriteEmotionDescription = GetMostRegisteredEmotionExample();
-            string weeklyEmotionsDescription = GetWeeklyEmotionsExample();
-
-            // Crear cards para diferentes estadísticas de emociones
-            var todayEmotionsCard = CardBuilder.CreateStandard()
+            var todayStatsCard = CardBuilder.CreateStandard()
                 .WithTitle("Emociones de Hoy")
-                .WithDescription(todayEmotionsDescription)
+                .WithDescription(_databaseEmotionFetcher.GetTodayEmotionSummary())
                 .Build();
 
-            var totalEmotionsCard = CardBuilder.CreateStandard()
+            var totalStatsCard = CardBuilder.CreateStandard()
                 .WithTitle("Emociones Totales")
-                .WithDescription(totalEmotionsDescription)
+                .WithDescription(_databaseEmotionFetcher.GetTotalEmotionSummary())
                 .Build();
 
             var favoriteEmotionCard = CardBuilder.CreateStandard()
                 .WithTitle("Emoción Más Registrada")
-                .WithDescription(favoriteEmotionDescription)
+                .WithDescription(_databaseEmotionFetcher.GetMostRegisteredEmotionSummary())
                 .Build();
 
-            var weeklyEmotionsCard = CardBuilder.CreateStandard()
+            var weeklyStatsCard = CardBuilder.CreateStandard()
                 .WithTitle("Emociones Semanales")
-                .WithDescription(weeklyEmotionsDescription)
+                .WithDescription(_databaseEmotionFetcher.GetWeeklyEmotionSummary())
                 .Build();
 
-            // Añadir las cards al contenedor
-            container.Children.Add(todayEmotionsCard);
-            container.Children.Add(totalEmotionsCard);
+            container.Children.Add(todayStatsCard);
+            container.Children.Add(totalStatsCard);
             container.Children.Add(favoriteEmotionCard);
-            container.Children.Add(weeklyEmotionsCard);
+            container.Children.Add(weeklyStatsCard);
         }
 
-        /// <summary>
-        /// Actualiza las estadísticas de emociones
-        /// </summary>
-        public void RefreshStatistics(StackPanel container)
+        public void RefreshTodayStatistics(StackPanel container)
+        {
+            if (container?.Children.Count >= 1 && container.Children[0] is UserControl todayCard)
+            {
+                var updated = CardBuilder.CreateStandard()
+                    .WithTitle("Emociones de Hoy")
+                    .WithDescription(_databaseEmotionFetcher.GetTodayEmotionSummary())
+                    .Build();
+
+                container.Children[0] = updated;
+            }
+        }
+
+        public void RefreshTotalStatistics(StackPanel container)
+        {
+            if (container?.Children.Count >= 2 && container.Children[1] is UserControl totalCard)
+            {
+                var updated = CardBuilder.CreateStandard()
+                    .WithTitle("Emociones Totales")
+                    .WithDescription(_databaseEmotionFetcher.GetTotalEmotionSummary())
+                    .Build();
+
+                container.Children[1] = updated;
+            }
+        }
+
+        public void RefreshFavoriteEmotion(StackPanel container)
+        {
+            if (container?.Children.Count >= 3 && container.Children[2] is UserControl favCard)
+            {
+                var updated = CardBuilder.CreateStandard()
+                    .WithTitle("Emoción Más Registrada")
+                    .WithDescription(_databaseEmotionFetcher.GetMostRegisteredEmotionSummary())
+                    .Build();
+
+                container.Children[2] = updated;
+            }
+        }
+
+        public void RefreshWeeklyStatistics(StackPanel container)
+        {
+            if (container?.Children.Count >= 4 && container.Children[3] is UserControl weekCard)
+            {
+                var updated = CardBuilder.CreateStandard()
+                    .WithTitle("Emociones Semanales")
+                    .WithDescription(_databaseEmotionFetcher.GetWeeklyEmotionSummary())
+                    .Build();
+
+                container.Children[3] = updated;
+            }
+        }
+
+        public void RefreshAllStatistics(StackPanel container)
         {
             CreateStatisticsCards(container);
-        }
-
-        private string GetTodayEmotionsExample()
-        {
-            var today = DateTime.Now;
-            return $"Fecha: {today:dd/MM/yyyy}\nEmoción de hoy: Feliz\nHora de registro: {today:HH:mm}";
-        }
-
-        private string GetTotalEmotionsExample()
-        {
-            return "Período: Enero 2025 - Presente\nRegistros por emoción:\n• Feliz: 45 registros\n• Triste: 23 registros\n• Enojado: 15 registros\n• Preocupado: 28 registros\n• Serio: 16 registros\nEmoción más registrada: Feliz";
-        }
-
-        private string GetMostRegisteredEmotionExample()
-        {
-            return "Feliz\n45 registros\nÚltima vez: Hoy 14:30";
-        }
-
-        private string GetWeeklyEmotionsExample()
-        {
-            var startOfWeek = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek + 1);
-            var endOfWeek = startOfWeek.AddDays(6);
-
-            return $"Período: {startOfWeek:dd/MM} - {endOfWeek:dd/MM/yyyy}\nRegistros por emoción:\n• Feliz: 12 registros\n• Triste: 6 registros\n• Enojado: 3 registros\n• Preocupado: 5 registros\n• Serio: 2 registros\nRegistros totales: 28";
         }
     }
 }

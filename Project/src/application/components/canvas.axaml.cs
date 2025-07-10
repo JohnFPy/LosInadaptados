@@ -94,7 +94,9 @@ namespace Project.application.components
             var moodPressPath = Path.Combine(appDataPath, "MoodPress", "customEmotions");
             Directory.CreateDirectory(moodPressPath);
 
-            var filePath = Path.Combine(moodPressPath, $"{name}.png");
+            var uniqueName = $"{name}_{Guid.NewGuid().ToString("N").Substring(0, 8)}.png";
+            var filePath = Path.Combine(moodPressPath, uniqueName);
+
 
 
             var renderSurface = this.FindControl<Grid>("RenderSurface");

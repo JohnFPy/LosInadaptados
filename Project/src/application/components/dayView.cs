@@ -40,6 +40,7 @@ namespace Project.application.components
 
         public ICommand ClickCommand { get; }
 
+        public string? DateId { get; set; }
 
         public dayView()
         {
@@ -71,6 +72,7 @@ namespace Project.application.components
         {
             DayNumber = "";
             EmotionColor.Color = Colors.Transparent;
+            DateId = null;
         }
     }
 }

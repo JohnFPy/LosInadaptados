@@ -27,15 +27,23 @@ namespace Project.application.components
 
         private void OpenFolder(string filePath)
         {
-            var folderPath = System.IO.Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrEmpty(folderPath))
+            try
             {
-                Process.Start(new ProcessStartInfo
+                var folderPath = System.IO.Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(folderPath))
                 {
-                    FileName = folderPath,
-                    UseShellExecute = true
-                });
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = folderPath,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al abrir carpeta: {ex.Message}");
             }
         }
+
     }
 }

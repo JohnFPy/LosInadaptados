@@ -10,13 +10,14 @@ namespace Project.domain.services
     internal class DatabaseEmotionFetcher
     {
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
-        string userId = UserSession.GetCurrentUsername();
 
         /// <summary>
         /// Obtiene la emoción (estándar o personalizada) registrada en una fecha para el usuario actual.
         /// </summary>
         public (long? emotionId, long? personalizedEmotionId)? GetEmotionLogForDate(string dateId)
         {
+            string userId = UserSession.GetCurrentUsername();
+
             try
             {
                 using var conn = _connectionSqlite.GetConnection();
@@ -52,6 +53,8 @@ namespace Project.domain.services
         /// </summary>
         public string? GetEmotionNameById(long id)
         {
+            string userId = UserSession.GetCurrentUsername();
+
             try
             {
                 using var conn = _connectionSqlite.GetConnection();
@@ -73,10 +76,12 @@ namespace Project.domain.services
         }
 
         /// <summary>
-        /// Obtiene el nombre de una emoción personalizada dado su Id y usuario.
+        /// Obtiene el nombre de una emoción dado su Id y usuario.
         /// </summary>
         public string? GetPersonalizedEmotionNameById(long id)
         {
+            string userId = UserSession.GetCurrentUsername();
+
             try
             {
                 using var conn = _connectionSqlite.GetConnection();
@@ -102,10 +107,64 @@ namespace Project.domain.services
         }
 
         /// <summary>
+        /// Obtiene Id de una emoción personalizada dado su nombre y usuario.
+        /// </summary>
+        public long? GetEmotionIdByName(string name)
+        {
+            try
+            {
+                using var conn = _connectionSqlite.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Id FROM Emotion WHERE Name = @name";
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt64(result) : null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetEmotionIdByName: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el Id de una emoción personalizada dado su nombre y usuario.
+        /// </summary>
+        public long? GetPersonalizedEmotionIdByName(string name)
+        {
+            string username = UserSession.GetCurrentUsername();
+
+            try
+            {
+                using var conn = _connectionSqlite.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Id FROM Personalized_Emotion WHERE Name = @name AND Id_user = @userId";
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", username);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt64(result) : null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetPersonalizedEmotionIdByName: {ex.Message}");
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// Obtiene el recuento por cada emoción estándar del usuario, para estadísticas.
         /// </summary>
         public Dictionary<string, int> GetEmotionFrequencies()
         {
+            string userId = UserSession.GetCurrentUsername();
+
             var result = new Dictionary<string, int>();
             try
             {
@@ -143,6 +202,8 @@ namespace Project.domain.services
         /// </summary>
         public Dictionary<string, int> GetPersonalizedEmotionFrequencies()
         {
+            string userId = UserSession.GetCurrentUsername();
+
             var result = new Dictionary<string, int>();
             try
             {
@@ -180,6 +241,8 @@ namespace Project.domain.services
         /// </summary>
         public (string firstDate, string lastDate)? GetDateRange()
         {
+            string userId = UserSession.GetCurrentUsername();
+
             try
             {
                 using var conn = _connectionSqlite.GetConnection();
@@ -215,6 +278,8 @@ namespace Project.domain.services
         /// </summary>
         public Dictionary<string, int> GetWeeklyEmotionFrequencies()
         {
+            string userId = UserSession.GetCurrentUsername();
+
             var result = new Dictionary<string, int>();
             try
             {
@@ -328,7 +393,7 @@ namespace Project.domain.services
         /// <summary>
         /// Devuelve un resumen formateado de la emoción más frecuente.
         /// </summary>
-        public string GetMostFrequentEmotionSummary()
+        public string GetMostRegisteredEmotionSummary()
         {
             var result = GetMostFrequentEmotion();
 
@@ -341,5 +406,68 @@ namespace Project.domain.services
             return $"Tu emoción más frecuente es **{emotionName}**, registrada {count} {veces}.";
         }
 
+        /// <summary>
+        /// Devuelve un resumen formateado de la emoción del día.
+        /// </summary>
+        public string GetTodayEmotionSummary()
+        {
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+            var log = GetEmotionLogForDate(today);
+
+            if (log == null)
+                return "Hoy no has registrado ninguna emoción.";
+
+            string? name = null;
+
+            if (log.Value.emotionId.HasValue)
+                name = GetEmotionNameById(log.Value.emotionId.Value);
+            else if (log.Value.personalizedEmotionId.HasValue)
+                name = GetPersonalizedEmotionNameById(log.Value.personalizedEmotionId.Value);
+
+            if (string.IsNullOrEmpty(name))
+                return "Hubo un problema al recuperar la emoción de hoy.";
+
+            var hour = DateTime.Now.ToString("HH:mm");
+
+            return $"Fecha: {DateTime.Now:dd/MM/yyyy}\nEmoción registrada: {name}\nHora: {hour}";
+        }
+
+        /// <summary>
+        /// Devuelve un resumen formateado de todas las emociones.
+        /// </summary>
+        public string GetTotalEmotionSummary()
+        {
+            var stdFreq = GetEmotionFrequencies();
+            var persFreq = GetPersonalizedEmotionFrequencies();
+
+            if (stdFreq.Count == 0 && persFreq.Count == 0)
+                return "No hay emociones registradas todavía.";
+
+            var sb = new StringBuilder();
+
+            var range = GetDateRange();
+            if (range != null)
+            {
+                sb.AppendLine($"Período: {DateTime.Parse(range.Value.firstDate):MMMM yyyy} - {DateTime.Parse(range.Value.lastDate):MMMM yyyy}");
+            }
+
+            sb.AppendLine("Registros por emoción:");
+
+            foreach (var (name, count) in stdFreq)
+                sb.AppendLine($"• {name}: {count} registro{(count == 1 ? "" : "s")}");
+
+            foreach (var (name, count) in persFreq)
+                sb.AppendLine($"• {name} (personalizada): {count} registro{(count == 1 ? "" : "s")}");
+
+            var most = GetMostFrequentEmotion();
+            if (most != null)
+            {
+                sb.AppendLine($"\nEmoción más registrada: {most.Value.emotionName} ({most.Value.count})");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
     }
+
 }
