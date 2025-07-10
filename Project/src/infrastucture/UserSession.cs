@@ -23,6 +23,11 @@ namespace Project.infrastucture
             return CurrentUser?.Name ?? "Usuario";
         }
 
+        public static string GetCurrentIdUser()
+        {
+            return CurrentUser?.Id.ToString() ?? "0";
+        }
+
         public static string GetCurrentUsername()
         {
             return CurrentUser?.Username ?? "Unknown";
