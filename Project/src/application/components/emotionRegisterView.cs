@@ -138,11 +138,11 @@ namespace Project.application.components
 
                 if (log.Value.idEmotion.HasValue)
                 {
-                    name = _emotionFetcher.GetEmotionNameById(log.Value.idEmotion.Value);
+                    name = _emotionLogCRUD.GetEmotionNameById(log.Value.idEmotion.Value);
                 }
                 else if (log.Value.idPersonalized.HasValue)
                 {
-                    name = _emotionFetcher.GetPersonalizedEmotionNameById(log.Value.idPersonalized.Value);
+                    name = _emotionLogCRUD.GetPersonalizedEmotionNameById(log.Value.idPersonalized.Value);
                     isPersonalized = true;
                 }
 
@@ -210,11 +210,11 @@ namespace Project.application.components
             }
             else if (SelectedEmotion.IsLocalImage)
             {
-                idPersonalized = _emotionFetcher.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
+                idPersonalized = _emotionLogCRUD.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
             }
             else
             {
-                idEmotion = _emotionFetcher.GetEmotionIdByName(SelectedEmotion.Name);
+                idEmotion = _emotionLogCRUD.GetEmotionIdByName(SelectedEmotion.Name);
             }
 
             if (idEmotion == null && idPersonalized == null)

@@ -14,7 +14,7 @@ namespace Project;
 
 public partial class App : Application
 {
-    public bool IsAuthenticated { get; set; } = false; // Propiedad pública
+    public bool IsAuthenticated { get; set; } = true; // Propiedad pública
 
     public override void Initialize()
     {

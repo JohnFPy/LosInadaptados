@@ -5,22 +5,9 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Project.presentation.components.emotionsStatistics">
 
-	<Design.PreviewWith>
-		<Border Padding="20">
-			<StackPanel>
-				<TextBlock Text="Estadísticas de Emociones" FontSize="16" FontWeight="Bold"/>
-				<Border Background="LightGray" CornerRadius="5" Padding="10" Margin="0,10">
-					<TextBlock Text="Preview de estadísticas de emociones"/>
-				</Border>
-			</StackPanel>
-		</Border>
-	</Design.PreviewWith>
+	<!-- Contenedor para las cards de estadísticas -->
+	<StackPanel Name="StatisticsContainer" Spacing="10" Margin="10">
+		<!-- Las cards se añadirán dinámicamente desde el código-behind -->
+	</StackPanel>
 
-	<ScrollViewer>
-		<StackPanel Name="StatisticsContainer"
-					Spacing="10"
-					Margin="10">
-			<!-- Las cards de estadísticas se añadirán dinámicamente aquí -->
-		</StackPanel>
-	</ScrollViewer>
 </UserControl>

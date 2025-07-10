@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Project.domain.services;
 using Project.application.services;
+using Project.infrastucture;
 
 namespace Project.application.components
 {
@@ -32,7 +33,7 @@ namespace Project.application.components
         public ICommand TodayCommand { get; }
 
         private DateTime currentDate;
-        private readonly DatabaseEmotionFetcher emotionFetcher = new();
+        private readonly EmotionLogCRUD _emotionCRUD = new();
 
         public calendarView()
         {
@@ -83,19 +84,19 @@ namespace Project.application.components
 
                 SolidColorBrush color = new SolidColorBrush(Colors.Transparent);
 
-                var emotionLog = emotionFetcher.GetEmotionLogForDate(dateId);
+                var emotionLog = _emotionCRUD.GetEmotionByDate(dateId);
                 if (emotionLog.HasValue)
                 {
                     string? name = null;
                     bool isPersonalized = false;
 
-                    if (emotionLog.Value.emotionId.HasValue)
+                    if (emotionLog.Value.idEmotion.HasValue)
                     {
-                        name = emotionFetcher.GetEmotionNameById(emotionLog.Value.emotionId.Value);
+                        name = _emotionCRUD.GetEmotionNameById(emotionLog.Value.idEmotion.Value);
                     }
-                    else if (emotionLog.Value.personalizedEmotionId.HasValue)
+                    else if (emotionLog.Value.idPersonalized.HasValue)
                     {
-                        name = emotionFetcher.GetPersonalizedEmotionNameById(emotionLog.Value.personalizedEmotionId.Value);
+                        name = _emotionCRUD.GetPersonalizedEmotionNameById(emotionLog.Value.idPersonalized.Value);
                         isPersonalized = true;
                     }
 

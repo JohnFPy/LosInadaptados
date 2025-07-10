@@ -10,10 +10,12 @@ namespace Project.domain.services
         private static EmotionStatisticsProcessor? _instance;
         private static readonly object _lock = new object();
         private readonly EmotionLogCRUD _emotionLogCRUD;
+        private readonly DatabaseEmotionFetcher _fetcher;
 
         private EmotionStatisticsProcessor()
         {
             _emotionLogCRUD = new EmotionLogCRUD();
+            _fetcher = new DatabaseEmotionFetcher();
         }
 
         public static EmotionStatisticsProcessor Instance
@@ -34,21 +36,18 @@ namespace Project.domain.services
         public bool RegisterTodayEmotion(long? idStandardEmotion, long? idPersonalizedEmotion)
         {
             var dateId = AudioCRUD.GetTodayDateId();
-            var username = UserSession.GetCurrentUsername();
             return _emotionLogCRUD.RegisterEmotion(dateId, idStandardEmotion, idPersonalizedEmotion);
         }
 
         public (long? idEmotion, long? idPersonalized)? GetTodayEmotion()
         {
             var dateId = AudioCRUD.GetTodayDateId();
-            var username = UserSession.GetCurrentUsername();
             return _emotionLogCRUD.GetEmotionByDate(dateId);
         }
 
         public void ProcessDailyEmotion()
         {
             var dateId = AudioCRUD.GetTodayDateId();
-            var username = UserSession.GetCurrentUsername();
             var emotionData = GetTodayEmotion();
 
             Debug.WriteLine("EMOCIÓN DEL DÍA");
@@ -88,8 +87,8 @@ namespace Project.domain.services
             Debug.WriteLine("=======================================");
             Debug.WriteLine("INSIGHTS EMOCIONALES:");
 
-            var std = _emotionLogCRUD.GetEmotionFrequencies();
-            var per = _emotionLogCRUD.GetPersonalizedEmotionFrequencies();
+            var std = _fetcher.GetEmotionFrequencies();
+            var per = _fetcher.GetPersonalizedEmotionFrequencies();
 
             if (std.Count > 0)
             {
