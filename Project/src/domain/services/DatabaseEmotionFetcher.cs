@@ -238,7 +238,7 @@ namespace Project.domain.services
 
             foreach (var (emotion, count) in sorted)
             {
-                summary.AppendLine($"- {emotion}: {count} vez{(count == 1 ? "" : "es")}");
+                summary.AppendLine($"- {emotion}: {count} ve{(count == 1 ? "z" : "ces")}");
             }
 
             return summary.ToString().TrimEnd();

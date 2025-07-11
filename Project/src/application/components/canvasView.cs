@@ -41,6 +41,7 @@ namespace Project.application.components
         public ObservableCollection<ColorOption> AvailableColors { get; } = new ObservableCollection<ColorOption>
         {
             new ColorOption { Name = "Negro", Brush = Brushes.Black },
+            new ColorOption { Name = "Blanco", Brush = Brushes.White },
             new ColorOption { Name = "Rojo", Brush = Brushes.Red },
             new ColorOption { Name = "Azul", Brush = Brushes.Blue },
             new ColorOption { Name = "Verde", Brush = Brushes.Green },

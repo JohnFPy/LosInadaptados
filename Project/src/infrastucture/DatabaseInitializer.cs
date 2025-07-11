@@ -11,7 +11,7 @@ namespace Project.infrastucture
         // Ruta de la base de datos persistente en AppData
         private static readonly string AppDataDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Project"
+            "MoodPress"
         );
 
         // Nombre del archivo de base de datos

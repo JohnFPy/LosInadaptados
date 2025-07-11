@@ -257,17 +257,12 @@ namespace Project.application.components
             long? idPersonalized = null;
 
             if (SelectedEmotion.IsAddButton)
-            {
                 return;
-            }
-            else if (SelectedEmotion.IsLocalImage)
-            {
+
+            if (SelectedEmotion.IsLocalImage)
                 idPersonalized = _emotionLogCRUD.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
-            }
             else
-            {
                 idEmotion = _emotionLogCRUD.GetEmotionIdByName(SelectedEmotion.Name);
-            }
 
             if (idEmotion == null && idPersonalized == null)
             {
@@ -275,19 +270,38 @@ namespace Project.application.components
                 return;
             }
 
-            bool success = _emotionLogCRUD.RegisterEmotion(dateId, idEmotion, idPersonalized);
-            if (!success)
+            // Verificar si ya hay registro para la fecha
+            var existing = _emotionLogCRUD.GetEmotionByDate(dateId);
+            bool success;
+
+            if (existing != null)
             {
-                Debug.WriteLine("Error en guardado de emoción: RegisterEmotion fallido");
-                return;
+                // Si existe, actualizar
+                success = _emotionLogCRUD.UpdateEmotion(dateId, idEmotion, idPersonalized);
+                if (!success)
+                {
+                    Debug.WriteLine("Error actualizando emoción");
+                    return;
+                }
+            }
+            else
+            {
+                // Si no existe, registrar nuevo
+                success = _emotionLogCRUD.RegisterEmotion(dateId, idEmotion, idPersonalized);
+                if (!success)
+                {
+                    Debug.WriteLine("Error registrando emoción");
+                    return;
+                }
             }
 
-            // Update color of dayView
+            // Actualizar color del día
             var colorHex = emotionColorMapper.GetColor(SelectedEmotion.Name, isPersonalized: idPersonalized != null);
             _day.EmotionColor = new SolidColorBrush(Color.Parse(colorHex));
 
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
+
 
         private Emotion? FindMatchingEmotion(string name, bool isPersonalized)
         {

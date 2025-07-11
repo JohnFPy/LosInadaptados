@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 namespace Project.infrastucture
 {
@@ -274,6 +275,34 @@ namespace Project.infrastucture
             }
 
             return result;
+        }
+
+        public bool UpdateEmotion(string dateId, long? idEmotion, long? idPersonalized)
+        {
+            try
+            {
+                using var connection = _connection.GetConnection();
+                connection.Open();
+
+                string query = @"
+                    UPDATE User_Emotion_Log
+                    SET Emotion_id = @EmotionId,
+                        Personalized_emotion_id = @PersonalizedId
+                    WHERE Date = @DateId;
+                ";
+
+                using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@DateId", dateId);
+                command.Parameters.AddWithValue("@EmotionId", (object?)idEmotion ?? DBNull.Value);
+                command.Parameters.AddWithValue("@PersonalizedId", (object?)idPersonalized ?? DBNull.Value);
+
+                return command.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error actualizando emoción: {ex.Message}");
+                return false;
+            }
         }
 
     }
