@@ -7,7 +7,7 @@ using Project.domain.services;
 
 namespace Project.application.components
 {
-    public class emotionsStatisticsViewModel : INotifyPropertyChanged
+    public class emotionsStatistics : INotifyPropertyChanged
     {
         private string _emotionsStatisticsText = "Estadísticas de Emociones";
         private readonly DatabaseEmotionFetcher _databaseEmotionFetcher = new();

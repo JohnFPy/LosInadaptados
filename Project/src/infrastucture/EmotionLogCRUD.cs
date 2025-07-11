@@ -17,12 +17,12 @@ namespace Project.infrastucture
                 using (var connection = _connection.GetConnection())
                 {
                     connection.Open();
-                    string query = "INSERT INTO Calendar (Id_user, Date, Id_emotion, Id_personalized_emotion) VALUES (@Id_user, @Date, @Id_emotion, @Id_personalized_emotion)";
+                    string query = "INSERT INTO User_Emotion_Log (Id_user, Date, Emotion_id, Personalized_emotion_id) VALUES (@Id_user, @Date, @Emotion_id, @Personalized_emotion_id)";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@Id_user", UserId);
                     command.Parameters.AddWithValue("@Date", dateId);
-                    command.Parameters.AddWithValue("@Id_emotion", idEmotion.HasValue ? (object)idEmotion.Value : DBNull.Value);
-                    command.Parameters.AddWithValue("@Id_personalized_emotion", idPersonalizedEmotion.HasValue ? (object)idPersonalizedEmotion.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@Emotion_id", idEmotion.HasValue ? (object)idEmotion.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@Personalized_emotion_id", idPersonalizedEmotion.HasValue ? (object)idPersonalizedEmotion.Value : DBNull.Value);
 
                     int rowsAffected = command.ExecuteNonQuery();
                     return rowsAffected > 0;
@@ -43,7 +43,7 @@ namespace Project.infrastucture
                 using (var connection = _connection.GetConnection())
                 {
                     connection.Open();
-                    string query = "SELECT Id_emotion, Id_personalized_emotion FROM Calendar WHERE Id_user = @Id_user AND Date = @Date";
+                    string query = "SELECT Emotion_id, Personalized_emotion_id FROM User_Emotion_Log WHERE Id_user = @Id_user AND Date = @Date";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@Id_user", UserId);
                     command.Parameters.AddWithValue("@Date", dateId);
@@ -73,7 +73,7 @@ namespace Project.infrastucture
                 using (var connection = _connection.GetConnection())
                 {
                     connection.Open();
-                    string query = "DELETE FROM Calendar WHERE Id_user = @Id_user AND Date = @Date";
+                    string query = "DELETE FROM User_Emotion_Log WHERE Id_user = @Id_user AND Date = @Date";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@Id_user", UserId);
                     command.Parameters.AddWithValue("@Date", dateId);
@@ -88,6 +88,51 @@ namespace Project.infrastucture
             }            
         }
 
+        public long? GetEmotionIdByName(string name)
+        {
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Id FROM Emotion WHERE Name = @name";
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt64(result) : null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetEmotionIdByName: {ex.Message}");
+                return null;
+            }
+        }
+
+        public long? GetPersonalizedEmotionIdByName(string name)
+        {
+            string username = UserSession.GetCurrentUsername();
+
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Id FROM Personalized_Emotion WHERE Name = @name AND Id_user = @userId";
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", username);
+
+                var result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt64(result) : null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetPersonalizedEmotionIdByName: {ex.Message}");
+                return null;
+            }
+        }
+
         public string? GetEmotionNameById(long emotionId)
         {
             try
@@ -95,9 +140,9 @@ namespace Project.infrastucture
                 using (var connection = _connection.GetConnection())
                 {
                     connection.Open();
-                    string query = "SELECT Name FROM Emotion WHERE Id = @Id_emotion";
+                    string query = "SELECT Name FROM Emotion WHERE Id = @Emotion_id";
                     using var command = new SQLiteCommand(query, connection);
-                    command.Parameters.AddWithValue("@Id_emotion", emotionId);
+                    command.Parameters.AddWithValue("@Emotion_id", emotionId);
                     return command.ExecuteScalar()?.ToString();
                 }
             }
@@ -115,9 +160,9 @@ namespace Project.infrastucture
                 using (var connection = _connection.GetConnection())
                 {
                     connection.Open();
-                    string query = "SELECT Name FROM Personalized_Emotion WHERE Id = @Id_personalized_emotion";
+                    string query = "SELECT Name FROM Personalized_Emotion WHERE Id = @Personalized_emotion_id";
                     using var command = new SQLiteCommand(query, connection);
-                    command.Parameters.AddWithValue("@Id_personalized_emotion", emotionId);
+                    command.Parameters.AddWithValue("@Personalized_emotion_id", emotionId);
                     return command.ExecuteScalar()?.ToString();
                 }
             }
@@ -128,25 +173,86 @@ namespace Project.infrastucture
             }
         }
 
-        public Dictionary<string, int> GetEmotionFrequencies()
+        public string? GetPersonalizedEmotionImagePathByName(string name)
         {
-            string username = UserSession.GetCurrentUsername();
+            string userId = UserSession.GetCurrentUsername();
 
-            return null;
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Path_image FROM Personalized_Emotion WHERE Name = @name AND Id_user = @userId";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                return cmd.ExecuteScalar()?.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetPersonalizedEmotionImagePathByName: {ex.Message}");
+                return null;
+            }
         }
 
-        public Dictionary<string, int> GetPersonalizedEmotionFrequencies()
+        public void SaveNewPersonalizedEmotion(string name, string imagePath)
         {
-            string username = UserSession.GetCurrentUsername();
+            string userId = UserSession.GetCurrentUsername();
 
-            return null;
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "INSERT INTO Personalized_Emotion (Name, Id_user, Path_image) VALUES (@name, @userId, @imagePath)";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@imagePath", imagePath);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en SaveNewPersonalizedEmotion: {ex.Message}");
+            }
         }
 
-        public List<personalizedEmotion> GetAllPersonalizedEmotionsByUser()
+        public Dictionary<string, string> GetAllPersonalizedEmotionsWithPaths()
         {
-            string username = UserSession.GetCurrentUsername();
+            string userId = UserSession.GetCurrentUsername();
+            var result = new Dictionary<string, string>();
 
-            return null;
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = @"
+            SELECT Name, Path_image
+            FROM Personalized_Emotion
+            WHERE Id_user = @userId";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var name = reader["Name"]?.ToString() ?? "";
+                    var path = reader["Path_image"]?.ToString() ?? "";
+                    result[name] = path;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetAllPersonalizedEmotionsWithPaths: {ex.Message}");
+            }
+
+            return result;
         }
 
     }

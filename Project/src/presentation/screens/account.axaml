@@ -150,7 +150,8 @@
 						   IsVisible="False"/>
 
 				<!-- Botón para Validar datos de Actualización -->
-				<Button Grid.Row="11"
+				<Button x:Name="UpdateDataButton"
+     					Grid.Row="11"
 						Grid.Column="0"
 						Width="250"
 						Margin="0,16,0,0"

@@ -137,6 +137,15 @@ namespace Project.presentation.Views.UnauthViews
                 {
                     // Guardar en la base de datos usando UserCRUD
                     var userCrud = new Project.infrastucture.UserCRUD();
+
+                    if (userCrud.GetUserByUsername(usernameText!) != null)
+                    {
+                        _usernameErrorTextBlock!.IsVisible = true;
+                        _usernameErrorTextBlock.Text = "El nombre de usuario ya está en uso.";
+                        return;
+                    }
+
+
                     var newUser = new Project.domain.models.user
                     {
                         Username = usernameText!,
@@ -211,6 +220,7 @@ namespace Project.presentation.Views.UnauthViews
                 }
             }
         }
+
 
         private void OnLoginClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {

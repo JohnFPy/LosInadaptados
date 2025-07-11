@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace Project.application.components
 {
@@ -77,6 +79,8 @@ namespace Project.application.components
 
                 if (result != null)
                 {
+                    _emotionLogCRUD.SaveNewPersonalizedEmotion(result.Name, result.Path);
+
                     var customEmotion = new Emotion
                     {
                         Name = result.Name,
@@ -85,10 +89,13 @@ namespace Project.application.components
                     };
 
                     Emotions.Insert(Emotions.Count - 1, customEmotion);
-                }
 
+                    SelectedEmotion = customEmotion;
+
+                }
             }
         }
+
 
         private string _comment = "";
         public string Comment
@@ -127,7 +134,9 @@ namespace Project.application.components
             CancelCommand = new relayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
             SelectImageCommand = new relayCommand(async _ => await SelectImageAsync());
 
-            // Intentar cargar emoción previamente registrada
+            LoadAllPersonalizedEmotions();
+
+            // Load emotion for day (selected)
             string dateId = _day.DateId ?? DateTime.Today.ToString("yyyy-MM-dd");
             var log = _emotionLogCRUD.GetEmotionByDate(dateId);
 
@@ -138,11 +147,11 @@ namespace Project.application.components
 
                 if (log.Value.idEmotion.HasValue)
                 {
-                    name = _emotionFetcher.GetEmotionNameById(log.Value.idEmotion.Value);
+                    name = _emotionLogCRUD.GetEmotionNameById(log.Value.idEmotion.Value);
                 }
                 else if (log.Value.idPersonalized.HasValue)
                 {
-                    name = _emotionFetcher.GetPersonalizedEmotionNameById(log.Value.idPersonalized.Value);
+                    name = _emotionLogCRUD.GetPersonalizedEmotionNameById(log.Value.idPersonalized.Value);
                     isPersonalized = true;
                 }
 
@@ -155,16 +164,41 @@ namespace Project.application.components
                     }
                     else
                     {
-                        // Si es personalizada y no está, agregarla a la lista
+                        // If personalized but not present
+                        string? path = _emotionLogCRUD.GetPersonalizedEmotionImagePathByName(name);
+
                         Emotions.Insert(Emotions.Count - 1, new Emotion
                         {
                             Name = name,
-                            ImagePath = "avares://Project/resources/emotions/custom.png", // puedes personalizar
+                            ImagePath = path ?? "avares://Project/resources/emotions/notfound.png",
                             IsLocalImage = true
                         });
 
-                        SelectedEmotion = Emotions[^2]; // penúltimo (antes del botón '+')
+                        SelectedEmotion = Emotions[^2]; // Before '+'
                     }
+
+                }
+            }
+        }
+
+        private void LoadAllPersonalizedEmotions()
+        {
+            var personalizedEmotions = _emotionLogCRUD.GetAllPersonalizedEmotionsWithPaths();
+
+            foreach (var kvp in personalizedEmotions)
+            {
+                var name = kvp.Key;
+                var path = kvp.Value;
+
+                // Avoid duplicates
+                if (!Emotions.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && e.IsLocalImage))
+                {
+                    Emotions.Insert(Emotions.Count - 1, new Emotion
+                    {
+                        Name = name,
+                        ImagePath = path ?? "avares://Project/resources/emotions/notfound.png",
+                        IsLocalImage = true
+                    });
                 }
             }
         }
@@ -210,21 +244,27 @@ namespace Project.application.components
             }
             else if (SelectedEmotion.IsLocalImage)
             {
-                idPersonalized = _emotionFetcher.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
+                idPersonalized = _emotionLogCRUD.GetPersonalizedEmotionIdByName(SelectedEmotion.Name);
             }
             else
             {
-                idEmotion = _emotionFetcher.GetEmotionIdByName(SelectedEmotion.Name);
+                idEmotion = _emotionLogCRUD.GetEmotionIdByName(SelectedEmotion.Name);
             }
 
             if (idEmotion == null && idPersonalized == null)
             {
+                Debug.WriteLine("Error en guardado de emoción: Ids nulos");
                 return;
             }
 
-            _emotionLogCRUD.RegisterEmotion(dateId, idEmotion, idPersonalized);
+            bool success = _emotionLogCRUD.RegisterEmotion(dateId, idEmotion, idPersonalized);
+            if (!success)
+            {
+                Debug.WriteLine("Error en guardado de emoción: RegisterEmotion fallido");
+                return;
+            }
 
-            // Actualizar color visual del día
+            // Update color of dayView
             var colorHex = emotionColorMapper.GetColor(SelectedEmotion.Name, isPersonalized: idPersonalized != null);
             _day.EmotionColor = new SolidColorBrush(Color.Parse(colorHex));
 
