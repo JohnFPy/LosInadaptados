@@ -279,6 +279,8 @@ namespace Project.infrastucture
 
         public bool UpdateEmotion(string dateId, long? idEmotion, long? idPersonalized)
         {
+            string userId = UserSession.GetCurrentUsername();
+
             try
             {
                 using var connection = _connection.GetConnection();
@@ -288,13 +290,14 @@ namespace Project.infrastucture
                     UPDATE User_Emotion_Log
                     SET Emotion_id = @EmotionId,
                         Personalized_emotion_id = @PersonalizedId
-                    WHERE Date = @DateId;
+                    WHERE Date = @DateId AND Id_user = @Id_user;
                 ";
 
                 using var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@DateId", dateId);
                 command.Parameters.AddWithValue("@EmotionId", (object?)idEmotion ?? DBNull.Value);
                 command.Parameters.AddWithValue("@PersonalizedId", (object?)idPersonalized ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Id_user", userId);
 
                 return command.ExecuteNonQuery() > 0;
             }

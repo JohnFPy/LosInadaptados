@@ -67,6 +67,7 @@
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,20,0,50">
 			<Button Content="Cancelar" Command="{Binding CancelCommand}" />
 			<Button Content="Guardar" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" />
+			<Button Content="Limpiar día" Command="{Binding ClearEmotionCommand}" Margin="10,20,10,0"/>
 
 		</StackPanel>
 

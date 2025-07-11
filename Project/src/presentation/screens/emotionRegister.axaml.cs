@@ -15,7 +15,7 @@ namespace Project.presentation.screens
             var viewModel = new emotionRegisterView(day, this);
             DataContext = viewModel;
 
-            // Close the eindow when event is trigggered
+            // Close the window when event is trigggered
             viewModel.RequestClose += (_, __) => Avalonia.Threading.Dispatcher.UIThread.Post(Close);
 
         }

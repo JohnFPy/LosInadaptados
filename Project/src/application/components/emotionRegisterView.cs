@@ -114,6 +114,8 @@ namespace Project.application.components
         public relayCommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public ICommand SelectImageCommand { get; }
+        public ICommand ClearEmotionCommand { get; }
+
 
         public event EventHandler? RequestClose;
 
@@ -125,6 +127,7 @@ namespace Project.application.components
             SaveCommand = new relayCommand(_ => Save(), _ => CanSave);
             CancelCommand = new relayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
             SelectImageCommand = new relayCommand(async _ => await SelectImageAsync());
+            ClearEmotionCommand = new relayCommand(_ => ClearEmotion());
 
             LoadStandardEmotions();
             LoadAllPersonalizedEmotions();
@@ -314,6 +317,23 @@ namespace Project.application.components
                 }
             }
             return null;
+        }
+
+        private void ClearEmotion()
+        {
+            string dateId = _day.DateId ?? DateTime.Today.ToString("yyyy-MM-dd");
+
+            bool deleted = _emotionLogCRUD.DeleteEmotionEntry(dateId);
+            if (!deleted)
+            {
+                Debug.WriteLine("No se pudo limpiar la emoción.");
+                return;
+            }
+
+            _day.EmotionColor = new SolidColorBrush(Brushes.Transparent.Color);
+            SelectedEmotion = null;
+
+            RequestClose?.Invoke(this, EventArgs.Empty);
         }
 
 
