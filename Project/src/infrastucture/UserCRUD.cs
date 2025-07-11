@@ -198,7 +198,7 @@ namespace Project.infrastucture
         }
 
 
-        public async Task<bool> UpdateUsername(string oldUsername, string newUsername)
+        /*public async Task<bool> UpdateUsername(string oldUsername, string newUsername)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace Project.infrastucture
                 Debug.WriteLine($"Error updating username: {ex.Message}");
                 return false;
             }
-        }
+        }*/
 
 
     }

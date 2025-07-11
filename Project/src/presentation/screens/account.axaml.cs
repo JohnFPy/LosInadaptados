@@ -2,9 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Project.domain;
+using Project.infrastucture;
+using Project.infrastucture.utils;
 using Project.presentation.Views.AuthViews;
 using Project.presentation.Views.UnauthViews;
-using Project.infrastucture;
 
 namespace Project.presentation.screens
 {
@@ -35,7 +37,7 @@ namespace Project.presentation.screens
             var updateButton = actualizationGrid?.FindControl<Button>("Actualizar datos");
             if (updateButton != null)
             {
-                // updateButton.Click += UpdateUserData;
+                //updateButton.Click += UpdateUserData;
             }
         }
 
@@ -145,7 +147,58 @@ namespace Project.presentation.screens
 
         private async void UpdateDataButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (_newUsernameTextBox == null)
+
+            string? newPassword = this.FindControl<TextBox>("NewPasswordTextBox")?.Text;
+            string? newAge = this.FindControl<TextBox>("NewAgeTextBox")?.Text;
+            string? newName = this.FindControl<TextBox>("NewNameTextBox")?.Text;
+            string? newLastname = this.FindControl<TextBox>("NewLastnameTextBox")?.Text;
+
+            bool validPassword = string.IsNullOrWhiteSpace(newPassword) || RegisterAutentification.IsValidPassword(newPassword);
+            bool validAge = string.IsNullOrWhiteSpace(newAge) || RegisterAutentification.IsValidAge(newAge);
+            bool validName = string.IsNullOrWhiteSpace(newName) || RegisterAutentification.IsValidName(newName);
+            bool validLastname = string.IsNullOrWhiteSpace(newLastname) || RegisterAutentification.IsValidLastname(newLastname);
+
+            if (!validPassword || !validAge || !validName || !validLastname)
+            {
+                // Mostrar mensajes de error s
+                return;
+            }
+
+            var user = UserSession.CurrentUser;
+            if (user == null)
+                return;
+
+            // Actualizar solo los campos que no son null o vacíos
+            if (!string.IsNullOrWhiteSpace(newPassword))
+                user.Password = passwordHasher.HashPassword(newPassword);
+
+            if (!string.IsNullOrWhiteSpace(newAge))
+                user.Age = int.Parse(newAge);
+
+            if (!string.IsNullOrWhiteSpace(newName))
+                user.Name = newName;
+
+            if (!string.IsNullOrWhiteSpace(newLastname))
+                user.LastName = newLastname;
+
+            // Actualizar en la base de datos
+            var userCrud = new UserCRUD();
+            bool result = userCrud.updateUser(user);
+
+            if (result)
+            {
+                // Actualización exitosa
+                if (_welcomeTextBlock != null)
+                    _welcomeTextBlock.Text = $"Bienvenido, {user.Username}";
+            }
+            else
+            {
+                // Mostrar mensaje de error
+            }
+
+
+
+            /*if (_newUsernameTextBox == null)
                 return;
 
             string newUsername = _newUsernameTextBox.Text?.Trim() ?? "";
@@ -156,7 +209,6 @@ namespace Project.presentation.screens
             if (string.IsNullOrWhiteSpace(currentUsername))
                 return;
 
-            var userCrud = new UserCRUD();
             bool result = await userCrud.UpdateUsername(currentUsername, newUsername);
 
             if (result)
@@ -164,13 +216,13 @@ namespace Project.presentation.screens
                 if (_welcomeTextBlock != null)
                     _welcomeTextBlock.Text = $"Bienvenido, {newUsername}";
 
-                // Cambiar la línea para usar el método correcto
+                
                 UserSession.CurrentUser.Username = newUsername;
             }
             else
             {
-                // Mensaje de error 
-            }
+                // Mensaje de error si todo se va a ñonga
+            }*/
         }
     }
 }
