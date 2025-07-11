@@ -30,18 +30,10 @@ namespace Project.application.components
     {
         private readonly dayView _day;
         private readonly EmotionLogCRUD _emotionLogCRUD = new();
-        private readonly DatabaseEmotionFetcher _emotionFetcher = new();
         private Window? _parentWindow;
 
-        public ObservableCollection<Emotion> Emotions { get; set; } = new ObservableCollection<Emotion>
-        {
-            new Emotion { Name = "Feliz", ImagePath = "avares://Project/resources/emotions/feliz.png" },
-            new Emotion { Name = "Triste", ImagePath = "avares://Project/resources/emotions/triste.png" },
-            new Emotion { Name = "Enojado", ImagePath = "avares://Project/resources/emotions/enojado.png" },
-            new Emotion { Name = "Preocupado", ImagePath = "avares://Project/resources/emotions/preocupado.png" },
-            new Emotion { Name = "Serio", ImagePath = "avares://Project/resources/emotions/serio.png" },
-            new Emotion { Name = "Emoción personalizada", ImagePath = "avares://Project/resources/emotions/add.png", IsAddButton = true }
-        };
+        public ObservableCollection<Emotion> Emotions { get; set; } = new();
+        private String notFoundPath = "avares://Project/resources/emotions/notfound.png";
 
         private Emotion? _selectedEmotion;
         public Emotion? SelectedEmotion
@@ -134,6 +126,7 @@ namespace Project.application.components
             CancelCommand = new relayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
             SelectImageCommand = new relayCommand(async _ => await SelectImageAsync());
 
+            LoadStandardEmotions();
             LoadAllPersonalizedEmotions();
 
             // Load emotion for day (selected)
@@ -170,7 +163,7 @@ namespace Project.application.components
                         Emotions.Insert(Emotions.Count - 1, new Emotion
                         {
                             Name = name,
-                            ImagePath = path ?? "avares://Project/resources/emotions/notfound.png",
+                            ImagePath = path ?? notFoundPath,
                             IsLocalImage = true
                         });
 
@@ -196,13 +189,38 @@ namespace Project.application.components
                     Emotions.Insert(Emotions.Count - 1, new Emotion
                     {
                         Name = name,
-                        ImagePath = path ?? "avares://Project/resources/emotions/notfound.png",
+                        ImagePath = path ?? notFoundPath,
                         IsLocalImage = true
                     });
                 }
             }
         }
 
+        private void LoadStandardEmotions()
+        {
+            var standardEmotions = _emotionLogCRUD.GetAllStandardEmotionsWithPaths();
+
+            foreach (var kvp in standardEmotions)
+            {
+                var name = kvp.Key;
+                var path = kvp.Value;
+
+                Emotions.Add(new Emotion
+                {
+                    Name = name,
+                    ImagePath = path ?? notFoundPath,
+                    IsLocalImage = false
+                });
+            }
+
+            // Custom emotion button
+            Emotions.Add(new Emotion
+            {
+                Name = "Emoción personalizada",
+                ImagePath = "avares://Project/resources/emotions/add.png",
+                IsAddButton = true
+            });
+        }
 
         private async Task SelectImageAsync()
         {

@@ -232,9 +232,9 @@ namespace Project.infrastucture
                 conn.Open();
 
                 string query = @"
-            SELECT Name, Path_image
-            FROM Personalized_Emotion
-            WHERE Id_user = @userId";
+                    SELECT Name, Path_image
+                    FROM Personalized_Emotion
+                    WHERE Id_user = @userId";
 
                 using var cmd = new SQLiteCommand(query, conn);
                 cmd.Parameters.AddWithValue("@userId", userId);
@@ -243,13 +243,34 @@ namespace Project.infrastucture
                 while (reader.Read())
                 {
                     var name = reader["Name"]?.ToString() ?? "";
-                    var path = reader["Path_image"]?.ToString() ?? "";
+                    var path = reader["Path_image"]?.ToString() ?? null;
                     result[name] = path;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en GetAllPersonalizedEmotionsWithPaths: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public Dictionary<string, string?> GetAllStandardEmotionsWithPaths()
+        {
+            var result = new Dictionary<string, string?>();
+
+            using var connection = _connection.GetConnection();
+            connection.Open();
+
+            string query = "SELECT Name, Image FROM Emotion";
+            using var command = new SQLiteCommand(query, connection);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                string name = reader["Name"].ToString()!;
+                string? path = reader["Image"]?.ToString() ?? null;
+                result[name] = path;
             }
 
             return result;

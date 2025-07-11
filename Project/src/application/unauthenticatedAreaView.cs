@@ -161,6 +161,7 @@ namespace Project.presentation.Views.UnauthViews
                     if (registroExitoso)
                     {
                         // Registro exitoso, establecer sesión del usuario
+                        newUser = userCrud.GetUserByUsername(usernameText!);
                         UserSession.SetCurrentUser(newUser);
 
                         System.Diagnostics.Debug.WriteLine($"Usuario registrado exitosamente: {usernameText}");
