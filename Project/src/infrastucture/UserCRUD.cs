@@ -117,7 +117,7 @@ namespace Project.infrastucture
                     connection.Open();
                     Debug.WriteLine($"Getting user data for username: {username}");
 
-                    string query = "SELECT Username, Password, Name, LastName, Age, PathImage FROM User WHERE Username = @Username";
+                    string query = "SELECT Id, Username, Password, Name, LastName, Age, PathImage FROM User WHERE Username = @Username";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@Username", username);
 
@@ -126,6 +126,7 @@ namespace Project.infrastucture
                     {
                         return new user
                         {
+                            Id = Convert.ToInt64(reader["Id"]),
                             Username = reader["Username"].ToString()!,
                             Password = reader["Password"].ToString()!,
                             Name = reader["Name"].ToString()!,
