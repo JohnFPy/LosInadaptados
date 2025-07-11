@@ -170,22 +170,29 @@ namespace Project.infrastucture
             }
         }
 
-        public async Task<bool> UpdateUsername(int userId, string newUsername)
+        public async Task<bool> UpdateUsername(string oldUsername, string newUsername)
         {
             try
             {
                 using (var connection = _connectionSqlite.GetConnection())
                 {
                     connection.Open();
-                    Debug.WriteLine($"Database connection opened for UpdateUsername: {connection.DataSource}");
-
-                    string query = "UPDATE User SET Username = @NewUsername WHERE Id = @UserId";
+                    string query = "UPDATE User SET Username = @NewUsername WHERE Username = @OldUsername";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@NewUsername", newUsername);
-                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.Parameters.AddWithValue("@OldUsername", oldUsername);
 
                     int rowsAffected = await command.ExecuteNonQueryAsync();
-                    Debug.WriteLine($"Username updated successfully. Rows affected: {rowsAffected}");
+
+                    if (rowsAffected > 0)
+                    {
+                        var updatedUser = GetUserByUsername(newUsername);
+                        if (updatedUser != null)
+                        {
+                            UserSession.SetCurrentUser(updatedUser);
+                        }
+                    }
+
                     return rowsAffected > 0;
                 }
             }
