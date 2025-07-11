@@ -30,9 +30,9 @@ namespace Project.application.components
             get => _emotionBrush;
             set
             {
-                if (_emotionBrush.Color != value.Color)
+                if (_emotionBrush != value)
                 {
-                    _emotionBrush.Color = value.Color;
+                    _emotionBrush = value;
                     OnPropertyChanged();
                 }
             }
@@ -45,6 +45,7 @@ namespace Project.application.components
         public dayView()
         {
             ClickCommand = new relayCommand(_ => OnClicked());
+            EmotionColor.Color = Colors.Transparent;
         }
 
         private async void OnClicked()

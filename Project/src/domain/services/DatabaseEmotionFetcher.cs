@@ -128,6 +128,19 @@ namespace Project.domain.services
         }
 
         /// <summary>
+        /// Obtiene el rango de fechas de la semana actual.
+        /// </summary>
+        private (string StartOfWeek, string EndOfWeek) GetCurrentWeekRange()
+        {
+            DateTime today = DateTime.Today;
+            int delta = DayOfWeek.Monday - today.DayOfWeek;
+            DateTime monday = today.AddDays(delta);
+            DateTime sunday = monday.AddDays(6);
+
+            return (monday.ToString("yyyy-MM-dd"), sunday.ToString("yyyy-MM-dd"));
+        }
+
+        /// <summary>
         /// Obtiene el recuento de emociones registradas en los últimos 7 días.
         /// </summary>
         public Dictionary<string, int> GetWeeklyEmotionFrequencies()
@@ -140,7 +153,7 @@ namespace Project.domain.services
                 using var conn = _connectionSqlite.GetConnection();
                 conn.Open();
 
-                var oneWeekAgo = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
+                var (startOfWeek, endOfWeek) = GetCurrentWeekRange();
 
                 string stdQuery = @"
                     SELECT e.Name, COUNT(*) AS count
@@ -148,7 +161,7 @@ namespace Project.domain.services
                     JOIN Emotion e ON l.Emotion_id = e.Id
                     WHERE l.Id_user = @userId 
                       AND l.Emotion_id IS NOT NULL
-                      AND l.Date >= @startDate
+                      AND l.Date BETWEEN @startDate AND @endDate
                     GROUP BY e.Name";
 
                 string persQuery = @"
@@ -157,12 +170,13 @@ namespace Project.domain.services
                     JOIN Personalized_Emotion pe ON l.Personalized_emotion_id = pe.Id
                     WHERE l.Id_user = @userId 
                       AND l.Personalized_emotion_id IS NOT NULL
-                      AND l.Date >= @startDate
+                      AND l.Date BETWEEN @startDate AND @endDate
                     GROUP BY pe.Name";
 
                 using var stdCmd = new SQLiteCommand(stdQuery, conn);
                 stdCmd.Parameters.AddWithValue("@userId", userId);
-                stdCmd.Parameters.AddWithValue("@startDate", oneWeekAgo);
+                stdCmd.Parameters.AddWithValue("@startDate", startOfWeek);
+                stdCmd.Parameters.AddWithValue("@endDate", endOfWeek);
 
                 using var stdReader = stdCmd.ExecuteReader();
                 while (stdReader.Read())
@@ -175,7 +189,8 @@ namespace Project.domain.services
 
                 using var persCmd = new SQLiteCommand(persQuery, conn);
                 persCmd.Parameters.AddWithValue("@userId", userId);
-                persCmd.Parameters.AddWithValue("@startDate", oneWeekAgo);
+                persCmd.Parameters.AddWithValue("@startDate", startOfWeek);
+                persCmd.Parameters.AddWithValue("@endDate", endOfWeek);
 
                 using var persReader = persCmd.ExecuteReader();
                 while (persReader.Read())
@@ -234,7 +249,7 @@ namespace Project.domain.services
             var sorted = frequencies.OrderByDescending(kv => kv.Value);
 
             var summary = new StringBuilder();
-            summary.AppendLine("Emociones registradas en la última semana:");
+            summary.AppendLine("Emociones registradas en la semana actual:");
 
             foreach (var (emotion, count) in sorted)
             {
@@ -257,7 +272,7 @@ namespace Project.domain.services
             var (emotionName, count) = result.Value;
             var veces = count == 1 ? "vez" : "veces";
 
-            return $"Tu emoción más frecuente es **{emotionName}**, registrada {count} {veces}.";
+            return $"Te has sentido {emotionName} con mayor frecuencia, la emoción fue registrada {count} {veces}.";
         }
 
         /// <summary>

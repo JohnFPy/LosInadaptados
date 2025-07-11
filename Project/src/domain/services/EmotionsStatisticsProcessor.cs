@@ -33,51 +33,10 @@ namespace Project.domain.services
             }
         }
 
-        public bool RegisterTodayEmotion(long? idStandardEmotion, long? idPersonalizedEmotion)
-        {
-            var dateId = AudioCRUD.GetTodayDateId();
-            return _emotionLogCRUD.RegisterEmotion(dateId, idStandardEmotion, idPersonalizedEmotion);
-        }
-
         public (long? idEmotion, long? idPersonalized)? GetTodayEmotion()
         {
             var dateId = AudioCRUD.GetTodayDateId();
             return _emotionLogCRUD.GetEmotionByDate(dateId);
-        }
-
-        public void ProcessDailyEmotion()
-        {
-            var dateId = AudioCRUD.GetTodayDateId();
-            var emotionData = GetTodayEmotion();
-
-            Debug.WriteLine("EMOCIÓN DEL DÍA");
-            Debug.WriteLine($"Fecha: {DateTime.Now:dddd, dd/MM/yyyy}");
-            Debug.WriteLine("DateId: " + dateId);
-
-            if (emotionData == null)
-            {
-                Debug.WriteLine("No hay emoción registrada.");
-                return;
-            }
-
-            var (idStandard, idPersonalized) = emotionData.Value;
-
-            if (idStandard.HasValue)
-            {
-                var name = _emotionLogCRUD.GetEmotionNameById(idStandard.Value);
-                Debug.WriteLine($"Emoción estándar: {name} (ID: {idStandard})");
-            }
-            else if (idPersonalized.HasValue)
-            {
-                var name = _emotionLogCRUD.GetPersonalizedEmotionNameById(idPersonalized.Value);
-                Debug.WriteLine($"Emoción personalizada: {name} (ID: {idPersonalized})");
-            }
-            else
-            {
-                Debug.WriteLine("Registro sin emoción asignada.");
-            }
-
-            ShowBasicInsights();
         }
 
         public void ShowBasicInsights()

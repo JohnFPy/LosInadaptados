@@ -21,20 +21,20 @@ namespace Project.application.components
             {
                 return new Border
                 {
-                    Background = Avalonia.Media.Brushes.Transparent,
+                    Background = Brushes.Transparent,
                     Height = DEFAULT_HEIGHT,
                     Margin = new Thickness(DEFAULT_MARGIN),
                     CornerRadius = new CornerRadius(DEFAULT_CORNER_RADIUS)
                 };
             }
 
-            if (data is dayView day)
+            if (data is dayView)
             {
                 var button = new Button
                 {
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
-                    Command = day.ClickCommand,
+                    [!Button.CommandProperty] = new Binding("ClickCommand"),
                     Content = new TextBlock
                     {
                         [!TextBlock.TextProperty] = new Binding("DayNumber"),
@@ -48,10 +48,15 @@ namespace Project.application.components
                     Height = DEFAULT_HEIGHT,
                     Margin = new Thickness(DEFAULT_MARGIN),
                     CornerRadius = new CornerRadius(DEFAULT_CORNER_RADIUS),
+                    BorderThickness = new Thickness(5),
                     Child = button
                 };
 
-                border.Bind(Border.BackgroundProperty, new Binding("EmotionColor"));
+                // Using IValueConverter
+                var converter = new EmotionToBrushConverter();
+
+                border.Bind(Border.BorderBrushProperty, new Binding("EmotionColor") { Converter = converter, ConverterParameter = "border" });
+                border.Bind(Border.BackgroundProperty, new Binding("EmotionColor") { Converter = converter, ConverterParameter = "background" });
 
                 return border;
             }
@@ -63,5 +68,6 @@ namespace Project.application.components
         {
             return data is dayView;
         }
+
     }
 }
