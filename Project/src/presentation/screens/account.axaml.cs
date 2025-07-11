@@ -10,10 +10,16 @@ namespace Project.presentation.screens
 {
     public partial class account : UserControl
     {
-        private Button? _showUpdateFormButton;
+
         private Grid? _actualizationGrid;
+
+        private Button? _showUpdateFormButton;
         private Button? _backButton;
         private Button? _logoutButton;
+        private Button? _updateDataButton;
+
+        private TextBox? _newUsernameTextBox;
+
         private TextBlock? _welcomeTextBlock;
 
         private int _userId;
@@ -45,6 +51,8 @@ namespace Project.presentation.screens
             _backButton = this.FindControl<Button>("BackButton");
             _logoutButton = this.FindControl<Button>("LogoutButton");
             _welcomeTextBlock = this.FindControl<TextBlock>("WelcomeTextBlock");
+            _updateDataButton = this.FindControl<Button>("UpdateDataButton");
+            _newUsernameTextBox = this.FindControl<TextBox>("NewUsernameTextBox");
 
             if (_showUpdateFormButton != null)
                 _showUpdateFormButton.Click += ShowUpdateFormButton_Click;
@@ -54,6 +62,9 @@ namespace Project.presentation.screens
 
             if (_logoutButton != null)
                 _logoutButton.Click += LogoutButton_Click;
+
+            if (_updateDataButton != null)
+                _updateDataButton.Click += UpdateDataButton_Click;
 
             // Establecer visibilidad inicial
             SetInitialVisibility();
@@ -129,6 +140,43 @@ namespace Project.presentation.screens
                         desktop.MainWindow.Content = new UnauthenticatedAreaView();
                     }
                 }
+            }
+        }
+
+        private async void UpdateDataButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (_newUsernameTextBox == null)
+                return;
+
+            string newUsername = _newUsernameTextBox.Text?.Trim() ?? "";
+            if (string.IsNullOrWhiteSpace(newUsername))
+            {
+                // Mensaje de error si lo deseas
+                return;
+            }
+
+            // Obtén el ID del usuario actual desde la propiedad CurrentUser
+            int userId = UserSession.CurrentUser?.Id ?? 0; // Asegúrate de que 'Id' sea una propiedad válida en el tipo 'user'
+            if (userId == 0)
+            {
+                // Mensaje de error si el ID no es válido
+                return;
+            }
+
+            var userCrud = new UserCRUD();
+        bool result = await userCrud.UpdateUsername(userId, newUsername);
+
+            if (result)
+            {
+                // Opcional: Actualiza el mensaje de bienvenida
+                if (_welcomeTextBlock != null)
+                    _welcomeTextBlock.Text = $"Bienvenido, {newUsername}";
+                // Opcional: Actualiza la sesión
+                UserSession.CurrentUser.Username = newUsername;
+            }
+            else
+            {
+                // Mensaje de error
             }
         }
     }
