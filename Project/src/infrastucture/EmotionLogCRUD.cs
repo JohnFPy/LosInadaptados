@@ -173,5 +173,87 @@ namespace Project.infrastucture
             }
         }
 
+        public string? GetPersonalizedEmotionImagePathByName(string name)
+        {
+            string userId = UserSession.GetCurrentUsername();
+
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "SELECT Path_image FROM Personalized_Emotion WHERE Name = @name AND Id_user = @userId";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                return cmd.ExecuteScalar()?.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetPersonalizedEmotionImagePathByName: {ex.Message}");
+                return null;
+            }
+        }
+
+        public void SaveNewPersonalizedEmotion(string name, string imagePath)
+        {
+            string userId = UserSession.GetCurrentUsername();
+
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = "INSERT INTO Personalized_Emotion (Name, Id_user, Path_image) VALUES (@name, @userId, @imagePath)";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@imagePath", imagePath);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en SaveNewPersonalizedEmotion: {ex.Message}");
+            }
+        }
+
+        public Dictionary<string, string> GetAllPersonalizedEmotionsWithPaths()
+        {
+            string userId = UserSession.GetCurrentUsername();
+            var result = new Dictionary<string, string>();
+
+            try
+            {
+                using var conn = _connection.GetConnection();
+                conn.Open();
+
+                string query = @"
+            SELECT Name, Path_image
+            FROM Personalized_Emotion
+            WHERE Id_user = @userId";
+
+                using var cmd = new SQLiteCommand(query, conn);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var name = reader["Name"]?.ToString() ?? "";
+                    var path = reader["Path_image"]?.ToString() ?? "";
+                    result[name] = path;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetAllPersonalizedEmotionsWithPaths: {ex.Message}");
+            }
+
+            return result;
+        }
+
     }
 }
