@@ -63,8 +63,8 @@ namespace Project.presentation.screens
             if (_logoutButton != null)
                 _logoutButton.Click += LogoutButton_Click;
 
-            if (_updateDataButton != null)
-                _updateDataButton.Click += UpdateDataButton_Click;
+            //if (_updateDataButton != null)
+            //    _updateDataButton.Click += UpdateDataButton_Click;
 
             // Establecer visibilidad inicial
             SetInitialVisibility();
@@ -143,7 +143,7 @@ namespace Project.presentation.screens
             }
         }
 
-        private async void UpdateDataButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        /*private async void UpdateDataButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (_newUsernameTextBox == null)
                 return;
@@ -164,7 +164,7 @@ namespace Project.presentation.screens
             }
 
             var userCrud = new UserCRUD();
-        bool result = await userCrud.UpdateUsername(userId, newUsername);
+            bool result = await userCrud.UpdateUsername(userId, newUsername);
 
             if (result)
             {
@@ -178,6 +178,6 @@ namespace Project.presentation.screens
             {
                 // Mensaje de error
             }
-        }
+        }*/
     }
 }
