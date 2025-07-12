@@ -27,73 +27,57 @@ echo.
 echo Ejecutandose con permisos de administrador...
 echo.
 
-REM Verificar .NET 9
-echo [1/3] Verificando .NET SDK...
-dotnet --version >nul 2>&1
+REM Verificar ASP.NET Core Runtime
+echo [1/3] Verificando ASP.NET Core Runtime...
+dotnet --list-runtimes | findstr "Microsoft.AspNetCore.App 9.0" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo WARNING: .NET SDK no encontrado
-    echo Iniciando descarga automatica de .NET SDK 9.0...
+    echo WARNING: ASP.NET Core Runtime 9.0 no encontrado
+    echo Iniciando instalacion de ASP.NET Core Runtime 9.0...
     echo.
     
     REM Detectar arquitectura del sistema
     if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-        set "sdk_url=https://download.visualstudio.microsoft.com/download/pr/4e766615-57e6-4b1d-a574-25eeb7a71107/9306af6accef6bf21de8a59f78c8868b/dotnet-sdk-9.0.100-win-x64.exe"
-        set "installer_name=dotnet-sdk-9.0.100-win-x64.exe"
+        set "runtime_installer=dependencies\aspnetcore-runtime-9.0.7-win-x64.exe"
     ) else if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-        set "sdk_url=https://download.visualstudio.microsoft.com/download/pr/4e766615-57e6-4b1d-a574-25eeb7a71107/b4a9b96a32b83bbbaed5a5776e93894e/dotnet-sdk-9.0.100-win-arm64.exe"
-        set "installer_name=dotnet-sdk-9.0.100-win-arm64.exe"
+        set "runtime_installer=dependencies\aspnetcore-runtime-9.0.7-win-arm64.exe"
     ) else (
-        set "sdk_url=https://download.visualstudio.microsoft.com/download/pr/4e766615-57e6-4b1d-a574-25eeb7a71107/8b3b312142e6e3a0b42fd4c4a8e64c31/dotnet-sdk-9.0.100-win-x86.exe"
-        set "installer_name=dotnet-sdk-9.0.100-win-x86.exe"
+        set "runtime_installer=dependencies\aspnetcore-runtime-9.0.7-win-x86.exe"
     )
     
-    echo Descargando !installer_name!...
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '!sdk_url!' -OutFile '!installer_name!' -UseBasicParsing}"
-    
-    if %errorlevel% neq 0 (
-        echo ERROR: Fallo la descarga del SDK
-        echo Descarga manualmente desde: https://dotnet.microsoft.com/download/dotnet/9.0
+    echo Verificando archivo del instalador: !runtime_installer!
+    if not exist "!runtime_installer!" (
+        echo ERROR: No se encontro el archivo del instalador
+        echo Ruta esperada: !runtime_installer!
         pause
         exit /b 1
     )
     
-    echo Instalando .NET SDK 9.0...
-    "!installer_name!" /quiet /norestart
+    echo Instalando ASP.NET Core Runtime 9.0...
+    "!runtime_installer!" /quiet /norestart
     
     if %errorlevel% neq 0 (
-        echo ERROR: Fallo la instalacion del SDK
-        echo Ejecuta manualmente: !installer_name!
+        echo ERROR: Fallo la instalacion del runtime
+        echo Ejecuta manualmente: !runtime_installer!
         pause
         exit /b 1
     )
     
-    echo Limpiando archivos temporales...
-    del "!installer_name!"
-    
-    echo .NET SDK 9.0 instalado exitosamente!
+    echo ASP.NET Core Runtime 9.0 instalado exitosamente!
     echo Reiniciando verificacion...
     echo.
 )
 
-REM Verificar version de .NET nuevamente
-dotnet --version >nul 2>&1
+REM Verificar ASP.NET Core Runtime nuevamente
+dotnet --list-runtimes | findstr "Microsoft.AspNetCore.App 9.0" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ERROR: .NET SDK sigue sin estar disponible
+    echo ERROR: ASP.NET Core Runtime sigue sin estar disponible
     echo Reinicia el sistema y ejecuta este script nuevamente
     pause
     exit /b 1
 )
 
-for /f "tokens=1" %%a in ('dotnet --version') do set dotnet_version=%%a
-echo .NET Version: !dotnet_version!
-
-REM Verificar que sea .NET 9.x
-echo !dotnet_version! | findstr /r "^9\." >nul
-if %errorlevel% neq 0 (
-    echo WARNING: Se encontro .NET version !dotnet_version!, pero se requiere .NET 9.x
-    echo Puede que necesites reinstalar o actualizar .NET SDK
-    pause
-)
+for /f "tokens=2" %%a in ('dotnet --list-runtimes ^| findstr "Microsoft.AspNetCore.App 9.0"') do set runtime_version=%%a
+echo ASP.NET Core Runtime Version: !runtime_version!
 
 echo [2/3] Restaurando dependencias...
 cd src
