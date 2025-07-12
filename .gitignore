@@ -14,13 +14,7 @@
 [Bb]in/
 [Oo]bj/
 [Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
 bld/
-[Bb]uild/
 IntermediateOutputPath/
 
 # Visual Studio 2015/2017 cache/options directory
@@ -141,3 +135,6 @@ coverage*.html
 # OS generated files
 # .DS_Store
 # Thumbs.db
+
+# Allow specific releases folder
+!Project/releases/
