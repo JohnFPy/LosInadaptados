@@ -1,6 +1,6 @@
 ﻿namespace Project.domain.models
 {
-    public class calendar
+    public class userEmotionLog
     {
         public long Id { get; set; }
         public long IdUser { get; set; }

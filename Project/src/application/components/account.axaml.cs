@@ -8,7 +8,7 @@ using Project.infrastucture.utils;
 using Project.presentation.Views.AuthViews;
 using Project.presentation.Views.UnauthViews;
 
-namespace Project.presentation.screens
+namespace Project.application.components
 {
     public partial class account : UserControl
     {
@@ -19,6 +19,12 @@ namespace Project.presentation.screens
         private Button? _backButton;
         private Button? _logoutButton;
         private Button? _updateDataButton;
+        private TextBlock? _usernameErrorTextBlock;
+        private TextBlock? _passwordErrorTextBlock;
+        private TextBlock? _nameErrorTextBlock;
+        private TextBlock? _lastnameErrorTextBlock;
+        private TextBlock? _ageErrorTextBlock;
+
 
         private TextBox? _newUsernameTextBox;
 
@@ -54,7 +60,13 @@ namespace Project.presentation.screens
             _logoutButton = this.FindControl<Button>("LogoutButton");
             _welcomeTextBlock = this.FindControl<TextBlock>("WelcomeTextBlock");
             _updateDataButton = this.FindControl<Button>("UpdateDataButton");
-            _newUsernameTextBox = this.FindControl<TextBox>("NewUsernameTextBox");
+
+            _usernameErrorTextBlock = this.FindControl<TextBlock>("UsernameErrorTextBlock");
+            _passwordErrorTextBlock = this.FindControl<TextBlock>("PasswordErrorTextBlock");
+            _nameErrorTextBlock = this.FindControl<TextBlock>("NameErrorTextBlock");
+            _lastnameErrorTextBlock = this.FindControl<TextBlock>("LastnameErrorTextBlock");
+            _ageErrorTextBlock = this.FindControl<TextBlock>("AgeErrorTextBlock");
+
 
             if (_showUpdateFormButton != null)
                 _showUpdateFormButton.Click += ShowUpdateFormButton_Click;
@@ -147,28 +159,67 @@ namespace Project.presentation.screens
 
         private async void UpdateDataButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            ClearAllErrorMessages();
 
+            string? newUsername = this.FindControl<TextBox>("NewUsernameTextBox")?.Text;
             string? newPassword = this.FindControl<TextBox>("NewPasswordTextBox")?.Text;
             string? newAge = this.FindControl<TextBox>("NewAgeTextBox")?.Text;
             string? newName = this.FindControl<TextBox>("NewNameTextBox")?.Text;
             string? newLastname = this.FindControl<TextBox>("NewLastnameTextBox")?.Text;
 
+            bool isUsernameValid = string.IsNullOrWhiteSpace(newUsername) || RegisterAutentification.IsValidUsername(newUsername);
             bool validPassword = string.IsNullOrWhiteSpace(newPassword) || RegisterAutentification.IsValidPassword(newPassword);
             bool validAge = string.IsNullOrWhiteSpace(newAge) || RegisterAutentification.IsValidAge(newAge);
             bool validName = string.IsNullOrWhiteSpace(newName) || RegisterAutentification.IsValidName(newName);
             bool validLastname = string.IsNullOrWhiteSpace(newLastname) || RegisterAutentification.IsValidLastname(newLastname);
 
-            if (!validPassword || !validAge || !validName || !validLastname)
+            bool hasErrors = false;
+
+            if (!isUsernameValid)
             {
-                // Mostrar mensajes de error s
-                return;
+                _usernameErrorTextBlock!.Text = "Nombre de usuario inválido.";
+                _usernameErrorTextBlock.IsVisible = true;
+                hasErrors = true;
             }
+
+            if (!validPassword)
+            {
+                _passwordErrorTextBlock!.Text = "Contraseña inválida.";
+                _passwordErrorTextBlock.IsVisible = true;
+                hasErrors = true;
+            }
+
+            if (!validAge)
+            {
+                _ageErrorTextBlock!.Text = "Edad inválida.";
+                _ageErrorTextBlock.IsVisible = true;
+                hasErrors = true;
+            }
+
+            if (!validName)
+            {
+                _nameErrorTextBlock!.Text = "Nombre inválido.";
+                _nameErrorTextBlock.IsVisible = true;
+                hasErrors = true;
+            }
+
+            if (!validLastname)
+            {
+                _lastnameErrorTextBlock!.Text = "Apellido inválido.";
+                _lastnameErrorTextBlock.IsVisible = true;
+                hasErrors = true;
+            }
+
+            if (hasErrors)
+                return;
 
             var user = UserSession.CurrentUser;
             if (user == null)
                 return;
 
-            // Actualizar solo los campos que no son null o vacíos
+            if (!string.IsNullOrWhiteSpace(newUsername) && isUsernameValid)
+                user.Username = newUsername;
+
             if (!string.IsNullOrWhiteSpace(newPassword))
                 user.Password = passwordHasher.HashPassword(newPassword);
 
@@ -181,48 +232,29 @@ namespace Project.presentation.screens
             if (!string.IsNullOrWhiteSpace(newLastname))
                 user.LastName = newLastname;
 
-            // Actualizar en la base de datos
             var userCrud = new UserCRUD();
             bool result = userCrud.updateUser(user);
 
             if (result)
             {
-                // Actualización exitosa
-                if (_welcomeTextBlock != null)
-                    _welcomeTextBlock.Text = $"Bienvenido, {user.Username}";
+                _welcomeTextBlock!.Text = $"Bienvenido, {user.Username}";
+                BackButton_Click(sender, e);
             }
             else
             {
-                // Mostrar mensaje de error
+                _usernameErrorTextBlock!.Text = "Error al actualizar los datos.";
+                _usernameErrorTextBlock.IsVisible = true;
             }
-
-
-
-            /*if (_newUsernameTextBox == null)
-                return;
-
-            string newUsername = _newUsernameTextBox.Text?.Trim() ?? "";
-            if (string.IsNullOrWhiteSpace(newUsername))
-                return;
-
-            string currentUsername = UserSession.GetCurrentUserName();
-            if (string.IsNullOrWhiteSpace(currentUsername))
-                return;
-
-            bool result = await userCrud.UpdateUsername(currentUsername, newUsername);
-
-            if (result)
-            {
-                if (_welcomeTextBlock != null)
-                    _welcomeTextBlock.Text = $"Bienvenido, {newUsername}";
-
-                
-                UserSession.CurrentUser.Username = newUsername;
-            }
-            else
-            {
-                // Mensaje de error si todo se va a ñonga
-            }*/
         }
+
+        private void ClearAllErrorMessages()
+        {
+            _usernameErrorTextBlock!.IsVisible = false;
+            _passwordErrorTextBlock!.IsVisible = false;
+            _nameErrorTextBlock!.IsVisible = false;
+            _lastnameErrorTextBlock!.IsVisible = false;
+            _ageErrorTextBlock!.IsVisible = false;
+        }
+
     }
 }

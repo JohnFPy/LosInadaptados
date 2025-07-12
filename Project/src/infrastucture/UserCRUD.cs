@@ -178,12 +178,13 @@ namespace Project.infrastucture
                 {
                     connection.Open();
                     Debug.WriteLine($"Database connection opened for updateUser: {connection.DataSource}");
-                    string query = "UPDATE User SET Username = @Username, Password = @Password, Name = @Name, LastName = @LastName, WHERE Id = @Id";
+                    string query = "UPDATE User SET Username = @Username, Password = @Password, Name = @Name, LastName = @LastName, Age = @Age WHERE Id = @Id";
                     using var command = new SQLiteCommand(query, connection);
                     command.Parameters.AddWithValue("@Username", updatedUser.Username);
                     command.Parameters.AddWithValue("@Password", updatedUser.Password);
                     command.Parameters.AddWithValue("@Name", updatedUser.Name);
                     command.Parameters.AddWithValue("@LastName", updatedUser.LastName);
+                    command.Parameters.AddWithValue("@Age", updatedUser.Age);
                     command.Parameters.AddWithValue("@Id", updatedUser.Id);
                     int rowsAffected = command.ExecuteNonQuery();
                     Debug.WriteLine($"User updated successfully. Rows affected: {rowsAffected}");
