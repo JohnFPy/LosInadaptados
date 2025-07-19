@@ -7,6 +7,7 @@ namespace Project.Tests;
 /// <summary>
 /// Pruebas unitarias para el guardado de emociones en emotionRegisterView
 /// </summary>
+/// 
 public class EmotionSaveValidationTests
 {
     private readonly ITestOutputHelper _output;
