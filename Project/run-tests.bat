@@ -1,55 +1,51 @@
+
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 
-set "DOTNET_URL=https://download.visualstudio.microsoft.com/download/pr/1b144bc4-fc3c-4cfd-81d5-4c6934141447/d65f0d9c4e9b8e78d6ac65e1a7207d30/dotnet-sdk-8.0.100-win-x64.exe"
-set "DOTNET_INSTALLER=%TEMP%\dotnet-sdk-installer.exe"
+:: Variables de configuración
+set "DOTNET_VERSION=9.0.303"
+set "DOTNET_ZIP_URL=https://builds.dotnet.microsoft.com/dotnet/Sdk/%DOTNET_VERSION%/dotnet-sdk-%DOTNET_VERSION%-win-x64.zip"
+set "DOTNET_ZIP=%TEMP%\dotnet-sdk.zip"
+set "DOTNET_DIR=%~dp0dotnet"
+set "DOTNET_EXE=%DOTNET_DIR%\dotnet.exe"
 
-echo [🔍] Verificando si .NET SDK está instalado...
-where dotnet >nul 2>&1
-IF %ERRORLEVEL% NEQ 0 (
-    echo [❌] .NET SDK no encontrado.
-    echo [✅ ] Descargando .NET SDK 8.0...
-    
-    powershell -Command "Invoke-WebRequest -Uri '%DOTNET_URL%' -OutFile '%DOTNET_INSTALLER%'"
-    
-    IF EXIST "%DOTNET_INSTALLER%" (
-        echo [✅ ] Ejecutando instalador en modo silencioso...
-        "%DOTNET_INSTALLER%" /quiet /norestart
+echo ------------------------------------------
+echo [✅] Ejecutando entorno de pruebas .NET
+echo ------------------------------------------
 
-        echo [✅] Esperando a que la instalación finalice...
-        timeout /t 30 >nul
+:: Verifica si el dotnet portable ya está extraído
+if not exist "%DOTNET_EXE%" (
+    echo [✅ ] Descargando .NET SDK %DOTNET_VERSION%...
+    powershell -Command "Invoke-WebRequest -Uri '%DOTNET_ZIP_URL%' -OutFile '%DOTNET_ZIP%'"
 
-        echo [✅] Eliminando instalador...
-        del "%DOTNET_INSTALLER%"
-    ) ELSE (
-        echo [❌] Error al descargar el instalador de .NET.
-        pause
-        exit /b
-    )
+    echo [✅] Descomprimiendo SDK en: %DOTNET_DIR%
+    powershell -Command "Expand-Archive -Path '%DOTNET_ZIP%' -DestinationPath '%DOTNET_DIR%' -Force"
+
+    del "%DOTNET_ZIP%"
+) else (
+    echo [✅] SDK ya descargado y extraído.
 )
 
-where dotnet >nul 2>&1
-IF %ERRORLEVEL% NEQ 0 (
-    echo [❌] .NET SDK no se detecta incluso después de la instalación.
-    echo [✅] Reinicia el sistema y vuelve a ejecutar este archivo.
-    pause
-    exit /b
-)
+:: Exporta variables para entorno portable
+set "DOTNET_ROOT=%DOTNET_DIR%"
+set "PATH=%DOTNET_DIR%;%PATH%"
 
-echo [✅] .NET SDK detectado.
+:: Mostrar versión activa
 echo.
+"%DOTNET_EXE%" --version
 
+echo.
 echo [✅] Restaurando dependencias...
-dotnet restore
+"%DOTNET_EXE%" restore
 
 echo.
-echo [✅] Compilando la solución...
-dotnet build --no-restore
+echo [✅] Compilando proyecto de pruebas...
+"%DOTNET_EXE%" build --no-restore
 
 echo.
-echo [✅] Ejecutando pruebas...
-dotnet test --no-build --logger "console;verbosity=detailed"
+echo [✅] Ejecutando tests...
+"%DOTNET_EXE%" test --no-build --logger "console;verbosity=detailed"
 
 echo.
-echo [✅] Proceso completado.
+echo [✅] Proceso de pruebas finalizado.
 pause

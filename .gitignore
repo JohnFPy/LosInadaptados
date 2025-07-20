@@ -72,6 +72,7 @@ ipch/
 *.backup
 _UpgradeReport_Files/
 Backup*/
+dotnet/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup*/
