@@ -8,7 +8,7 @@ using Project.infrastucture;
 
 namespace Project.domain.services
 {
-    internal class DatabaseAudioFetcher
+    public class DatabaseAudioFetcher
     {
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
 

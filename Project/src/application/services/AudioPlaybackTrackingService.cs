@@ -142,7 +142,7 @@ namespace Project.application.services
         }
 
         /// Obtiene el tipo de audio basado en el nombre del archivo
-        private string GetAudioTypeFromFileName(string fileName)
+        public string GetAudioTypeFromFileName(string fileName)
         {
             fileName = fileName.ToLowerInvariant();
 
