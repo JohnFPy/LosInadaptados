@@ -7,7 +7,7 @@ using Project.infrastucture;
 
 namespace Project.domain.services
 {
-    internal class DatabaseEmotionFetcher
+    public class DatabaseEmotionFetcher
     {
         private readonly connectionSqlite _connectionSqlite = new connectionSqlite();
         private readonly EmotionLogCRUD _emotionLogCRUD = new EmotionLogCRUD();
